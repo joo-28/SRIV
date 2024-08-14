@@ -5,19 +5,21 @@ import { useRouter } from "expo-router";
 export default function index() {
   const router = useRouter();
   useEffect(() => {
-    checkUserAuth();
+    const checkLoginStatus = async () => {
+      const username = await service.getUserData();
+      console.log(username);
+      if (username) {
+        router.replace("/Home");
+      } else {
+        router.replace("/Login");
+      }
+    };
+    checkLoginStatus();
   }, []);
-  const checkUserAuth = async () => {
-    const result = await service.getData("Login");
-    if (result !== true) {
-      router.replace("/Login");
-    } else {
-      router.replace("/Home");
-    }
-  };
+
   return (
     <View>
-      <Text></Text>
+      <Text>Check</Text>
     </View>
   );
 }

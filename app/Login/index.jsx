@@ -5,17 +5,30 @@ import {
   Text,
   TextInput,
   Button,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import Colors from "../../Services/Colors";
+import service from "../../Services/service";
+import { router } from "expo-router";
+
+const VALID_USERNAME = "Sriv";
+const VALID_PASSWORD = "Varun$2020";
 
 export default function LoginScreen() {
-  const [userId, setUserId] = useState("");
-  const [password, setpassword] = useState("");
-
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const handleSubmit = () => {
-    console.log("User ID:", userId);
-    console.log("password:", password);
+    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+      service.storeUserData(username);
+      router.replace("/Home");
+    } else {
+      Alert.alert(
+        "Invalid Credentials",
+        "Please check your username and password."
+      );
+      console.log(username, password);
+    }
   };
   return (
     <View style={styles.bg}>
@@ -31,8 +44,8 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter your Users ID"
-            value={userId}
-            onChangeText={setUserId}
+            value={username}
+            onChangeText={setUsername}
           />
 
           <Text style={styles.label}>Password:</Text>
@@ -41,7 +54,7 @@ export default function LoginScreen() {
             placeholder="Enter your Password"
             value={password}
             secureTextEntry={true}
-            onChangeText={setpassword}
+            onChangeText={setPassword}
           />
 
           <Button color={Colors.Green} title="Login" onPress={handleSubmit} />
