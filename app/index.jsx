@@ -7,7 +7,6 @@ export default function index() {
   useEffect(() => {
     const checkLoginStatus = async () => {
       const username = await service.getUserData();
-      console.log(username);
       if (username) {
         router.replace("/Home");
       } else {

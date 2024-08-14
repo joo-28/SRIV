@@ -27,7 +27,6 @@ export default function LoginScreen() {
         "Invalid Credentials",
         "Please check your username and password."
       );
-      console.log(username, password);
     }
   };
   return (

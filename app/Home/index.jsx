@@ -1,37 +1,47 @@
 import { View, StyleSheet, Text, TextInput, Button } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import Colors from "../../Services/Colors";
 import { useRouter } from "expo-router";
 import service from "../../Services/service";
+import { RadioButton } from "react-native-paper";
+
 export default function index() {
   const router = useRouter();
+  const [selectedValue, setSelectedValue] = useState("option1");
   const handleLogout = async () => {
     await service.clearUserData();
     router.push("/Login");
   };
   return (
     <View style={styles.bg}>
+      <View style={styles.searchButton}>
+        <Button color={Colors.Green} title="Logout" onPress={handleLogout} />
+      </View>
       <View style={styles.formDesign}>
-        <TextInput
-          style={styles.input}
-          placeholder="Customer Name"
-          // value={userId}
-          // onChangeText={setUserId}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Customer Number"
-          // value={userId}
-          // onChangeText={setUserId}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Amount"
-          // value={userId}
-          // onChangeText={setUserId}
-        />
-        <View style={styles.searchButton}>
-          <Button color={Colors.Green} title="Logout" onPress={handleLogout} />
+        <TextInput style={styles.input} placeholder="Customer Name" />
+        <TextInput style={styles.input} placeholder="Customer Number" />
+        <TextInput style={styles.input} placeholder="Amount" />
+
+        <View style={styles.radioGroup}>
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="option1"
+              status={selectedValue === "option1" ? "checked" : "unchecked"}
+              onPress={() => setSelectedValue("option1")}
+              color="#007BFF"
+            />
+            <Text style={styles.radioLabel}>Debit</Text>
+          </View>
+
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="option2"
+              status={selectedValue === "option2" ? "checked" : "unchecked"}
+              onPress={() => setSelectedValue("option2")}
+              color="#007BFF"
+            />
+            <Text style={styles.radioLabel}>Credit</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -67,16 +77,25 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: 10,
     paddingHorizontal: 8,
   },
   searchButton: {
     width: 100,
     color: Colors.Green,
+    left: 150,
   },
-  dateButton: {
-    width: 100,
-    color: Colors.Green,
-    left: 228,
+  radioGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  radioButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  radioLabel: {
+    fontSize: 16,
+    color: "#333",
   },
 });
