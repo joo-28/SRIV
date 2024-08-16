@@ -21,7 +21,7 @@ export default function LoginScreen() {
   const handleSubmit = () => {
     if (username === VALID_USERNAME && password === VALID_PASSWORD) {
       service.storeUserData(username);
-      router.replace("/Home");
+      router.push("(tabs)");
     } else {
       Alert.alert(
         "Invalid Credentials",
