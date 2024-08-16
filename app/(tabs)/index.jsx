@@ -44,9 +44,6 @@ export default function index() {
 
   return (
     <View style={styles.bg}>
-      <View style={styles.logOutButton}>
-        <Button color={Colors.Green} title="Logout" onPress={handleLogout} />
-      </View>
       <View style={styles.formDesign}>
         <TextInput style={styles.input} placeholder="Customer Number" />
         <TextInput style={styles.input} placeholder="Customer Name" />
@@ -164,6 +161,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     position: "relative",
     left: 130,
-    top: 290,
+    top: 320,
   },
 });
