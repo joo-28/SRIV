@@ -6,7 +6,12 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Colors from "../../Services/Colors";
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: Colors.DarkBlue }}>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: Colors.DarkBlue,
+        headerShown: false,
+      }}
+    >
       <Tabs.Screen
         name="Reports"
         options={{
@@ -28,7 +33,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Customer"
         options={{
-          title: "customer",
+          title: "Customer",
           tabBarIcon: ({ color }) => (
             <Ionicons name="person" size={24} color={color} />
           ),

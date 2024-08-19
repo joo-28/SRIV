@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Yellow,
   },
   formDesign: {
-    top: 20,
+    top: 40,
     left: 28,
     width: 360,
     height: 300,
@@ -161,6 +161,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     position: "relative",
     left: 130,
-    top: 320,
+    top: 340,
   },
 });
