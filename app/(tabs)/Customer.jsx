@@ -1,5 +1,7 @@
 import Colors from "../../Services/Colors";
 import React, { useState } from "react";
+import { useRouter } from "expo-router";
+
 import {
   View,
   TextInput,
@@ -13,7 +15,7 @@ import {
 export default function Customer() {
   const [inputValue, setInputValue] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
-
+  const router = useRouter();
   const items = [
     "Apple",
     "Banana",
@@ -38,6 +40,12 @@ export default function Customer() {
   const handleItemPress = (item) => {
     setInputValue(item);
     setFilteredItems([]);
+  };
+  const handleNavigateToNewCustomer = () => {
+    router.push("/AddNewCustomer");
+  };
+  const handleNavigateToEditCustomer = () => {
+    router.push("/EditCustomer");
   };
   return (
     <View style={styles.bg}>
@@ -73,10 +81,18 @@ export default function Customer() {
       </View>
       <View style={styles.buttonContainer}>
         <View style={styles.addCustomerButton}>
-          <Button color={Colors.DarkBlue} title="Edit Customer" />
+          <Button
+            color={Colors.DarkBlue}
+            title="Edit Customer"
+            onPress={handleNavigateToEditCustomer}
+          />
         </View>
         <View style={styles.editCustomer}>
-          <Button color={Colors.Green} title="Add New Customer" />
+          <Button
+            color={Colors.Green}
+            title="Add New Customer"
+            onPress={handleNavigateToNewCustomer}
+          />
         </View>
       </View>
     </View>
@@ -140,7 +156,7 @@ const styles = StyleSheet.create({
   dataDesign: {
     top: 170,
     width: 360,
-    height: 510,
+    height: 530,
     minWidth: 320,
     backgroundColor: "white",
     borderRadius: 8,
@@ -172,9 +188,10 @@ const styles = StyleSheet.create({
   },
   headerSize: {
     fontSize: 20,
+    color: "white",
   },
   buttonContainer: {
-    top: 750,
+    top: 770,
     flex: 1,
     width: "100%",
     justifyContent: "center",

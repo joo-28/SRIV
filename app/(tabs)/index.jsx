@@ -267,5 +267,6 @@ const styles = StyleSheet.create({
   },
   headerSize: {
     fontSize: 20,
+    color: "white",
   },
 });
