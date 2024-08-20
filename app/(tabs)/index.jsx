@@ -5,11 +5,12 @@ import {
   View,
   StyleSheet,
   Text,
+  FlatList,
+  TouchableOpacity,
   TextInput,
   Button,
   Platform,
 } from "react-native";
-
 import Colors from "../../Services/Colors";
 
 import { RadioButton } from "react-native-paper";
@@ -41,12 +42,56 @@ export default function index() {
   const showDatePicker = () => {
     setShow(true);
   };
+  const [inputValue, setInputValue] = useState("");
+  const [filteredItems, setFilteredItems] = useState([]);
 
+  const items = [
+    "Apple",
+    "Banana",
+    "Orange",
+    "Grapes",
+    "Watermelon",
+    "Pineapple",
+  ];
+  const handleInputChange = (text) => {
+    setInputValue(text);
+
+    if (text) {
+      const filtered = items.filter((item) =>
+        item.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredItems(filtered);
+    } else {
+      setFilteredItems([]);
+    }
+  };
+
+  const handleItemPress = (item) => {
+    setInputValue(item);
+    setFilteredItems([]);
+  };
   return (
     <View style={styles.bg}>
       <View style={styles.formDesign}>
+        <TextInput
+          style={styles.input}
+          value={inputValue}
+          onChangeText={handleInputChange}
+          placeholder="Customer Name"
+        />
+        {filteredItems.length > 0 && (
+          <FlatList
+            data={filteredItems}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleItemPress(item)}>
+                <Text style={styles.item}>{item}</Text>
+              </TouchableOpacity>
+            )}
+            style={styles.list}
+          />
+        )}
         <TextInput style={styles.input} placeholder="Customer Number" />
-        <TextInput style={styles.input} placeholder="Customer Name" />
 
         <TextInput style={styles.input} placeholder="Amount" />
 
@@ -89,6 +134,12 @@ export default function index() {
         </View>
       </View>
       <Text style={styles.heading}>Reports</Text>
+      <View style={styles.dataDesign}>
+        <View style={styles.headingDesign}>
+          <Text style={styles.headerSize}>CustomerID</Text>
+          <Text style={styles.headerSize}>Customer Name</Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -124,6 +175,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 8,
+    zIndex: 1,
+  },
+  list: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    right: 20,
+    backgroundColor: "white",
+    borderColor: "gray",
+    borderWidth: 1,
+    zIndex: 1000,
+    maxHeight: 200,
+  },
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "lightgray",
   },
   searchButton: {
     width: 100,
@@ -162,5 +230,42 @@ const styles = StyleSheet.create({
     position: "relative",
     left: 130,
     top: 340,
+  },
+  dataDesign: {
+    top: 400,
+    left: 28,
+    width: 360,
+    height: 410,
+    minWidth: 320,
+    backgroundColor: "white",
+    borderRadius: 8,
+    borderStyle: "solid",
+    position: "absolute",
+    flex: 1,
+    justifyContent: "center",
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  headingDesign: {
+    top: 0,
+    width: 360,
+    flexDirection: "row",
+    height: 40,
+    minWidth: 320,
+    backgroundColor: Colors.Blue,
+    borderStyle: "solid",
+    position: "absolute",
+    flex: 1,
+    justifyContent: "space-around",
+    padding: 5,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  headerSize: {
+    fontSize: 20,
   },
 });
