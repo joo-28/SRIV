@@ -43,12 +43,26 @@ export default function index() {
   const [filteredItems, setFilteredItems] = useState([]);
 
   const items = [
-    "Apple",
-    "Banana",
-    "Orange",
-    "Grapes",
-    "Watermelon",
-    "Pineapple",
+    "Arun Kumar",
+    "Meena Rani",
+    "Rajesh Kannan",
+    "Priya Lakshmi",
+    "Vijay Anand",
+    "Divya Bharathi",
+    "Karthik Raja",
+    "Anitha Devi",
+    "Suresh Babu",
+    "Lakshmi Narayanan",
+    "Muthu Kumaran",
+    "Saranya Devi",
+    "Ganesh Kumar",
+    "Deepa Lakshmi",
+    "Ramesh Babu",
+    "Bala Murugan",
+    "Vijaya Kumar",
+    "Uma Maheswari",
+    "Sundar Raman",
+    "Gayathri Devi",
   ];
   const handleInputChange = (text) => {
     setInputValue(text);
@@ -168,6 +182,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
+    borderRadius: 4,
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 10,
