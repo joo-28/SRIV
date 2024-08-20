@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     top: 0,
     width: 360,
     flexDirection: "row",
-    height: 40,
+    height: 50,
     minWidth: 320,
     backgroundColor: Colors.Blue,
     borderStyle: "solid",
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
-    paddingTop: 5,
+    paddingTop: 10,
   },
   headerSize: {
     fontSize: 20,

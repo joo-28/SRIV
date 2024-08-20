@@ -30,10 +30,7 @@ export default function index() {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [selectedValue, setSelectedValue] = useState("option1");
-  const handleLogout = async () => {
-    await service.clearUserData();
-    router.push("/Login");
-  };
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
@@ -130,10 +127,10 @@ export default function index() {
           </View>
         </View>
         <View style={styles.searchButton}>
-          <Button color={Colors.Green} title="Add" onPress={handleLogout} />
+          <Button color={Colors.Green} title="Add" />
         </View>
       </View>
-      <Text style={styles.heading}>Reports</Text>
+
       <View style={styles.dataDesign}>
         <View style={styles.headingDesign}>
           <Text style={styles.headerSize}>CustomerID</Text>
@@ -225,17 +222,12 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "white",
   },
-  heading: {
-    fontSize: 40,
-    position: "relative",
-    left: 130,
-    top: 350,
-  },
+
   dataDesign: {
-    top: 410,
+    top: 380,
     left: 28,
     width: 360,
-    height: 410,
+    height: 430,
     minWidth: 320,
     backgroundColor: "white",
     borderRadius: 8,
@@ -254,14 +246,14 @@ const styles = StyleSheet.create({
     top: 0,
     width: 360,
     flexDirection: "row",
-    height: 40,
+    height: 50,
     minWidth: 320,
     backgroundColor: Colors.Blue,
     borderStyle: "solid",
     position: "absolute",
     flex: 1,
     justifyContent: "space-around",
-    padding: 5,
+    padding: 10,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
