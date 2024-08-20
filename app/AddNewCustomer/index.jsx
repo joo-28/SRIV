@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function index() {
+export default function AddNewCustomer() {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const onChange = (event, selectedDate) => {
@@ -26,6 +26,9 @@ export default function index() {
 
   const goBack = () => {
     router.back();
+  };
+  const handleSaveData = () => {
+    console.log("saved");
   };
   return (
     <View style={styles.bg}>
@@ -47,7 +50,10 @@ export default function index() {
             />
           )}
         </View>
-        <View>
+        <View style={styles.SaveButton}>
+          <Button color={Colors.Green} title="Save" onPress={handleSaveData} />
+        </View>
+        <View style={styles.GobackButton}>
           <Button title="Go Back" onPress={goBack} />
         </View>
       </View>
@@ -97,5 +103,17 @@ const styles = StyleSheet.create({
   datePicker: {
     width: "100%",
     backgroundColor: "white",
+  },
+  SaveButton: {
+    width: 150,
+    color: Colors.Green,
+    alignSelf: "center",
+    marginBottom: 15,
+  },
+  GobackButton: {
+    width: 150,
+    color: Colors.Green,
+    alignSelf: "center",
+    marginBottom: 15,
   },
 });

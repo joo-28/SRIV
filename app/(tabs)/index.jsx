@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Yellow,
   },
   formDesign: {
-    top: 40,
+    top: 50,
     left: 28,
     width: 360,
     height: 300,
@@ -229,10 +229,10 @@ const styles = StyleSheet.create({
     fontSize: 40,
     position: "relative",
     left: 130,
-    top: 340,
+    top: 350,
   },
   dataDesign: {
-    top: 400,
+    top: 410,
     left: 28,
     width: 360,
     height: 410,

@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Yellow,
   },
   formDesign: {
-    top: 40,
+    top: 50,
     left: 28,
     width: 360,
     height: 150,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   buttonContainer: {
-    top: 770,
+    top: 780,
     flex: 1,
     width: "100%",
     justifyContent: "center",
