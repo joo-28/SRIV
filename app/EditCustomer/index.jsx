@@ -4,102 +4,102 @@ import {
   StyleSheet,
   TextInput,
   Button,
-  TouchableOpacity,
-  FlatList,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import Colors from "../../Services/Colors";
+import supabase from "../../Services/supabaseConfig";
 
 export default function EditCustomer() {
   const router = useRouter();
-  const [inputValue, setInputValue] = useState("");
-  const [filteredItems, setFilteredItems] = useState([]);
+  const [customerNumber, setCustomerNumber] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [newContactNumber, setNewContactNumber] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const items = [
-    "Arun Kumar",
-    "Meena Rani",
-    "Rajesh Kannan",
-    "Priya Lakshmi",
-    "Vijay Anand",
-    "Divya Bharathi",
-    "Karthik Raja",
-    "Anitha Devi",
-    "Suresh Babu",
-    "Lakshmi Narayanan",
-    "Muthu Kumaran",
-    "Saranya Devi",
-    "Ganesh Kumar",
-    "Deepa Lakshmi",
-    "Ramesh Babu",
-    "Bala Murugan",
-    "Vijaya Kumar",
-    "Uma Maheswari",
-    "Sundar Raman",
-    "Gayathri Devi",
-  ];
-  const handleInputChange = (text) => {
-    setInputValue(text);
+  const searchCustomer = async (customerNumber) => {
+    if (customerNumber.trim() === "") {
+      setContactNumber("");
+      return;
+    }
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("customer")
+      .select("customer_contact_number")
+      .eq("customer_number", customerNumber)
+      .single();
 
-    if (text) {
-      const filtered = items.filter((item) =>
-        item.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredItems(filtered);
+    setLoading(false);
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error fetching customer:", error);
+      setContactNumber("");
+    } else if (data) {
+      setContactNumber(data.customer_contact_number);
     } else {
-      setFilteredItems([]);
+      setContactNumber("");
     }
   };
 
-  const handleItemPress = (item) => {
-    setInputValue(item);
-    setFilteredItems([]);
-  };
+  async function updateCustomerContactNumber(customerNumber, newContactNumber) {
+    const { data, error } = await supabase
+      .from("customer")
+      .update({ customer_contact_number: newContactNumber })
+      .eq("customer_number", customerNumber);
+
+    if (error) {
+      console.error("Error updating contact number:", error);
+      return null;
+    }
+    setNewContactNumber("");
+    Alert.alert("Sucessfull", "Contact updated");
+    console.log("Updated customer contact number:", data);
+    return data;
+  }
   const goBack = () => {
     router.back();
   };
-  const handleSaveData = () => {
-    console.log("saved");
-  };
+
   const handleDeleteData = () => {
     console.log("saved");
   };
-  const handleSelectUser = () => {
-    console.log("saved");
-  };
+
   return (
     <View style={styles.bg}>
       <View style={styles.formDesign}>
         <Text style={styles.heading}>Edit Customer Details</Text>
         <TextInput
           style={styles.input}
-          value={inputValue}
-          onChangeText={handleInputChange}
+          value={customerNumber}
+          onChangeText={(text) => {
+            setCustomerNumber(text);
+            searchCustomer(text);
+          }}
           placeholder="Customer Number"
+          keyboardType="numeric"
         />
-        {filteredItems.length > 0 && (
-          <FlatList
-            data={filteredItems}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleItemPress(item)}>
-                <Text style={styles.item}>{item}</Text>
-              </TouchableOpacity>
-            )}
-            style={styles.list}
-          />
-        )}
-        <View style={styles.SelectButton}>
+        {loading && <ActivityIndicator size="small" color="#0000ff" />}
+        <View style={styles.contantView}>
+          <Text>Contact Number:</Text>
+          <Text>{contactNumber ? contactNumber : "No customer found."}</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Contact Number"
+          value={newContactNumber}
+          onChangeText={setNewContactNumber}
+          keyboardType="numeric"
+        />
+        <View style={styles.SaveButton}>
           <Button
             color={Colors.Green}
-            title="Select"
-            onPress={handleSelectUser}
+            title="Save"
+            onPress={() => {
+              updateCustomerContactNumber(customerNumber, newContactNumber);
+            }}
           />
-        </View>
-        <TextInput style={styles.input} placeholder="Contact Number" />
-        <TextInput style={styles.input} placeholder="Amount" />
-        <View style={styles.SaveButton}>
-          <Button color={Colors.Green} title="Save" onPress={handleSaveData} />
         </View>
         <View style={styles.DeleteButton}>
           <Button color={"red"} title="Delete" onPress={handleDeleteData} />
@@ -181,5 +181,9 @@ const styles = StyleSheet.create({
     color: Colors.Green,
     alignSelf: "center",
     marginBottom: 30,
+  },
+  contantView: {
+    flexDirection: "row",
+    marginBottom: 13,
   },
 });
