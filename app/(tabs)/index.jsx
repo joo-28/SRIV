@@ -88,7 +88,7 @@ export default function index() {
           style={styles.input}
           value={inputValue}
           onChangeText={handleInputChange}
-          placeholder="Customer Name"
+          placeholder="Customer Number"
         />
         {filteredItems.length > 0 && (
           <FlatList
@@ -102,7 +102,6 @@ export default function index() {
             style={styles.list}
           />
         )}
-        <TextInput style={styles.input} placeholder="Customer Number" />
 
         <TextInput style={styles.input} placeholder="Amount" />
 
@@ -147,8 +146,8 @@ export default function index() {
 
       <View style={styles.dataDesign}>
         <View style={styles.headingDesign}>
-          <Text style={styles.headerSize}>CustomerID</Text>
-          <Text style={styles.headerSize}>Customer Name</Text>
+          <Text style={styles.headerSize}>Customer Number : </Text>
+          <Text style={styles.headerSize}>101</Text>
         </View>
       </View>
     </View>
@@ -267,7 +266,6 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     position: "absolute",
     flex: 1,
-    justifyContent: "space-around",
     padding: 10,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
@@ -275,5 +273,6 @@ const styles = StyleSheet.create({
   headerSize: {
     fontSize: 20,
     color: "white",
+    marginLeft: 20,
   },
 });

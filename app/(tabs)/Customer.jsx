@@ -68,7 +68,7 @@ export default function Customer() {
           style={styles.input}
           value={inputValue}
           onChangeText={handleInputChange}
-          placeholder="Customer Name"
+          placeholder="Customer Number"
         />
         {filteredItems.length > 0 && (
           <FlatList
@@ -82,14 +82,13 @@ export default function Customer() {
             style={styles.list}
           />
         )}
-
         <View style={styles.searchButton}>
           <Button color={Colors.Green} title="See Reports" />
         </View>
         <View style={styles.dataDesign}>
           <View style={styles.headingDesign}>
-            <Text style={styles.headerSize}>CustomerID</Text>
-            <Text style={styles.headerSize}>Customer Name</Text>
+            <Text style={styles.headerSize}>Customer Number : </Text>
+            <Text style={styles.headerSize}>101</Text>
           </View>
         </View>
       </View>
@@ -195,7 +194,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     position: "absolute",
     flex: 1,
-    justifyContent: "space-around",
+
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
     paddingTop: 10,
@@ -203,6 +202,7 @@ const styles = StyleSheet.create({
   headerSize: {
     fontSize: 20,
     color: "white",
+    marginLeft: 20,
   },
   buttonContainer: {
     top: 780,

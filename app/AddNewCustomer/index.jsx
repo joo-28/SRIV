@@ -5,15 +5,26 @@ import {
   TextInput,
   Button,
   Platform,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
+import supabase from "../../Services/supabaseConfig";
 import React, { useState } from "react";
 import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function AddNewCustomer() {
+  //State Varibles
+
+  const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
+  const [customerNumber, setCustomerNumber] = useState("");
+  const [customerContactNumber, setCustomerContactNumber] = useState("");
+  const [totalAmount, setTotalAmount] = useState("");
+
+  //State Functions
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
@@ -22,21 +33,98 @@ export default function AddNewCustomer() {
   const showDatePicker = () => {
     setShow(true);
   };
-  const router = useRouter();
 
   const goBack = () => {
     router.back();
   };
-  const handleSaveData = () => {
-    console.log("saved");
-  };
+
+  async function handleSaveData() {
+    async function checkCustomerNumberExists(customerNumber) {
+      const { data, error } = await supabase
+        .from("customer")
+        .select("customer_number")
+        .eq("customer_number", customerNumber)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Error checking customer number:", error);
+        return false;
+      }
+
+      if (data) {
+        console.log(`Customer number ${customerNumber} already exists.`);
+        Alert.alert("Already exists.", `Customer number ${customerNumber}`);
+        return true;
+      } else {
+        if (customerNumber === "" || totalAmount === "") {
+          Alert.alert("Error", "Please Enter customer number and Amount");
+        } else {
+          const { data: customerData, error: customerError } = await supabase
+            .from("customer")
+            .insert([
+              {
+                customer_number: customerNumber,
+                customer_contact_number: customerContactNumber,
+                total_amount: parseFloat(totalAmount),
+              },
+            ])
+            .select();
+          if (customerError) {
+            console.error("Error inserting customer:", customerError);
+          } else {
+            console.log("Inserted customer:", customerData);
+          }
+          const { data: ledgerData, error: ledgerError } = await supabase
+            .from("ledger")
+            .insert([
+              {
+                customer_number: customerNumber,
+                due_paid_date: date,
+                transaction: "Credit",
+              },
+            ])
+            .select();
+
+          if (ledgerError) {
+            console.error("Error inserting into ledger:", ledgerError);
+            return;
+          } else {
+            console.log("Inserted customer:", ledgerData);
+          }
+          Alert.alert("Sucessful", "New Customer Created");
+          setCustomerNumber("");
+          setCustomerContactNumber("");
+          setTotalAmount("");
+        }
+      }
+    }
+    checkCustomerNumberExists(customerNumber);
+  }
   return (
     <View style={styles.bg}>
       <View style={styles.formDesign}>
         <Text style={styles.heading}>Add New Customer</Text>
-        <TextInput style={styles.input} placeholder="Customer Name" />
-        <TextInput style={styles.input} placeholder="Contact Number" />
-        <TextInput style={styles.input} placeholder="Amount" />
+        <TextInput
+          style={styles.input}
+          placeholder="Customer Number"
+          value={customerNumber}
+          onChangeText={setCustomerNumber}
+          keyboardType="numeric"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contact Number"
+          value={customerContactNumber}
+          onChangeText={setCustomerContactNumber}
+          keyboardType="numeric"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Amount"
+          value={totalAmount}
+          onChangeText={setTotalAmount}
+          keyboardType="numeric"
+        />
         <View style={styles.container}>
           <Button onPress={showDatePicker} title={date.toDateString()} />
           {show && (

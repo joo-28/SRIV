@@ -75,7 +75,7 @@ export default function EditCustomer() {
           style={styles.input}
           value={inputValue}
           onChangeText={handleInputChange}
-          placeholder="Customer Name"
+          placeholder="Customer Number"
         />
         {filteredItems.length > 0 && (
           <FlatList
@@ -96,7 +96,6 @@ export default function EditCustomer() {
             onPress={handleSelectUser}
           />
         </View>
-        <TextInput style={styles.input} placeholder="Customer Name" />
         <TextInput style={styles.input} placeholder="Contact Number" />
         <TextInput style={styles.input} placeholder="Amount" />
         <View style={styles.SaveButton}>
