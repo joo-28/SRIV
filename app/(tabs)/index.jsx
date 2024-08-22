@@ -17,6 +17,10 @@ import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 export default function index() {
   const router = useRouter();
+  const [customerNumber, setCustomerNumber] = useState("");
+  const [customerContactNumber, setCustomerContactNumber] = useState("");
+  const [totalAmount, setTotalAmount] = useState("");
+
   useEffect(() => {
     const checkLoginStatus = async () => {
       const username = await service.getUserData();
@@ -39,70 +43,16 @@ export default function index() {
   const showDatePicker = () => {
     setShow(true);
   };
-  const [inputValue, setInputValue] = useState("");
-  const [filteredItems, setFilteredItems] = useState([]);
-
-  const items = [
-    "Arun Kumar",
-    "Meena Rani",
-    "Rajesh Kannan",
-    "Priya Lakshmi",
-    "Vijay Anand",
-    "Divya Bharathi",
-    "Karthik Raja",
-    "Anitha Devi",
-    "Suresh Babu",
-    "Lakshmi Narayanan",
-    "Muthu Kumaran",
-    "Saranya Devi",
-    "Ganesh Kumar",
-    "Deepa Lakshmi",
-    "Ramesh Babu",
-    "Bala Murugan",
-    "Vijaya Kumar",
-    "Uma Maheswari",
-    "Sundar Raman",
-    "Gayathri Devi",
-  ];
-  const handleInputChange = (text) => {
-    setInputValue(text);
-
-    if (text) {
-      const filtered = items.filter((item) =>
-        item.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredItems(filtered);
-    } else {
-      setFilteredItems([]);
-    }
-  };
-
-  const handleItemPress = (item) => {
-    setInputValue(item);
-    setFilteredItems([]);
-  };
   return (
     <View style={styles.bg}>
       <View style={styles.formDesign}>
         <TextInput
           style={styles.input}
-          value={inputValue}
-          onChangeText={handleInputChange}
           placeholder="Customer Number"
+          value={customerNumber}
+          onChangeText={setCustomerNumber}
+          keyboardType="numeric"
         />
-        {filteredItems.length > 0 && (
-          <FlatList
-            data={filteredItems}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleItemPress(item)}>
-                <Text style={styles.item}>{item}</Text>
-              </TouchableOpacity>
-            )}
-            style={styles.list}
-          />
-        )}
-
         <TextInput style={styles.input} placeholder="Amount" />
 
         <View style={styles.radioGroup}>

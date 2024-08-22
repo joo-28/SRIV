@@ -14,7 +14,7 @@ import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function AddNewCustomer() {
-  //State Varibles
+  //State Varible
 
   const router = useRouter();
   const [date, setDate] = useState(new Date());

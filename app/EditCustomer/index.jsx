@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
 
@@ -31,16 +31,17 @@ export default function EditCustomer() {
       .eq("customer_number", customerNumber)
       .single();
 
-    setLoading(false);
-
-    if (error && error.code !== "PGRST116") {
-      console.error("Error fetching customer:", error);
-      setContactNumber("");
-    } else if (data) {
-      setContactNumber(data.customer_contact_number);
-    } else {
-      setContactNumber("");
-    }
+    setTimeout(() => {
+      if (error && error.code !== "PGRST116") {
+        console.log("Error fetching customer:", error);
+        setContactNumber("");
+      } else if (data) {
+        setContactNumber(data.customer_contact_number);
+      } else {
+        setContactNumber("");
+      }
+      setLoading(false);
+    }, 2000);
   };
 
   async function updateCustomerContactNumber(customerNumber, newContactNumber) {
@@ -50,10 +51,11 @@ export default function EditCustomer() {
       .eq("customer_number", customerNumber);
 
     if (error) {
-      console.error("Error updating contact number:", error);
+      console.log("Error updating contact number:", error);
       return null;
     }
     setNewContactNumber("");
+    setContactNumber(newContactNumber);
     Alert.alert("Sucessfull", "Contact updated");
     console.log("Updated customer contact number:", data);
     return data;
@@ -82,7 +84,7 @@ export default function EditCustomer() {
         />
         {loading && <ActivityIndicator size="small" color="#0000ff" />}
         <View style={styles.contantView}>
-          <Text>Contact Number:</Text>
+          <Text>Contact Number : </Text>
           <Text>{contactNumber ? contactNumber : "No customer found."}</Text>
         </View>
         <TextInput
