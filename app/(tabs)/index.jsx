@@ -8,14 +8,20 @@ import {
   TextInput,
   Button,
   Platform,
+  Alert,
 } from "react-native";
 import Colors from "../../Services/Colors";
+import supabase from "../../Services/supabaseConfig";
 
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 export default function index() {
   const router = useRouter();
   const [customerNumber, setCustomerNumber] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("debit");
+  const [amount, setAmount] = useState(0);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -27,9 +33,6 @@ export default function index() {
     };
     checkLoginStatus();
   }, []);
-  const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("option1");
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -39,6 +42,68 @@ export default function index() {
   const showDatePicker = () => {
     setShow(true);
   };
+  const handleInsertData = async () => {
+    const { data: customerData, error: customerError } = await supabase
+      .from("customer")
+      .select("customer_number, total_amount")
+      .eq("customer_number", customerNumber)
+      .single();
+
+    if (customerError) {
+      Alert.alert("Error", "Error fetching customer details.");
+      console.log("Error fetching customer:", customerError);
+      return;
+    }
+
+    if (!customerData) {
+      Alert.alert("Error", "No customer found with this customer number.");
+      return;
+    }
+
+    const { data: ledgerData, error: ledgerError } = await supabase
+      .from("ledger")
+      .insert([
+        {
+          customer_number: customerNumber,
+          amount: amount,
+          due_paid_date: date,
+          transaction: selectedValue,
+        },
+      ])
+      .select();
+
+    if (ledgerError) {
+      console.log("Error inserting into ledger:", ledgerError);
+      return;
+    } else {
+      console.log("Inserted transaction into ledger:", ledgerData);
+    }
+
+    let updatedTotalAmount = customerData.total_amount;
+
+    if (selectedValue === "credit") {
+      updatedTotalAmount += parseFloat(amount);
+    } else if (selectedValue === "debit") {
+      updatedTotalAmount -= parseFloat(amount);
+    } else if (selectedValue === "Miscellaneous") {
+      updatedTotalAmount += eval(amount);
+    }
+    const { data: updateData, error: updateError } = await supabase
+      .from("customer")
+      .update({ total_amount: updatedTotalAmount })
+      .eq("customer_number", customerNumber);
+
+    if (updateError) {
+      console.error("Error updating total_amount:", updateError);
+    } else {
+      console.log("Updated total_amount successfully:", updateData);
+    }
+
+    Alert.alert("Successful", "Transaction recorded successfully.");
+    setCustomerNumber("");
+    setAmount("");
+  };
+
   return (
     <View style={styles.bg}>
       <View style={styles.formDesign}>
@@ -49,14 +114,19 @@ export default function index() {
           onChangeText={setCustomerNumber}
           keyboardType="numeric"
         />
-        <TextInput style={styles.input} placeholder="Amount" />
+        <TextInput
+          style={styles.input}
+          placeholder="Amount"
+          value={amount}
+          onChangeText={setAmount}
+        />
 
         <View style={styles.radioGroup}>
           <View style={styles.radioButton}>
             <RadioButton
-              value="option1"
-              status={selectedValue === "option1" ? "checked" : "unchecked"}
-              onPress={() => setSelectedValue("option1")}
+              value="debit"
+              status={selectedValue === "debit" ? "checked" : "unchecked"}
+              onPress={() => setSelectedValue("debit")}
               color="#007BFF"
             />
             <Text style={styles.radioLabel}>Debit</Text>
@@ -64,9 +134,9 @@ export default function index() {
 
           <View style={styles.radioButton}>
             <RadioButton
-              value="option2"
-              status={selectedValue === "option2" ? "checked" : "unchecked"}
-              onPress={() => setSelectedValue("option2")}
+              value="credit"
+              status={selectedValue === "credit" ? "checked" : "unchecked"}
+              onPress={() => setSelectedValue("credit")}
               color="#007BFF"
             />
             <Text style={styles.radioLabel}>Credit</Text>
@@ -74,9 +144,11 @@ export default function index() {
 
           <View style={styles.radioButton}>
             <RadioButton
-              value="option3"
-              status={selectedValue === "option3" ? "checked" : "unchecked"}
-              onPress={() => setSelectedValue("option3")}
+              value="Miscellaneous"
+              status={
+                selectedValue === "Miscellaneous" ? "checked" : "unchecked"
+              }
+              onPress={() => setSelectedValue("Miscellaneous")}
               color="#007BFF"
             />
             <Text style={styles.radioLabel}>Miscellaneous</Text>
@@ -98,7 +170,7 @@ export default function index() {
         </View>
 
         <View style={styles.searchButton}>
-          <Button color={Colors.Green} title="Add" />
+          <Button color={Colors.Green} title="Add" onPress={handleInsertData} />
         </View>
       </View>
 
