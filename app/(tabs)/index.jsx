@@ -71,20 +71,32 @@ export default function index() {
             />
             <Text style={styles.radioLabel}>Credit</Text>
           </View>
-          <View style={styles.container}>
-            <Button onPress={showDatePicker} title={date.toDateString()} />
-            {show && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={date}
-                mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={onChange}
-                style={styles.datePicker}
-              />
-            )}
+
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="option3"
+              status={selectedValue === "option3" ? "checked" : "unchecked"}
+              onPress={() => setSelectedValue("option3")}
+              color="#007BFF"
+            />
+            <Text style={styles.radioLabel}>Miscellaneous</Text>
           </View>
         </View>
+
+        <View style={styles.container}>
+          <Button onPress={showDatePicker} title={date.toDateString()} />
+          {show && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode="date"
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={onChange}
+              style={styles.datePicker}
+            />
+          )}
+        </View>
+
         <View style={styles.searchButton}>
           <Button color={Colors.Green} title="Add" />
         </View>
@@ -134,36 +146,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     zIndex: 1,
   },
-  list: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    right: 20,
-    backgroundColor: "white",
-    borderColor: "gray",
-    borderWidth: 1,
-    zIndex: 1000,
-    maxHeight: 200,
-  },
-  item: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "lightgray",
-  },
   searchButton: {
     width: 100,
     color: Colors.Green,
     left: 110,
   },
-  logOutButton: {
-    width: 100,
-    color: Colors.Green,
-    left: 150,
-  },
   radioGroup: {
+    marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "white",
+    justifyContent: "space-between",
   },
   radioButton: {
     flexDirection: "row",
@@ -182,7 +175,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "white",
   },
-
   dataDesign: {
     top: 380,
     left: 28,
