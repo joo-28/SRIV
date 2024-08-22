@@ -14,42 +14,8 @@ import {
 
 export default function Customer() {
   const [inputValue, setInputValue] = useState("");
-  const [filteredItems, setFilteredItems] = useState([]);
-  const router = useRouter();
-  const items = [
-    "Arun Kumar",
-    "Meena Rani",
-    "Rajesh Kannan",
-    "Priya Lakshmi",
-    "Vijay Anand",
-    "Divya Bharathi",
-    "Karthik Raja",
-    "Anitha Devi",
-    "Suresh Babu",
-    "Lakshmi Narayanan",
-    "Muthu Kumaran",
-    "Saranya Devi",
-    "Ganesh Kumar",
-    "Deepa Lakshmi",
-    "Ramesh Babu",
-    "Bala Murugan",
-    "Vijaya Kumar",
-    "Uma Maheswari",
-    "Sundar Raman",
-    "Gayathri Devi",
-  ];
-  const handleInputChange = (text) => {
-    setInputValue(text);
 
-    if (text) {
-      const filtered = items.filter((item) =>
-        item.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredItems(filtered);
-    } else {
-      setFilteredItems([]);
-    }
-  };
+  const router = useRouter();
 
   const handleItemPress = (item) => {
     setInputValue(item);
@@ -67,21 +33,9 @@ export default function Customer() {
         <TextInput
           style={styles.input}
           value={inputValue}
-          onChangeText={handleInputChange}
           placeholder="Customer Number"
         />
-        {filteredItems.length > 0 && (
-          <FlatList
-            data={filteredItems}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleItemPress(item)}>
-                <Text style={styles.item}>{item}</Text>
-              </TouchableOpacity>
-            )}
-            style={styles.list}
-          />
-        )}
+
         <View style={styles.searchButton}>
           <Button color={Colors.Green} title="See Reports" />
         </View>

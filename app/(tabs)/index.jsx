@@ -5,8 +5,6 @@ import {
   View,
   StyleSheet,
   Text,
-  FlatList,
-  TouchableOpacity,
   TextInput,
   Button,
   Platform,
@@ -18,8 +16,6 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 export default function index() {
   const router = useRouter();
   const [customerNumber, setCustomerNumber] = useState("");
-  const [customerContactNumber, setCustomerContactNumber] = useState("");
-  const [totalAmount, setTotalAmount] = useState("");
 
   useEffect(() => {
     const checkLoginStatus = async () => {
