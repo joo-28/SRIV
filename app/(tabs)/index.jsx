@@ -49,6 +49,7 @@ export default function index() {
   };
 
   const handleInsertData = async () => {
+    // Fetch customer data
     const { data: customerData, error: customerError } = await supabase
       .from("customer")
       .select(
@@ -68,6 +69,7 @@ export default function index() {
       return;
     }
 
+    // Insert into ledger
     const { data: ledgerData, error: ledgerError } = await supabase
       .from("ledger")
       .insert([
@@ -87,13 +89,15 @@ export default function index() {
       console.log("Inserted transaction into ledger:", ledgerData);
     }
 
-    let updatedTotalAmount = parseFloat(customerData.total_amount);
-    let updatedBalanceAmount = parseFloat(customerData.balance_amount);
-    let updatedTotalDuePaid = parseFloat(customerData.total_due_paid);
+    // Initialize amounts
+    let updatedTotalAmount = parseFloat(customerData.total_amount) || 0;
+    let updatedBalanceAmount = parseFloat(customerData.balance_amount) || 0;
+    let updatedTotalDuePaid = parseFloat(customerData.total_due_paid) || 0;
 
+    // Update based on transaction type
     if (selectedValue === "credit") {
-      updatedBalanceAmount += amount;
-      updatedTotalAmount += amount;
+      updatedBalanceAmount += eval(amount);
+      updatedTotalAmount += eval(amount);
 
       const { data: updateData, error: updateError } = await supabase
         .from("customer")
@@ -118,8 +122,8 @@ export default function index() {
         setAmount(0);
       }
     } else if (selectedValue === "debit") {
-      updatedBalanceAmount -= amount;
-      updatedTotalDuePaid += amount;
+      updatedBalanceAmount -= eval(amount);
+      updatedTotalDuePaid += eval(amount);
 
       const { data: updateData, error: updateError } = await supabase
         .from("customer")
@@ -144,11 +148,14 @@ export default function index() {
         setAmount(0);
       }
     } else if (selectedValue === "Miscellaneous") {
-      updatedTotalAmount += amount; // Assuming amount should be added directly
-
+      updatedTotalAmount += eval(amount);
+      updatedBalanceAmount -= eval(amount);
       const { data: updateData, error: updateError } = await supabase
         .from("customer")
-        .update({ total_amount: updatedTotalAmount })
+        .update({
+          total_amount: updatedTotalAmount,
+          balance_amount: updatedBalanceAmount,
+        })
         .eq("customer_number", customerNumber);
 
       if (updateError) {
