@@ -1,60 +1,124 @@
-import Colors from "../../Services/Colors";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
-
 import {
   View,
   TextInput,
-  FlatList,
   Text,
-  TouchableOpacity,
   StyleSheet,
   Button,
+  ScrollView,
 } from "react-native";
+import Colors from "../../Services/Colors";
+import supabase from "../../Services/supabaseConfig";
 
 export default function Customer() {
   const [inputValue, setInputValue] = useState("");
-
+  const [customerDetails, setCustomerDetails] = useState(null);
+  const [ledgerEntries, setLedgerEntries] = useState([]);
   const router = useRouter();
 
-  const handleItemPress = (item) => {
-    setInputValue(item);
-    setFilteredItems([]);
+  const fetchCustomerDetails = async (customerNumber) => {
+    try {
+      const { data: customerData, error: customerError } = await supabase
+        .from("customer")
+        .select("customer_number, total_due_paid, balance_amount")
+        .eq("customer_number", customerNumber)
+        .single();
+
+      if (customerError) throw customerError;
+
+      const { data: ledgerData, error: ledgerError } = await supabase
+        .from("ledger")
+        .select("due_paid_date, transaction, amount")
+        .eq("customer_number", customerNumber);
+
+      if (ledgerError) throw ledgerError;
+
+      setCustomerDetails(customerData);
+      setLedgerEntries(ledgerData);
+    } catch (error) {
+      console.error("Error fetching customer details:", error.message);
+    }
   };
+
+  const handleSearch = () => {
+    if (inputValue) {
+      fetchCustomerDetails(inputValue);
+    }
+  };
+
   const handleNavigateToNewCustomer = () => {
     router.push("/AddNewCustomer");
   };
+
   const handleNavigateToEditCustomer = () => {
     router.push("/EditCustomer");
   };
+
   return (
-    <View style={styles.bg}>
-      <View style={styles.formDesign}>
+    <View style={styles.container}>
+      <View style={styles.form}>
         <TextInput
           style={styles.input}
           value={inputValue}
+          onChangeText={setInputValue}
           placeholder="Customer Number"
         />
-
         <View style={styles.searchButton}>
-          <Button color={Colors.Green} title="See Reports" />
-        </View>
-        <View style={styles.dataDesign}>
-          <View style={styles.headingDesign}>
-            <Text style={styles.headerSize}>Customer Number : </Text>
-            <Text style={styles.headerSize}>101</Text>
-          </View>
+          <Button
+            color={Colors.Green}
+            title="See Reports"
+            onPress={handleSearch}
+          />
         </View>
       </View>
+
+      <View style={styles.dataContainer}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>Customer Number:</Text>
+          <Text style={styles.headerText}>
+            {customerDetails ? customerDetails.customer_number : ""}
+          </Text>
+        </View>
+
+        <ScrollView style={styles.scrollView}>
+          <View style={styles.tableHeader}>
+            <Text style={styles.tableHeaderText}>Date</Text>
+            <Text style={styles.tableHeaderText}>Amount</Text>
+            <Text style={styles.tableHeaderText}>Action</Text>
+            <Text style={styles.tableHeaderText}>Total Paid</Text>
+            <Text style={styles.tableHeaderText}>Balance</Text>
+          </View>
+
+          {ledgerEntries.length > 0 ? (
+            ledgerEntries.map((entry, index) => (
+              <View key={index} style={styles.tableRow}>
+                <Text style={styles.tableCell}>{entry.due_paid_date}</Text>
+                <Text style={styles.tableCell}>{entry.amount}</Text>
+                <Text style={styles.tableCell}>{entry.transaction}</Text>
+                <Text style={styles.tableCell}>
+                  {customerDetails.total_due_paid}
+                </Text>
+                <Text style={styles.tableCell}>
+                  {customerDetails.balance_amount}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noDataText}>No ledger entries found.</Text>
+          )}
+        </ScrollView>
+      </View>
+
       <View style={styles.buttonContainer}>
-        <View style={styles.addCustomerButton}>
+        <View style={styles.editButton}>
           <Button
             color={Colors.DarkBlue}
             title="Edit Customer"
             onPress={handleNavigateToEditCustomer}
           />
         </View>
-        <View style={styles.editCustomer}>
+        <View style={styles.addButton}>
           <Button
             color={Colors.Green}
             title="Add New Customer"
@@ -65,105 +129,89 @@ export default function Customer() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  bg: {
-    width: "100%",
-    height: "100%",
+  container: {
+    flex: 1,
     backgroundColor: Colors.Yellow,
+    paddingHorizontal: 16,
+    paddingTop: 40,
   },
-  formDesign: {
-    top: 50,
-    left: 28,
-    width: 360,
-    height: 150,
-    minWidth: 320,
+  form: {
     backgroundColor: "white",
     borderRadius: 8,
-    borderStyle: "solid",
-    position: "absolute",
-    flex: 1,
     padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
     elevation: 5,
-    justifyContent: "center",
+    marginBottom: 6,
   },
   input: {
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 10,
     paddingHorizontal: 8,
-    zIndex: 1,
+    marginBottom: 10,
   },
   searchButton: {
-    width: 150,
-    color: Colors.Green,
-    left: 85,
-    paddingTop: 10,
+    alignItems: "center",
   },
-  list: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    right: 20,
+  dataContainer: {
     backgroundColor: "white",
-    borderColor: "gray",
-    borderWidth: 1,
-    zIndex: 1000,
-    maxHeight: 200,
+    borderRadius: 8,
+    elevation: 5,
+    flex: 1,
   },
-  item: {
-    padding: 10,
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: Colors.Blue,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    padding: 8,
+  },
+  headerText: {
+    color: "white",
+    fontSize: 18,
+  },
+  tableHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: Colors.DarkBlue,
+    padding: 5,
+  },
+  tableHeaderText: {
+    color: "white",
+    fontWeight: "bold",
+    width: "20%",
+    textAlign: "center",
+  },
+  tableRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 5,
     borderBottomWidth: 1,
     borderBottomColor: "lightgray",
   },
-  dataDesign: {
-    top: 170,
-    width: 360,
-    height: 530,
-    minWidth: 320,
-    backgroundColor: "white",
-    borderRadius: 8,
-    borderStyle: "solid",
-    position: "absolute",
-    flex: 1,
-    justifyContent: "center",
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+  tableCell: {
+    width: "20%",
+    textAlign: "center",
+    fontSize: 10,
   },
-  headingDesign: {
-    top: 0,
-    width: 360,
-    flexDirection: "row",
-    height: 50,
-    minWidth: 320,
-    backgroundColor: Colors.Blue,
-    borderStyle: "solid",
-    position: "absolute",
-    flex: 1,
-
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    paddingTop: 10,
-  },
-  headerSize: {
-    fontSize: 20,
-    color: "white",
-    marginLeft: 20,
+  noDataText: {
+    textAlign: "center",
+    marginTop: 20,
+    color: "gray",
   },
   buttonContainer: {
-    top: 780,
-    flex: 1,
-    width: "100%",
-    justifyContent: "center",
     flexDirection: "row",
-    gap: 45,
+    justifyContent: "space-between",
+    paddingTop: 15,
+    marginBottom: 15,
+  },
+  editButton: {
+    flex: 1,
+    marginRight: 10,
+  },
+  addButton: {
+    flex: 1,
   },
 });

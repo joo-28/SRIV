@@ -6,6 +6,7 @@ import {
   Button,
   Platform,
   Alert,
+  ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
@@ -14,8 +15,7 @@ import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function AddNewCustomer() {
-  //State Varible
-
+  // State Variables
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
@@ -23,8 +23,7 @@ export default function AddNewCustomer() {
   const [customerContactNumber, setCustomerContactNumber] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
 
-  //State Functions
-
+  // State Functions
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
@@ -57,7 +56,7 @@ export default function AddNewCustomer() {
         return true;
       } else {
         if (customerNumber === "" || totalAmount === "") {
-          Alert.alert("Error", "Please Enter customer number and Amount");
+          Alert.alert("Error", "Please enter customer number and amount");
         } else {
           const { data: customerData, error: customerError } = await supabase
             .from("customer")
@@ -91,7 +90,7 @@ export default function AddNewCustomer() {
           } else {
             console.log("Inserted customer:", ledgerData);
           }
-          Alert.alert("Sucessful", "New Customer Created");
+          Alert.alert("Successful", "New Customer Created");
           setCustomerNumber("");
           setCustomerContactNumber("");
           setTotalAmount("");
@@ -100,8 +99,9 @@ export default function AddNewCustomer() {
     }
     checkCustomerNumberExists(customerNumber);
   }
+
   return (
-    <View style={styles.bg}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.formDesign}>
         <Text style={styles.heading}>Add New Customer</Text>
         <TextInput
@@ -125,7 +125,7 @@ export default function AddNewCustomer() {
           onChangeText={setTotalAmount}
           keyboardType="numeric"
         />
-        <View style={styles.container}>
+        <View style={styles.datePickerContainer}>
           <Button onPress={showDatePicker} title={date.toDateString()} />
           {show && (
             <DateTimePicker
@@ -138,39 +138,43 @@ export default function AddNewCustomer() {
             />
           )}
         </View>
-        <View style={styles.SaveButton}>
-          <Button color={Colors.Green} title="Save" onPress={handleSaveData} />
-        </View>
-        <View style={styles.GobackButton}>
-          <Button title="Go Back" onPress={goBack} />
+        <View style={styles.buttonContainer}>
+          <View style={styles.saveButton}>
+            <Button
+              color={Colors.Green}
+              title="Save"
+              onPress={handleSaveData}
+            />
+          </View>
+          <View style={styles.goBackButton}>
+            <Button title="Go Back" onPress={goBack} />
+          </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
-  bg: {
-    width: "100%",
-    height: "100%",
+  container: {
+    flexGrow: 1,
     backgroundColor: Colors.Yellow,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
   },
   formDesign: {
-    top: 50,
-    left: 28,
-    width: 360,
-    height: 780,
-    minWidth: 320,
+    width: "100%",
+    maxWidth: 400,
     backgroundColor: "white",
     borderRadius: 8,
-    borderStyle: "solid",
-    position: "absolute",
-    flex: 1,
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
+    marginBottom: 20,
   },
   input: {
     height: 40,
@@ -178,30 +182,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 15,
     paddingHorizontal: 8,
+    borderRadius: 4,
   },
   heading: {
-    fontSize: 20,
+    fontSize: 24,
     alignSelf: "center",
-    marginBottom: 25,
+    marginBottom: 20,
+    fontWeight: "bold",
   },
-  container: {
-    flex: 1,
-    padding: 20,
+  datePickerContainer: {
+    marginBottom: 20,
   },
   datePicker: {
     width: "100%",
     backgroundColor: "white",
   },
-  SaveButton: {
-    width: 150,
-    color: Colors.Green,
-    alignSelf: "center",
-    marginBottom: 15,
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
-  GobackButton: {
-    width: 150,
-    color: Colors.Green,
-    alignSelf: "center",
-    marginBottom: 15,
+  saveButton: {
+    width: "45%",
+  },
+  goBackButton: {
+    width: "45%",
   },
 });

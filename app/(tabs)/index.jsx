@@ -2,21 +2,26 @@ import React, { useEffect, useState } from "react";
 import service from "../../Services/service";
 import { useRouter } from "expo-router";
 import {
+  Dimensions,
+  Platform,
   View,
   StyleSheet,
   Text,
   TextInput,
   Button,
-  Platform,
   Alert,
 } from "react-native";
+
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
 
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
+const { width, height } = Dimensions.get("window");
+
 export default function index() {
   const router = useRouter();
+
   const [customerNumber, setCustomerNumber] = useState("");
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
@@ -191,18 +196,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Yellow,
   },
   formDesign: {
-    top: 50,
-    left: 28,
-    width: 360,
-    height: 300,
+    top: "5%",
+    width: "90%",
+    left: "5%",
+    height: height * 0.37,
     minWidth: 320,
     backgroundColor: "white",
     borderRadius: 8,
-    borderStyle: "solid",
     position: "absolute",
     flex: 1,
-    justifyContent: "center",
-    padding: 16,
+    padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -216,19 +219,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 8,
-    zIndex: 1,
   },
   searchButton: {
-    width: 100,
-    color: Colors.Green,
-    left: 110,
+    width: "50%",
+    alignSelf: "center",
   },
   radioGroup: {
-    marginTop: 10,
+    marginTop: 4,
     flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    justifyContent: "space-between",
   },
   radioButton: {
     flexDirection: "row",
@@ -241,25 +239,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
   },
   datePicker: {
     width: "100%",
     backgroundColor: "white",
   },
   dataDesign: {
-    top: 380,
-    left: 28,
-    width: 360,
-    height: 430,
-    minWidth: 320,
+    top: "49%",
+    width: "90%",
+    left: "5%",
+    height: height * 0.47,
     backgroundColor: "white",
     borderRadius: 8,
-    borderStyle: "solid",
     position: "absolute",
-    flex: 1,
-    justifyContent: "center",
-    padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -267,15 +259,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   headingDesign: {
-    top: 0,
-    width: 360,
+    width: "100%",
     flexDirection: "row",
     height: 50,
-    minWidth: 320,
     backgroundColor: Colors.Blue,
-    borderStyle: "solid",
-    position: "absolute",
-    flex: 1,
     padding: 10,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,

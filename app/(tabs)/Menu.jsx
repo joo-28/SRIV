@@ -3,6 +3,7 @@ import React from "react";
 import Colors from "../../Services/Colors";
 import { useRouter } from "expo-router";
 import service from "../../Services/service";
+
 export default function Menu() {
   const router = useRouter();
 
@@ -12,42 +13,36 @@ export default function Menu() {
   };
 
   return (
-    <View style={styles.bg}>
-      <View style={styles.formDesign}>
-        <View style={styles.logoutButton}>
+    <View style={styles.container}>
+      <View style={styles.form}>
+        <View style={styles.logoutButtonContainer}>
           <Button color={Colors.Green} title="Logout" onPress={handleLogout} />
         </View>
       </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  bg: {
-    width: "100%",
-    height: "100%",
+  container: {
+    flex: 1,
     backgroundColor: Colors.Yellow,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  formDesign: {
-    top: 80,
-    left: 28,
-    width: 360,
-    height: 200,
-    minWidth: 320,
+  form: {
+    width: "90%",
     backgroundColor: "white",
     borderRadius: 8,
-    borderStyle: "solid",
-    position: "absolute",
-    flex: 1,
-    padding: 16,
+    padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
-    justifyContent: "center",
+    alignItems: "center",
   },
-  logoutButton: {
-    width: 100,
-    alignSelf: "center",
+  logoutButtonContainer: {
+    width: "60%",
   },
 });

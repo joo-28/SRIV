@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
 
@@ -35,7 +35,7 @@ export default function EditCustomer() {
 
     setTimeout(() => {
       if (error && error.code !== "PGRST116") {
-        console.log("Error fetching customer:", error);
+        console.error("Error fetching customer:", error);
         setContactNumber("");
         setIsActive(null);
       } else if (data) {
@@ -49,58 +49,53 @@ export default function EditCustomer() {
     }, 2000);
   };
 
-  async function updateCustomerContactNumber(customerNumber, newContactNumber) {
+  const updateCustomerContactNumber = async () => {
+    if (newContactNumber.trim() === "") {
+      Alert.alert("Error", "Please enter a new contact number.");
+      return;
+    }
+
     const { data, error } = await supabase
       .from("customer")
       .update({ customer_contact_number: newContactNumber })
       .eq("customer_number", customerNumber);
 
     if (error) {
-      console.log("Error updating contact number:", error);
-      return null;
-    }
-    setNewContactNumber("");
-    setContactNumber(newContactNumber);
-    Alert.alert("Success", "Contact updated");
-    console.log("Updated customer contact number:", data);
-    return data;
-  }
-
-  async function handleDeleteOrActivateCustomer() {
-    if (isActive) {
-      // Deactivate customer
-      const { data, error } = await supabase
-        .from("customer")
-        .update({ active: false })
-        .eq("customer_number", customerNumber);
-
-      if (error) {
-        console.log("Error deactivating customer:", error);
-        Alert.alert("Error", "Failed to deactivate customer.");
-        return;
-      }
-
-      Alert.alert("Success", "Customer has been deactivated.");
-      setIsActive(false);
-      console.log("Customer deactivated:", data);
+      console.error("Error updating contact number:", error);
+      Alert.alert("Error", "Failed to update contact number.");
     } else {
-      // Activate customer
-      const { data, error } = await supabase
-        .from("customer")
-        .update({ active: true })
-        .eq("customer_number", customerNumber);
-
-      if (error) {
-        console.log("Error activating customer:", error);
-        Alert.alert("Error", "Failed to activate customer.");
-        return;
-      }
-
-      Alert.alert("Success", "Customer has been activated.");
-      setIsActive(true);
-      console.log("Customer activated:", data);
+      setContactNumber(newContactNumber);
+      setNewContactNumber("");
+      Alert.alert("Success", "Contact number updated successfully.");
+      console.log("Updated customer contact number:", data);
     }
-  }
+  };
+
+  const handleDeleteOrActivateCustomer = async () => {
+    const newStatus = !isActive;
+    const { data, error } = await supabase
+      .from("customer")
+      .update({ active: newStatus })
+      .eq("customer_number", customerNumber);
+
+    if (error) {
+      console.error(
+        `Error ${newStatus ? "activating" : "deactivating"} customer:`,
+        error
+      );
+      Alert.alert(
+        "Error",
+        `Failed to ${newStatus ? "activate" : "deactivate"} customer.`
+      );
+    } else {
+      setIsActive(newStatus);
+      Alert.alert(
+        "Success",
+        `Customer has been ${newStatus ? "activated" : "deactivated"}.`
+      );
+      console.log(`Customer ${newStatus ? "activated" : "deactivated"}:`, data);
+    }
+  };
 
   const goBack = () => {
     router.back();
@@ -120,13 +115,13 @@ export default function EditCustomer() {
           placeholder="Customer Number"
           keyboardType="numeric"
         />
-        {loading && <ActivityIndicator size="small" color="#0000ff" />}
-        <View style={styles.contantView}>
+        {loading && <ActivityIndicator size="small" color={Colors.Blue} />}
+        <View style={styles.detailView}>
           <Text>Contact Number: </Text>
-          <Text>{contactNumber ? contactNumber : "No customer found."}</Text>
+          <Text>{contactNumber || "No customer found."}</Text>
         </View>
         {isActive !== null && (
-          <View style={styles.contantView}>
+          <View style={styles.detailView}>
             <Text>Status: </Text>
             <Text>{isActive ? "Active" : "Inactive"}</Text>
           </View>
@@ -138,25 +133,23 @@ export default function EditCustomer() {
           onChangeText={setNewContactNumber}
           keyboardType="numeric"
         />
-        <View style={styles.SaveButton}>
+        <View style={styles.saveButton}>
           <Button
             color={Colors.Green}
             title="Save"
-            onPress={() => {
-              updateCustomerContactNumber(customerNumber, newContactNumber);
-            }}
+            onPress={updateCustomerContactNumber}
           />
         </View>
         {isActive !== null && (
-          <View style={styles.DeleteButton}>
+          <View style={styles.toggleButton}>
             <Button
-              color={isActive ? "red" : "blue"}
+              color={isActive ? Colors.Red : Colors.Blue}
               title={isActive ? "Deactivate Customer" : "Activate Customer"}
               onPress={handleDeleteOrActivateCustomer}
             />
           </View>
         )}
-        <View style={styles.GoBackButton}>
+        <View style={styles.goBackButton}>
           <Button title="Go Back" onPress={goBack} />
         </View>
       </View>
@@ -171,16 +164,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Yellow,
   },
   formDesign: {
-    top: 50,
-    left: 28,
-    width: 360,
-    height: 780,
-    minWidth: 320,
+    marginTop: 50,
+    marginHorizontal: 28,
     backgroundColor: "white",
     borderRadius: 8,
-    borderStyle: "solid",
-    position: "absolute",
-    flex: 1,
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -200,41 +187,23 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 25,
   },
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  datePicker: {
-    width: "100%",
-    backgroundColor: "white",
-  },
-  SaveButton: {
-    width: 150,
-    color: Colors.Green,
-    alignSelf: "center",
-    marginBottom: 15,
-  },
-  DeleteButton: {
-    marginBottom: 15,
-    width: 150,
-    alignSelf: "center",
-  },
-  SelectButton: {
-    width: 150,
-    color: Colors.Green,
-    alignSelf: "center",
-    marginBottom: 30,
-  },
-  GoBackButton: {
-    width: 150,
-    bottom: 0,
-    position: "absolute",
-    color: Colors.Green,
-    alignSelf: "center",
-    marginBottom: 30,
-  },
-  contantView: {
+  detailView: {
     flexDirection: "row",
     marginBottom: 13,
+  },
+  saveButton: {
+    width: 150,
+    alignSelf: "center",
+    marginBottom: 15,
+  },
+  toggleButton: {
+    width: 150,
+    alignSelf: "center",
+    marginBottom: 15,
+  },
+  goBackButton: {
+    width: 150,
+    alignSelf: "center",
+    marginBottom: 30,
   },
 });
