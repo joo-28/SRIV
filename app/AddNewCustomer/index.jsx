@@ -65,6 +65,7 @@ export default function AddNewCustomer() {
                 customer_number: customerNumber,
                 customer_contact_number: customerContactNumber,
                 total_amount: parseFloat(totalAmount),
+                balance_amount: parseFloat(totalAmount),
               },
             ])
             .select();

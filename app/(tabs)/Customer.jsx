@@ -49,6 +49,7 @@ export default function Customer() {
 
   const handleNavigateToNewCustomer = () => {
     router.push("/AddNewCustomer");
+    console.log(customerDetails);
   };
 
   const handleNavigateToEditCustomer = () => {

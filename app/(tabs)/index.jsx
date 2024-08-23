@@ -33,7 +33,6 @@ export default function index() {
       const username = await service.getUserData();
       if (!username) {
         router.replace("/Login");
-      } else {
       }
     };
     checkLoginStatus();
@@ -44,13 +43,17 @@ export default function index() {
     setShow(Platform.OS === "ios");
     setDate(currentDate);
   };
+
   const showDatePicker = () => {
     setShow(true);
   };
+
   const handleInsertData = async () => {
     const { data: customerData, error: customerError } = await supabase
       .from("customer")
-      .select("customer_number, total_amount")
+      .select(
+        "customer_number, total_amount, total_due_paid, active, balance_amount"
+      )
       .eq("customer_number", customerNumber)
       .single();
 
@@ -84,29 +87,79 @@ export default function index() {
       console.log("Inserted transaction into ledger:", ledgerData);
     }
 
-    let updatedTotalAmount = customerData.total_amount;
+    let updatedTotalAmount = parseFloat(customerData.total_amount);
+    let updatedBalanceAmount = parseFloat(customerData.balance_amount);
+    let updatedTotalDuePaid = parseFloat(customerData.total_due_paid);
 
     if (selectedValue === "credit") {
-      updatedTotalAmount += parseFloat(amount);
+      updatedBalanceAmount += amount;
+      updatedTotalAmount += amount;
+
+      const { data: updateData, error: updateError } = await supabase
+        .from("customer")
+        .update({
+          balance_amount: updatedBalanceAmount,
+          total_amount: updatedTotalAmount,
+        })
+        .eq("customer_number", customerNumber);
+
+      if (updateError) {
+        console.error(
+          "Error updating balance_amount and total_amount:",
+          updateError
+        );
+      } else {
+        console.log(
+          "Updated balance_amount and total_amount successfully:",
+          updateData
+        );
+        Alert.alert("Successful", "Transaction recorded successfully.");
+        setCustomerNumber("");
+        setAmount(0);
+      }
     } else if (selectedValue === "debit") {
-      updatedTotalAmount -= parseFloat(amount);
+      updatedBalanceAmount -= amount;
+      updatedTotalDuePaid += amount;
+
+      const { data: updateData, error: updateError } = await supabase
+        .from("customer")
+        .update({
+          balance_amount: updatedBalanceAmount,
+          total_due_paid: updatedTotalDuePaid,
+        })
+        .eq("customer_number", customerNumber);
+
+      if (updateError) {
+        console.error(
+          "Error updating balance_amount and total_due_paid:",
+          updateError
+        );
+      } else {
+        console.log(
+          "Updated balance_amount and total_due_paid successfully:",
+          updateData
+        );
+        Alert.alert("Successful", "Transaction recorded successfully.");
+        setCustomerNumber("");
+        setAmount(0);
+      }
     } else if (selectedValue === "Miscellaneous") {
-      updatedTotalAmount += eval(amount);
-    }
-    const { data: updateData, error: updateError } = await supabase
-      .from("customer")
-      .update({ total_amount: updatedTotalAmount })
-      .eq("customer_number", customerNumber);
+      updatedTotalAmount += amount; // Assuming amount should be added directly
 
-    if (updateError) {
-      console.error("Error updating total_amount:", updateError);
-    } else {
-      console.log("Updated total_amount successfully:", updateData);
-    }
+      const { data: updateData, error: updateError } = await supabase
+        .from("customer")
+        .update({ total_amount: updatedTotalAmount })
+        .eq("customer_number", customerNumber);
 
-    Alert.alert("Successful", "Transaction recorded successfully.");
-    setCustomerNumber("");
-    setAmount("");
+      if (updateError) {
+        console.error("Error updating total_amount:", updateError);
+      } else {
+        console.log("Updated total_amount successfully:", updateData);
+        Alert.alert("Successful", "Transaction recorded successfully.");
+        setCustomerNumber("");
+        setAmount(0);
+      }
+    }
   };
 
   return (
