@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Button,
   ScrollView,
+  Alert,
 } from "react-native";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
@@ -21,7 +22,7 @@ export default function Customer() {
     try {
       const { data: customerData, error: customerError } = await supabase
         .from("customer")
-        .select("customer_number, total_due_paid, balance_amount")
+        .select("customer_number")
         .eq("customer_number", customerNumber)
         .single();
 
@@ -29,7 +30,9 @@ export default function Customer() {
 
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("ledger")
-        .select("due_paid_date, transaction, amount")
+        .select(
+          "due_paid_date, transaction, amount,total_due_paid,balance_amount"
+        )
         .eq("customer_number", customerNumber);
 
       if (ledgerError) throw ledgerError;
@@ -37,7 +40,11 @@ export default function Customer() {
       setCustomerDetails(customerData);
       setLedgerEntries(ledgerData);
     } catch (error) {
-      console.error("Error fetching customer details:", error.message);
+      console.log("Error fetching customer details:", error.message);
+      Alert.alert(
+        "Error fetching customer details",
+        "Customer does not Exists or Incorrect Customer Number"
+      );
     }
   };
 
@@ -92,19 +99,18 @@ export default function Customer() {
           </View>
 
           {ledgerEntries.length > 0 ? (
-            ledgerEntries.map((entry, index) => (
-              <View key={index} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{entry.due_paid_date}</Text>
-                <Text style={styles.tableCell}>{entry.amount}</Text>
-                <Text style={styles.tableCell}>{entry.transaction}</Text>
-                <Text style={styles.tableCell}>
-                  {customerDetails.total_due_paid}
-                </Text>
-                <Text style={styles.tableCell}>
-                  {customerDetails.balance_amount}
-                </Text>
-              </View>
-            ))
+            ledgerEntries
+              .slice()
+              .reverse()
+              .map((entry, index) => (
+                <View key={index} style={styles.tableRow}>
+                  <Text style={styles.tableCell}>{entry.due_paid_date}</Text>
+                  <Text style={styles.tableCell}>{entry.amount}</Text>
+                  <Text style={styles.tableCell}>{entry.transaction}</Text>
+                  <Text style={styles.tableCell}>{entry.total_due_paid}</Text>
+                  <Text style={styles.tableCell}>{entry.balance_amount}</Text>
+                </View>
+              ))
           ) : (
             <Text style={styles.noDataText}>No ledger entries found.</Text>
           )}

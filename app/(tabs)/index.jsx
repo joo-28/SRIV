@@ -52,9 +52,7 @@ export default function index() {
     // Fetch customer data
     const { data: customerData, error: customerError } = await supabase
       .from("customer")
-      .select(
-        "customer_number, total_amount, total_due_paid, active, balance_amount"
-      )
+      .select("customer_number,active,balance,total_paid,total_amount")
       .eq("customer_number", customerNumber)
       .single();
 
@@ -68,41 +66,46 @@ export default function index() {
       Alert.alert("Error", "No customer found with this customer number.");
       return;
     }
-
-    // Insert into ledger
-    const { data: ledgerData, error: ledgerError } = await supabase
-      .from("ledger")
-      .insert([
-        {
-          customer_number: customerNumber,
-          amount: amount,
-          due_paid_date: date,
-          transaction: selectedValue,
-        },
-      ])
-      .select();
-
-    if (ledgerError) {
-      console.log("Error inserting into ledger:", ledgerError);
+    if (customerData.active === "false") {
+      Alert.alert("Error", "This Customer Account is Closed.");
       return;
-    } else {
-      console.log("Inserted transaction into ledger:", ledgerData);
     }
 
     // Initialize amounts
+
     let updatedTotalAmount = parseFloat(customerData.total_amount) || 0;
-    let updatedBalanceAmount = parseFloat(customerData.balance_amount) || 0;
-    let updatedTotalDuePaid = parseFloat(customerData.total_due_paid) || 0;
+    let updatedBalanceAmount = parseFloat(customerData.balance) || 0;
+    let updatedTotalDuePaid = parseFloat(customerData.total_paid) || 0;
 
     // Update based on transaction type
+
     if (selectedValue === "credit") {
       updatedBalanceAmount += eval(amount);
       updatedTotalAmount += eval(amount);
+      const { data: ledgerData, error: ledgerError } = await supabase
+        .from("ledger")
+        .insert([
+          {
+            customer_number: customerNumber,
+            amount: amount,
+            due_paid_date: date,
+            transaction: selectedValue,
+            total_due_paid: updatedTotalDuePaid,
+            balance_amount: updatedBalanceAmount,
+          },
+        ])
+        .select();
 
+      if (ledgerError) {
+        console.log("Error inserting into ledger:", ledgerError);
+        return;
+      } else {
+        console.log("Inserted transaction into ledger:", ledgerData);
+      }
       const { data: updateData, error: updateError } = await supabase
         .from("customer")
         .update({
-          balance_amount: updatedBalanceAmount,
+          balance: updatedBalanceAmount,
           total_amount: updatedTotalAmount,
         })
         .eq("customer_number", customerNumber);
@@ -126,12 +129,18 @@ export default function index() {
       updatedTotalDuePaid += eval(amount);
 
       const { data: updateData, error: updateError } = await supabase
-        .from("customer")
-        .update({
-          balance_amount: updatedBalanceAmount,
-          total_due_paid: updatedTotalDuePaid,
-        })
-        .eq("customer_number", customerNumber);
+        .from("ledger")
+        .insert([
+          {
+            customer_number: customerNumber,
+            amount: amount,
+            due_paid_date: date,
+            transaction: selectedValue,
+            total_due_paid: updatedTotalDuePaid,
+            balance_amount: updatedBalanceAmount,
+          },
+        ])
+        .select();
 
       if (updateError) {
         console.error(
@@ -143,18 +152,58 @@ export default function index() {
           "Updated balance_amount and total_due_paid successfully:",
           updateData
         );
-        Alert.alert("Successful", "Transaction recorded successfully.");
-        setCustomerNumber("");
-        setAmount(0);
+        const { data: updateDataToLedger, error: updateErrorToLedger } =
+          await supabase
+            .from("customer")
+            .update({
+              total_paid: updatedTotalDuePaid,
+              balance: updatedBalanceAmount,
+            })
+            .eq("customer_number", customerNumber);
+
+        if (updateErrorToLedger) {
+          console.error(
+            "Error updating balance_amount and total_due_paid:",
+            updateError
+          );
+        } else {
+          console.log(
+            "Updated balance_amount and total_due_paid successfully:",
+            updateDataToLedger
+          );
+          Alert.alert("Successful", "Transaction recorded successfully.");
+          setCustomerNumber("");
+          setAmount(0);
+        }
       }
     } else if (selectedValue === "Miscellaneous") {
       updatedTotalAmount += eval(amount);
       updatedBalanceAmount -= eval(amount);
+      const { data: ledgerData, error: ledgerError } = await supabase
+        .from("ledger")
+        .insert([
+          {
+            customer_number: customerNumber,
+            amount: amount,
+            due_paid_date: date,
+            transaction: selectedValue,
+            total_due_paid: updatedTotalDuePaid,
+            balance_amount: updatedBalanceAmount,
+          },
+        ])
+        .select();
+
+      if (ledgerError) {
+        console.log("Error inserting into ledger:", ledgerError);
+        return;
+      } else {
+        console.log("Inserted transaction into ledger:", ledgerData);
+      }
       const { data: updateData, error: updateError } = await supabase
         .from("customer")
         .update({
           total_amount: updatedTotalAmount,
-          balance_amount: updatedBalanceAmount,
+          balance: updatedBalanceAmount,
         })
         .eq("customer_number", customerNumber);
 
@@ -189,7 +238,7 @@ export default function index() {
         <View style={styles.radioGroup}>
           <View style={styles.radioButton}>
             <RadioButton
-              value="debit"
+              value="Debit"
               status={selectedValue === "debit" ? "checked" : "unchecked"}
               onPress={() => setSelectedValue("debit")}
               color="#007BFF"
@@ -199,7 +248,7 @@ export default function index() {
 
           <View style={styles.radioButton}>
             <RadioButton
-              value="credit"
+              value="Credit"
               status={selectedValue === "credit" ? "checked" : "unchecked"}
               onPress={() => setSelectedValue("credit")}
               color="#007BFF"
@@ -239,12 +288,7 @@ export default function index() {
         </View>
       </View>
 
-      <View style={styles.dataDesign}>
-        <View style={styles.headingDesign}>
-          <Text style={styles.headerSize}>Customer Number : </Text>
-          <Text style={styles.headerSize}>101</Text>
-        </View>
-      </View>
+      <View style={styles.dataDesign}></View>
     </View>
   );
 }
@@ -277,15 +321,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 10,
+    marginBottom: 7,
     paddingHorizontal: 8,
   },
   searchButton: {
     width: "50%",
     alignSelf: "center",
+    marginTop: 5,
   },
   radioGroup: {
-    marginTop: 4,
+    marginTop: 2,
     flexDirection: "row",
   },
   radioButton: {
@@ -305,7 +350,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   dataDesign: {
-    top: "49%",
+    top: "48%",
     width: "90%",
     left: "5%",
     height: height * 0.47,
@@ -317,19 +362,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
-  },
-  headingDesign: {
-    width: "100%",
-    flexDirection: "row",
-    height: 50,
-    backgroundColor: Colors.Blue,
-    padding: 10,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-  },
-  headerSize: {
-    fontSize: 20,
-    color: "white",
-    marginLeft: 20,
   },
 });

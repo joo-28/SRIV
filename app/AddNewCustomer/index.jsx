@@ -65,7 +65,7 @@ export default function AddNewCustomer() {
                 customer_number: customerNumber,
                 customer_contact_number: customerContactNumber,
                 total_amount: parseFloat(totalAmount),
-                balance_amount: parseFloat(totalAmount),
+                balance: parseFloat(totalAmount),
               },
             ])
             .select();
@@ -82,6 +82,7 @@ export default function AddNewCustomer() {
                 due_paid_date: date,
                 transaction: "Credit",
                 amount: parseFloat(totalAmount),
+                balance_amount: parseFloat(totalAmount),
               },
             ])
             .select();
