@@ -240,7 +240,7 @@ export default function index() {
             <RadioButton
               value="Debit"
               status={selectedValue === "debit" ? "checked" : "unchecked"}
-              onPress={() => setSelectedValue("debit")}
+              onPress={() => setSelectedValue("Debit")}
               color="#007BFF"
             />
             <Text style={styles.radioLabel}>Debit</Text>
@@ -250,7 +250,7 @@ export default function index() {
             <RadioButton
               value="Credit"
               status={selectedValue === "credit" ? "checked" : "unchecked"}
-              onPress={() => setSelectedValue("credit")}
+              onPress={() => setSelectedValue("Credit")}
               color="#007BFF"
             />
             <Text style={styles.radioLabel}>Credit</Text>
