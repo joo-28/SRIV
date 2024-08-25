@@ -178,7 +178,7 @@ export default function index() {
       }
     } else if (selectedValue === "Miscellaneous") {
       updatedTotalAmount += eval(amount);
-      updatedBalanceAmount -= eval(amount);
+      updatedBalanceAmount += eval(amount);
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("ledger")
         .insert([
