@@ -10,16 +10,18 @@ import {
   TextInput,
   Button,
   Alert,
+  KeyboardAvoidingView,
+  ScrollView,
+  Keyboard,
 } from "react-native";
-
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
-
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
 const { width, height } = Dimensions.get("window");
 
-export default function index() {
+export default function Index() {
   const router = useRouter();
 
   const [customerNumber, setCustomerNumber] = useState("");
@@ -27,6 +29,7 @@ export default function index() {
   const [show, setShow] = useState(false);
   const [selectedValue, setSelectedValue] = useState("debit");
   const [amount, setAmount] = useState(0);
+  const [outstandingFund, setOutstandingFund] = useState(0);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -36,7 +39,28 @@ export default function index() {
       }
     };
     checkLoginStatus();
+    fetchOutstandingFund();
   }, []);
+
+  const fetchOutstandingFund = async () => {
+    try {
+      const { data: customers, error } = await supabase
+        .from("customer")
+        .select("balance");
+
+      if (error) {
+        throw error;
+      }
+
+      const totalOutstanding = customers.reduce(
+        (sum, customer) => sum + parseFloat(customer.balance || 0),
+        0
+      );
+      setOutstandingFund(totalOutstanding);
+    } catch (error) {
+      console.error("Error fetching outstanding fund:", error);
+    }
+  };
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -72,16 +96,14 @@ export default function index() {
     }
 
     // Initialize amounts
-
     let updatedTotalAmount = parseFloat(customerData.total_amount) || 0;
     let updatedBalanceAmount = parseFloat(customerData.balance) || 0;
     let updatedTotalDuePaid = parseFloat(customerData.total_paid) || 0;
 
     // Update based on transaction type
-
     if (selectedValue === "credit") {
-      updatedBalanceAmount += eval(amount);
-      updatedTotalAmount += eval(amount);
+      updatedBalanceAmount += parseFloat(amount);
+      updatedTotalAmount += parseFloat(amount);
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("ledger")
         .insert([
@@ -125,8 +147,8 @@ export default function index() {
         setAmount(0);
       }
     } else if (selectedValue === "debit") {
-      updatedBalanceAmount -= eval(amount);
-      updatedTotalDuePaid += eval(amount);
+      updatedBalanceAmount -= parseFloat(amount);
+      updatedTotalDuePaid += parseFloat(amount);
 
       const { data: updateData, error: updateError } = await supabase
         .from("ledger")
@@ -175,10 +197,11 @@ export default function index() {
           setCustomerNumber("");
           setAmount(0);
         }
+        fetchOutstandingFund();
       }
     } else if (selectedValue === "Miscellaneous") {
-      updatedTotalAmount += eval(amount);
-      updatedBalanceAmount += eval(amount);
+      updatedTotalAmount += parseFloat(amount);
+      updatedBalanceAmount += parseFloat(amount);
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("ledger")
         .insert([
@@ -219,96 +242,115 @@ export default function index() {
   };
 
   return (
-    <View style={styles.bg}>
-      <View style={styles.formDesign}>
-        <TextInput
-          style={styles.input}
-          placeholder="Customer Number"
-          value={customerNumber}
-          onChangeText={setCustomerNumber}
-          keyboardType="numeric"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Amount"
-          value={amount}
-          onChangeText={setAmount}
-        />
+    <KeyboardAvoidingView
+      style={styles.bg}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.formDesign}>
+          <TextInput
+            style={styles.input}
+            placeholder="Customer Number"
+            value={customerNumber}
+            onChangeText={setCustomerNumber}
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Amount"
+            value={amount}
+            onChangeText={setAmount}
+            keyboardType="numeric"
+          />
 
-        <View style={styles.radioGroup}>
-          <View style={styles.radioButton}>
-            <RadioButton
-              value="Debit"
-              status={selectedValue === "debit" ? "checked" : "unchecked"}
-              onPress={() => setSelectedValue("debit")}
-              color="#007BFF"
-            />
-            <Text style={styles.radioLabel}>Debit</Text>
+          <View style={styles.radioGroup}>
+            <View style={styles.radioButton}>
+              <RadioButton
+                value="Debit"
+                status={selectedValue === "debit" ? "checked" : "unchecked"}
+                onPress={() => setSelectedValue("debit")}
+                color="#007BFF"
+              />
+              <Text style={styles.radioLabel}>Debit</Text>
+            </View>
+
+            <View style={styles.radioButton}>
+              <RadioButton
+                value="Credit"
+                status={selectedValue === "credit" ? "checked" : "unchecked"}
+                onPress={() => setSelectedValue("credit")}
+                color="#007BFF"
+              />
+              <Text style={styles.radioLabel}>Credit</Text>
+            </View>
+
+            <View style={styles.radioButton}>
+              <RadioButton
+                value="Miscellaneous"
+                status={
+                  selectedValue === "Miscellaneous" ? "checked" : "unchecked"
+                }
+                onPress={() => setSelectedValue("Miscellaneous")}
+                color="#007BFF"
+              />
+              <Text style={styles.radioLabel}>Miscellaneous</Text>
+            </View>
           </View>
 
-          <View style={styles.radioButton}>
-            <RadioButton
-              value="Credit"
-              status={selectedValue === "credit" ? "checked" : "unchecked"}
-              onPress={() => setSelectedValue("credit")}
-              color="#007BFF"
-            />
-            <Text style={styles.radioLabel}>Credit</Text>
+          <View style={styles.container}>
+            <Button onPress={showDatePicker} title={date.toDateString()} />
+            {show && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode="date"
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={onChange}
+                style={styles.datePicker}
+              />
+            )}
           </View>
 
-          <View style={styles.radioButton}>
-            <RadioButton
-              value="Miscellaneous"
-              status={
-                selectedValue === "Miscellaneous" ? "checked" : "unchecked"
-              }
-              onPress={() => setSelectedValue("Miscellaneous")}
-              color="#007BFF"
+          <View style={styles.searchButton}>
+            <Button
+              color={Colors.Green}
+              title="Add"
+              onPress={handleInsertData}
             />
-            <Text style={styles.radioLabel}>Miscellaneous</Text>
           </View>
         </View>
 
-        <View style={styles.container}>
-          <Button onPress={showDatePicker} title={date.toDateString()} />
-          {show && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={date}
-              mode="date"
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={onChange}
-              style={styles.datePicker}
-            />
-          )}
+        <View style={styles.dataDesign}>
+          <Text style={styles.reportTitle}>Outstanding Fund</Text>
+          <Text style={styles.reportAmount}>
+            RS.{outstandingFund.toFixed(2)}
+          </Text>
         </View>
-
-        <View style={styles.searchButton}>
-          <Button color={Colors.Green} title="Add" onPress={handleInsertData} />
-        </View>
-      </View>
-
-      <View style={styles.dataDesign}></View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   bg: {
-    width: "100%",
-    height: "100%",
+    flex: 1,
     backgroundColor: Colors.Yellow,
   },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingBottom: 15,
+  },
   formDesign: {
-    top: "5%",
-    width: "90%",
-    left: "5%",
-    height: height * 0.37,
+    marginHorizontal: "5%",
+    height: height * 0.47,
     minWidth: 320,
     backgroundColor: "white",
     borderRadius: 8,
-    position: "absolute",
-    flex: 1,
+    position: "relative",
     padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -330,12 +372,13 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   radioGroup: {
-    marginTop: 2,
+    marginTop: 5,
     flexDirection: "row",
   },
   radioButton: {
     flexDirection: "row",
     alignItems: "center",
+    marginRight: 5,
   },
   radioLabel: {
     fontSize: 16,
@@ -344,23 +387,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    marginVertical: 10,
   },
   datePicker: {
     width: "100%",
     backgroundColor: "white",
   },
   dataDesign: {
-    top: "48%",
-    width: "90%",
-    left: "5%",
-    height: height * 0.47,
+    marginHorizontal: "20%",
+    height: height * 0.2,
     backgroundColor: "white",
     borderRadius: 8,
-    position: "absolute",
+    marginTop: 20,
+    padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
+  },
+  reportTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  reportAmount: {
+    fontSize: 24,
   },
 });

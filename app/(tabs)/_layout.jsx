@@ -2,16 +2,16 @@ import React from "react";
 import { Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Colors from "../../Services/Colors";
+
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.DarkBlue,
         headerShown: false,
-        tabBarOptions: {
+        tabBarStyle: {
           keyboardHidesTabBar: true,
         },
       }}
@@ -39,7 +39,7 @@ export default function TabLayout() {
         options={{
           title: "Menu",
           tabBarIcon: ({ color }) => (
-            <SimpleLineIcons name="menu" size={24} color="black" />
+            <SimpleLineIcons name="menu" size={24} color={color} />
           ),
         }}
       />

@@ -15,6 +15,7 @@ import React, { useState } from "react";
 import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton } from "react-native-paper";
+import service from "../../Services/service";
 
 export default function Menu() {
   // State Variables
@@ -63,9 +64,10 @@ export default function Menu() {
     }
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     // Handle logout functionality here
     Alert.alert("Logout", "You have been logged out.");
+    await service.clearUserData();
     router.replace("/Login");
   }
 

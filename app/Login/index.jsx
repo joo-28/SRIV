@@ -25,48 +25,33 @@ export default function LoginScreen() {
       .eq("USERNAME", userName)
       .single();
 
-    if (error) {
-      Alert.alert("Incorrect ", "Incorrect UserName And Password.");
-      console.log("Error UserName:", error);
+    if (error || !data) {
+      Alert.alert("Error", "Incorrect UserName or Password.");
       return;
     }
 
-    if (!data) {
-      Alert.alert("Error", "Incorrect UserName");
-      return;
-    }
-    const VALID_USERNAME = data.USERNAME;
-    const VALID_PASSWORD = data.PASSWORD;
-    if (data.ROLE === "admin") {
-      if (userName === VALID_USERNAME && password === VALID_PASSWORD) {
-        service.storeUserData(userName);
-        router.push("(tabs)");
-      } else {
-        Alert.alert(
-          "Invalid Credentials",
-          "Please check your username and password."
-        );
+    const { USERNAME, PASSWORD, ROLE } = data;
+
+    if (userName === USERNAME && password === PASSWORD) {
+      service.storeUserData(userName);
+      switch (ROLE) {
+        case "admin":
+          router.push("(tabs)");
+          break;
+        case "ccstaff":
+          router.push("CCShiftEntry");
+          break;
+        case "cstaff":
+          router.push("CenterShiftEntry");
+          break;
+        default:
+          Alert.alert("Error", "Role not recognized.");
       }
-    } else if (data.ROLE === "ccstaff") {
-      if (userName === VALID_USERNAME && password === VALID_PASSWORD) {
-        service.storeUserData(userName);
-        router.push("CCShiftEntry");
-      } else {
-        Alert.alert(
-          "Invalid Credentials",
-          "Please check your username and password."
-        );
-      }
-    } else if (data.ROLE === "cstaff") {
-      if (userName === VALID_USERNAME && password === VALID_PASSWORD) {
-        service.storeUserData(userName);
-        router.push("CenterShiftEntry");
-      } else {
-        Alert.alert(
-          "Invalid Credentials",
-          "Please check your username and password."
-        );
-      }
+    } else {
+      Alert.alert(
+        "Invalid Credentials",
+        "Please check your username and password."
+      );
     }
   };
 

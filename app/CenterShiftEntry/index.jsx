@@ -12,6 +12,7 @@ import {
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
 import React, { useState } from "react";
+import service from "../../Services/service";
 import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton } from "react-native-paper";
@@ -66,9 +67,10 @@ export default function Menu() {
     }
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     // Handle logout functionality here
     Alert.alert("Logout", "You have been logged out.");
+    await service.clearUserData();
     router.replace("/Login");
   }
 
