@@ -17,15 +17,6 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="Reports"
-        options={{
-          title: "Reports",
-          tabBarIcon: ({ color }) => (
-            <AntDesign name="file1" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="index"
         options={{
           title: "Home",
