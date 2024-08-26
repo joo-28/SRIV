@@ -1,4 +1,4 @@
-import { View, StyleSheet, Button, Text } from "react-native";
+import { View, StyleSheet, Button, Text, Alert } from "react-native";
 import React from "react";
 import Colors from "../../Services/Colors";
 import { useRouter } from "expo-router";
@@ -14,22 +14,18 @@ export default function Menu() {
   };
 
   const handleSwitchMilkApp = () => {
-    // Add navigation or functionality for switching to the Milk App
     console.log("Switch Milk App clicked");
   };
 
   const handleEditUser = () => {
-    // Add navigation or functionality for editing user
     router.push("/EditUser");
   };
 
   const handleAddNewUser = () => {
-    // Add navigation or functionality for adding a new user
     router.push("/AddNewUser");
   };
 
   const handleChangePassword = () => {
-    // Add navigation or functionality for changing password
     router.push("/ChangePassword");
   };
 

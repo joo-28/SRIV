@@ -145,6 +145,7 @@ export default function Index() {
         Alert.alert("Successful", "Transaction recorded successfully.");
         setCustomerNumber("");
         setAmount(0);
+        fetchOutstandingFund();
       }
     } else if (selectedValue === "debit") {
       updatedBalanceAmount -= parseFloat(amount);
@@ -196,8 +197,8 @@ export default function Index() {
           Alert.alert("Successful", "Transaction recorded successfully.");
           setCustomerNumber("");
           setAmount(0);
+          fetchOutstandingFund();
         }
-        fetchOutstandingFund();
       }
     } else if (selectedValue === "Miscellaneous") {
       updatedTotalAmount += parseFloat(amount);
@@ -237,6 +238,7 @@ export default function Index() {
         Alert.alert("Successful", "Transaction recorded successfully.");
         setCustomerNumber("");
         setAmount(0);
+        fetchOutstandingFund();
       }
     }
   };
@@ -357,6 +359,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
+    marginTop: 50,
   },
   input: {
     height: 40,
@@ -410,8 +413,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
+    alignSelf: "center",
   },
   reportAmount: {
     fontSize: 24,
+    alignSelf: "center",
   },
 });
