@@ -19,7 +19,7 @@ export default function EditCenterShift() {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [show, setShow] = useState(false);
-  const [totalLiters, setTotalLiters] = useState("");
+  const [totalLitres, setTotalLitres] = useState("");
   const [FAT, setFAT] = useState("");
   const [SNF, setSNF] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
@@ -39,10 +39,10 @@ export default function EditCenterShift() {
         setFAT("");
         setSNF("");
         setTotalAmount("");
-        setTotalLiters("");
+        setTotalLitres("");
       } else {
         if (data) {
-          setTotalLiters(data.Total_liter.toString());
+          setTotalLitres(data.Total_liter.toString());
           setFAT(data.FAT.toString());
           setSNF(data.SNF.toString());
           setTotalAmount(data.total_amt.toString());
@@ -63,7 +63,7 @@ export default function EditCenterShift() {
   };
 
   async function handleSaveData() {
-    if (totalLiters === "" || FAT === "" || SNF === "" || totalAmount === "") {
+    if (totalLitres === "" || FAT === "" || SNF === "" || totalAmount === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
@@ -71,7 +71,7 @@ export default function EditCenterShift() {
     const { data, error } = await supabase.from("center_shift_entry").upsert({
       DATE: currentDate.toISOString().split("T")[0],
       AM_PM: selectedValue,
-      Total_liter: parseFloat(totalLiters),
+      Total_litre: parseFloat(totalLitres),
       FAT: parseFloat(FAT),
       SNF: parseFloat(SNF),
       total_amt: parseFloat(totalAmount),
@@ -129,8 +129,8 @@ export default function EditCenterShift() {
         <TextInput
           style={styles.input}
           placeholder="Total Litre"
-          value={totalLiters}
-          onChangeText={setTotalLiters}
+          value={totalLitres}
+          onChangeText={setTotalLitres}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>FAT</Text>

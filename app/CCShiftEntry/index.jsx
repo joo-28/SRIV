@@ -22,7 +22,7 @@ export default function Menu() {
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
-  const [totalLiters, setTotalLiters] = useState("");
+  const [totalLitres, setTotalLitres] = useState("");
   const [FAT, setFAT] = useState("");
   const [SNF, setSNF] = useState("");
   const [selectedValue, setSelectedValue] = useState("AM");
@@ -38,7 +38,7 @@ export default function Menu() {
   };
 
   async function handleSaveData() {
-    if (totalLiters === "" || FAT === "" || SNF === "") {
+    if (totalLitres === "" || FAT === "" || SNF === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
@@ -47,7 +47,7 @@ export default function Menu() {
       {
         DATE: date,
         AM_PM: selectedValue,
-        Total_liter: parseFloat(totalLiters),
+        Total_litre: parseFloat(totalLitres),
         FAT: parseFloat(FAT),
         SNF: parseFloat(SNF),
       },
@@ -58,7 +58,7 @@ export default function Menu() {
     } else {
       console.log("Inserted data:", data);
       Alert.alert("Success", "Data saved successfully");
-      setTotalLiters("");
+      setTotalLitres("");
       setFAT("");
       setSNF("");
     }
@@ -121,8 +121,8 @@ export default function Menu() {
         <TextInput
           style={styles.input}
           placeholder="Total Litre"
-          value={totalLiters}
-          onChangeText={setTotalLiters}
+          value={totalLitres}
+          onChangeText={setTotalLitres}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>FAT</Text>

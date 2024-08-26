@@ -20,7 +20,7 @@ export default function EditCCEntry() {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [show, setShow] = useState(false);
-  const [totalLiters, setTotalLiters] = useState("");
+  const [totalLitres, setTotalLitres] = useState("");
   const [FAT, setFAT] = useState("");
   const [SNF, setSNF] = useState("");
   const [selectedValue, setSelectedValue] = useState("AM"); // Default to AM
@@ -36,12 +36,12 @@ export default function EditCCEntry() {
       if (error) {
         console.log("Error fetching data:", error);
         Alert.alert("Error", "Failed to fetch data");
-        setTotalLiters("");
+        setTotalLitres("");
         setFAT("");
         setSNF("");
       } else {
         if (data) {
-          setTotalLiters(data.Total_liter.toString());
+          setTotalLitres(data.Total_liter.toString());
           setFAT(data.FAT.toString());
           setSNF(data.SNF.toString());
         }
@@ -70,7 +70,7 @@ export default function EditCCEntry() {
     const { data, error } = await supabase.from("cc_shift_entry").upsert({
       DATE: currentDate.toISOString().split("T")[0],
       AM_PM: selectedValue,
-      Total_liter: parseFloat(totalLiters),
+      Total_litre: parseFloat(totalLitres),
       FAT: parseFloat(FAT),
       SNF: parseFloat(SNF),
     });
@@ -78,7 +78,7 @@ export default function EditCCEntry() {
     if (error) {
       console.log("Error updating data:", error);
       Alert.alert("Error", "Failed to update data");
-      setTotalLiters("");
+      setTotalLitres("");
       setFAT("");
       setSNF("");
     } else {
@@ -132,8 +132,8 @@ export default function EditCCEntry() {
         <TextInput
           style={styles.input}
           placeholder="Total Litres"
-          value={totalLiters}
-          onChangeText={setTotalLiters}
+          value={totalLitres}
+          onChangeText={setTotalLitres}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>FAT</Text>

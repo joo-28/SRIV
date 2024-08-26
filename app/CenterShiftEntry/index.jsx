@@ -22,7 +22,7 @@ export default function Menu() {
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
-  const [totalLiters, setTotalLiters] = useState("");
+  const [totalLitres, setTotalLitres] = useState("");
   const [FAT, setFAT] = useState("");
   const [SNF, setSNF] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
@@ -39,7 +39,7 @@ export default function Menu() {
   };
 
   async function handleSaveData() {
-    if (totalLiters === "" || FAT === "" || SNF === "" || totalAmount === "") {
+    if (totalLitres === "" || FAT === "" || SNF === "" || totalAmount === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
@@ -48,7 +48,7 @@ export default function Menu() {
       {
         DATE: date,
         AM_PM: selectedValue,
-        Total_liter: parseFloat(totalLiters),
+        Total_litre: parseFloat(totalLitres),
         FAT: parseFloat(FAT),
         SNF: parseFloat(SNF),
         total_amt: parseFloat(totalAmount),
@@ -128,8 +128,8 @@ export default function Menu() {
         <TextInput
           style={styles.input}
           placeholder="Total Litre"
-          value={totalLiters}
-          onChangeText={setTotalLiters}
+          value={totalLitres}
+          onChangeText={setTotalLitres}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>FAT</Text>
@@ -199,14 +199,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
-    marginBottom: 20,
+    marginBottom: 10,
     marginTop: 40,
   },
   input: {
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 10,
+    marginBottom: 5,
     paddingHorizontal: 8,
     borderRadius: 4,
   },
