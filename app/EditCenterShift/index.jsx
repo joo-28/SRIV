@@ -36,6 +36,10 @@ export default function EditCenterShift() {
       if (error) {
         console.log("Error fetching data:", error);
         Alert.alert("Error", "Failed to fetch data");
+        setFAT("");
+        setSNF("");
+        setTotalAmount("");
+        setTotalLiters("");
       } else {
         if (data) {
           setTotalLiters(data.Total_liter.toString());
@@ -121,13 +125,15 @@ export default function EditCenterShift() {
             <Text style={styles.radioLabel}>PM</Text>
           </View>
         </View>
+        <Text style={styles.radioLabel}>Total Litre</Text>
         <TextInput
           style={styles.input}
-          placeholder="Total Liter"
+          placeholder="Total Litre"
           value={totalLiters}
           onChangeText={setTotalLiters}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>FAT</Text>
         <TextInput
           style={styles.input}
           placeholder="FAT"
@@ -135,6 +141,7 @@ export default function EditCenterShift() {
           onChangeText={setFAT}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>SNF</Text>
         <TextInput
           style={styles.input}
           placeholder="SNF"
@@ -142,6 +149,7 @@ export default function EditCenterShift() {
           onChangeText={setSNF}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>Total Amount</Text>
         <TextInput
           style={styles.input}
           placeholder="Amount"
@@ -175,11 +183,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Yellow,
     alignItems: "center",
     justifyContent: "center",
-    padding: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 5,
   },
   formDesign: {
     backgroundColor: "white",
     borderRadius: 8,
+    width: "90%",
     padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

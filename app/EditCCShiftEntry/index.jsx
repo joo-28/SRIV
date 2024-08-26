@@ -128,13 +128,15 @@ export default function EditCCEntry() {
             <Text style={styles.radioLabel}>PM</Text>
           </View>
         </View>
+        <Text style={styles.radioLabel}>Total Litres</Text>
         <TextInput
           style={styles.input}
-          placeholder="Total Liter"
+          placeholder="Total Litres"
           value={totalLiters}
           onChangeText={setTotalLiters}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>FAT</Text>
         <TextInput
           style={styles.input}
           placeholder="FAT"
@@ -142,6 +144,7 @@ export default function EditCCEntry() {
           onChangeText={setFAT}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>SNF</Text>
         <TextInput
           style={styles.input}
           placeholder="SNF"

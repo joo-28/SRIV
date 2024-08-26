@@ -56,7 +56,11 @@ export default function Menu() {
     ]);
     if (error) {
       console.log("Error inserting data:", error);
-      Alert.alert("Error", "Already Data update on this date");
+      Alert.alert("Error", "Already Data updated on this date");
+      setTotalLiters("");
+      setFAT("");
+      setSNF("");
+      setTotalAmount("");
     } else {
       console.log("Inserted data:", data);
       Alert.alert("Success", "Data saved successfully");
@@ -120,13 +124,15 @@ export default function Menu() {
             <Text style={styles.radioLabel}>PM</Text>
           </View>
         </View>
+        <Text style={styles.radioLabel}>Total Litre</Text>
         <TextInput
           style={styles.input}
-          placeholder="Total Liter"
+          placeholder="Total Litre"
           value={totalLiters}
           onChangeText={setTotalLiters}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>FAT</Text>
         <TextInput
           style={styles.input}
           placeholder="FAT"
@@ -134,6 +140,7 @@ export default function Menu() {
           onChangeText={setFAT}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>SNF</Text>
         <TextInput
           style={styles.input}
           placeholder="SNF"
@@ -141,6 +148,7 @@ export default function Menu() {
           onChangeText={setSNF}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>Total Amount</Text>
         <TextInput
           style={styles.input}
           placeholder="Amount"
@@ -192,6 +200,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     marginBottom: 20,
+    marginTop: 40,
   },
   input: {
     height: 40,

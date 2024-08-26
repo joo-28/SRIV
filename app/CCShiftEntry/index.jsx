@@ -117,13 +117,15 @@ export default function Menu() {
             <Text style={styles.radioLabel}>PM</Text>
           </View>
         </View>
+        <Text style={styles.radioLabel}>Total Litre</Text>
         <TextInput
           style={styles.input}
-          placeholder="Total Liter"
+          placeholder="Total Litre"
           value={totalLiters}
           onChangeText={setTotalLiters}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>FAT</Text>
         <TextInput
           style={styles.input}
           placeholder="FAT"
@@ -131,6 +133,7 @@ export default function Menu() {
           onChangeText={setFAT}
           keyboardType="numeric"
         />
+        <Text style={styles.radioLabel}>SNF</Text>
         <TextInput
           style={styles.input}
           placeholder="SNF"
