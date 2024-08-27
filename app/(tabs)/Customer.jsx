@@ -63,6 +63,14 @@ export default function Customer() {
     router.push("/EditCustomer");
   };
 
+  // Get the last balance value from the ledger entries
+  const getLastBalance = () => {
+    if (ledgerEntries.length > 0) {
+      return ledgerEntries[ledgerEntries.length - 1].balance_amount;
+    }
+    return "0";
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -86,6 +94,10 @@ export default function Customer() {
           <Text style={styles.headerText}>Customer Number:</Text>
           <Text style={styles.headerText}>
             {customerDetails ? customerDetails.customer_number : ""}
+          </Text>
+          <Text style={styles.headerText}>Balance:</Text>
+          <Text style={styles.headerText}>
+            {customerDetails ? getLastBalance() : ""}
           </Text>
         </View>
 
@@ -177,7 +189,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 16,
   },
   tableHeader: {
     flexDirection: "row",
