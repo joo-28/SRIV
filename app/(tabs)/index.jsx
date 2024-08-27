@@ -12,7 +12,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   ScrollView,
-  Keyboard,
 } from "react-native";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
@@ -23,12 +22,11 @@ const { width, height } = Dimensions.get("window");
 
 export default function Index() {
   const router = useRouter();
-
   const [customerNumber, setCustomerNumber] = useState("");
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [selectedValue, setSelectedValue] = useState("debit");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [outstandingFund, setOutstandingFund] = useState(0);
 
   useEffect(() => {
@@ -64,7 +62,7 @@ export default function Index() {
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios");
+    setShow(false);
     setDate(currentDate);
   };
 
@@ -73,10 +71,9 @@ export default function Index() {
   };
 
   const handleInsertData = async () => {
-    // Fetch customer data
     const { data: customerData, error: customerError } = await supabase
       .from("customer")
-      .select("customer_number,active,balance,total_paid,total_amount")
+      .select("customer_number, active, balance, total_paid, total_amount")
       .eq("customer_number", customerNumber)
       .single();
 
@@ -90,156 +87,65 @@ export default function Index() {
       Alert.alert("Error", "No customer found with this customer number.");
       return;
     }
+
     if (customerData.active === "false") {
       Alert.alert("Error", "This Customer Account is Closed.");
       return;
     }
 
-    // Initialize amounts
     let updatedTotalAmount = parseFloat(customerData.total_amount) || 0;
     let updatedBalanceAmount = parseFloat(customerData.balance) || 0;
     let updatedTotalDuePaid = parseFloat(customerData.total_paid) || 0;
 
-    // Update based on transaction type
-    if (selectedValue === "credit") {
-      updatedBalanceAmount += parseFloat(amount);
-      updatedTotalAmount += parseFloat(amount);
-      const { data: ledgerData, error: ledgerError } = await supabase
-        .from("ledger")
-        .insert([
-          {
-            customer_number: customerNumber,
-            amount: amount,
-            due_paid_date: date,
-            transaction: selectedValue,
-            total_due_paid: updatedTotalDuePaid,
-            balance_amount: updatedBalanceAmount,
-          },
-        ])
-        .select();
+    const transactionAmount = parseFloat(amount);
 
-      if (ledgerError) {
-        console.log("Error inserting into ledger:", ledgerError);
-        return;
-      } else {
-        console.log("Inserted transaction into ledger:", ledgerData);
-      }
-      const { data: updateData, error: updateError } = await supabase
-        .from("customer")
-        .update({
-          balance: updatedBalanceAmount,
-          total_amount: updatedTotalAmount,
-        })
-        .eq("customer_number", customerNumber);
-
-      if (updateError) {
-        console.error(
-          "Error updating balance_amount and total_amount:",
-          updateError
-        );
-      } else {
-        console.log(
-          "Updated balance_amount and total_amount successfully:",
-          updateData
-        );
-        Alert.alert("Successful", "Transaction recorded successfully.");
-        setCustomerNumber("");
-        setAmount(0);
-        fetchOutstandingFund();
-      }
+    if (selectedValue === "credit" || selectedValue === "Miscellaneous") {
+      updatedBalanceAmount += transactionAmount;
+      updatedTotalAmount += transactionAmount;
     } else if (selectedValue === "debit") {
-      updatedBalanceAmount -= parseFloat(amount);
-      updatedTotalDuePaid += parseFloat(amount);
+      updatedBalanceAmount -= transactionAmount;
+      updatedTotalDuePaid += transactionAmount;
+    }
 
-      const { data: updateData, error: updateError } = await supabase
-        .from("ledger")
-        .insert([
-          {
-            customer_number: customerNumber,
-            amount: amount,
-            due_paid_date: date,
-            transaction: selectedValue,
-            total_due_paid: updatedTotalDuePaid,
-            balance_amount: updatedBalanceAmount,
-          },
-        ])
-        .select();
-
-      if (updateError) {
-        console.error(
-          "Error updating balance_amount and total_due_paid:",
-          updateError
-        );
-      } else {
-        console.log(
-          "Updated balance_amount and total_due_paid successfully:",
-          updateData
-        );
-        const { data: updateDataToLedger, error: updateErrorToLedger } =
-          await supabase
-            .from("customer")
-            .update({
-              total_paid: updatedTotalDuePaid,
-              balance: updatedBalanceAmount,
-            })
-            .eq("customer_number", customerNumber);
-
-        if (updateErrorToLedger) {
-          console.error(
-            "Error updating balance_amount and total_due_paid:",
-            updateError
-          );
-        } else {
-          console.log(
-            "Updated balance_amount and total_due_paid successfully:",
-            updateDataToLedger
-          );
-          Alert.alert("Successful", "Transaction recorded successfully.");
-          setCustomerNumber("");
-          setAmount(0);
-          fetchOutstandingFund();
-        }
-      }
-    } else if (selectedValue === "Miscellaneous") {
-      updatedTotalAmount += parseFloat(amount);
-      updatedBalanceAmount += parseFloat(amount);
+    try {
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("ledger")
         .insert([
           {
             customer_number: customerNumber,
-            amount: amount,
+            amount: transactionAmount,
             due_paid_date: date,
             transaction: selectedValue,
             total_due_paid: updatedTotalDuePaid,
             balance_amount: updatedBalanceAmount,
           },
-        ])
-        .select();
+        ]);
 
       if (ledgerError) {
-        console.log("Error inserting into ledger:", ledgerError);
-        return;
-      } else {
-        console.log("Inserted transaction into ledger:", ledgerData);
+        throw ledgerError;
       }
+
+      const updateFields =
+        selectedValue === "debit"
+          ? { total_paid: updatedTotalDuePaid, balance: updatedBalanceAmount }
+          : { balance: updatedBalanceAmount, total_amount: updatedTotalAmount };
+
       const { data: updateData, error: updateError } = await supabase
         .from("customer")
-        .update({
-          total_amount: updatedTotalAmount,
-          balance: updatedBalanceAmount,
-        })
+        .update(updateFields)
         .eq("customer_number", customerNumber);
 
       if (updateError) {
-        console.error("Error updating total_amount:", updateError);
-      } else {
-        console.log("Updated total_amount successfully:", updateData);
-        Alert.alert("Successful", "Transaction recorded successfully.");
-        setCustomerNumber("");
-        setAmount(0);
-        fetchOutstandingFund();
+        throw updateError;
       }
+
+      Alert.alert("Successful", "Transaction recorded successfully.");
+      setCustomerNumber("");
+      setAmount("");
+      fetchOutstandingFund();
+    } catch (error) {
+      console.error("Error handling transaction:", error);
+      Alert.alert("Error", "Failed to record the transaction.");
     }
   };
 
@@ -271,20 +177,20 @@ export default function Index() {
           <View style={styles.radioGroup}>
             <View style={styles.radioButton}>
               <RadioButton
-                value="Debit"
+                value="debit"
                 status={selectedValue === "debit" ? "checked" : "unchecked"}
                 onPress={() => setSelectedValue("debit")}
-                color="#007BFF"
+                color={Colors.Blue}
               />
               <Text style={styles.radioLabel}>Debit</Text>
             </View>
 
             <View style={styles.radioButton}>
               <RadioButton
-                value="Credit"
+                value="credit"
                 status={selectedValue === "credit" ? "checked" : "unchecked"}
                 onPress={() => setSelectedValue("credit")}
-                color="#007BFF"
+                color={Colors.Blue}
               />
               <Text style={styles.radioLabel}>Credit</Text>
             </View>
@@ -296,7 +202,7 @@ export default function Index() {
                   selectedValue === "Miscellaneous" ? "checked" : "unchecked"
                 }
                 onPress={() => setSelectedValue("Miscellaneous")}
-                color="#007BFF"
+                color={Colors.Blue}
               />
               <Text style={styles.radioLabel}>Miscellaneous</Text>
             </View>
@@ -306,12 +212,10 @@ export default function Index() {
             <Button onPress={showDatePicker} title={date.toDateString()} />
             {show && (
               <DateTimePicker
-                testID="dateTimePicker"
                 value={date}
                 mode="date"
                 display={Platform.OS === "ios" ? "spinner" : "default"}
                 onChange={onChange}
-                style={styles.datePicker}
               />
             )}
           </View>

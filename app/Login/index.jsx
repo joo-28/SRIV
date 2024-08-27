@@ -60,6 +60,7 @@ export default function LoginScreen() {
       <ImageBackground
         source={require("../../assets/background.png")}
         style={styles.backgroundImage}
+        resizeMode="cover"
       >
         <Text style={styles.heading}>SRIV</Text>
 
