@@ -28,6 +28,12 @@ export default function CenterStaffMenu() {
   const handleCenterReport = () => {
     router.push("/CenterReport");
   };
+  const handleFixedRateCustomer = () => {
+    router.push("/FixedRateCustomer");
+  };
+  const handleCalculator = () => {
+    router.push("/Calculator");
+  };
 
   return (
     <View style={styles.container}>
@@ -36,8 +42,15 @@ export default function CenterStaffMenu() {
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.Green}
-            title="Blank"
-            onPress={handleSwitchMilkApp}
+            title="Calculator"
+            onPress={handleCalculator}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Fixed Rate Customer"
+            onPress={handleFixedRateCustomer}
           />
         </View>
         <View style={styles.buttonContainer}>
@@ -47,6 +60,7 @@ export default function CenterStaffMenu() {
             onPress={handleCenterSales}
           />
         </View>
+
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}

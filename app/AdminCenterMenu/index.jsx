@@ -24,6 +24,18 @@ export default function CenterStaffMenu() {
   const handleMilkRate = () => {
     router.push("/SetMilkRate");
   };
+  const handleCreateCenter = () => {
+    router.push("/CreateCenter");
+  };
+  const handleFixedRate = () => {
+    router.push("/AllFixedRateCusomers");
+  };
+  const handleAddFixedRateCustomer = () => {
+    router.push("/AddFixedRateCustomer");
+  };
+  const handleFixedRateCustomer = () => {
+    router.push("/FixedRateCustomer");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -40,6 +52,34 @@ export default function CenterStaffMenu() {
             color={Colors.Blue}
             title="Set Milk Rate"
             onPress={handleMilkRate}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.Blue}
+            title="Create Center"
+            onPress={handleCreateCenter}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Add New Fixed Rate Customer"
+            onPress={handleAddFixedRateCustomer}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Fixed Rate Customer"
+            onPress={handleFixedRateCustomer}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="ALL Fixed Rate Customer"
+            onPress={handleFixedRate}
           />
         </View>
         <View style={styles.buttonContainer}>
@@ -96,7 +136,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    marginVertical: 10,
+    marginVertical: 5,
   },
   logoutButtonContainer: {
     width: "60%",

@@ -279,7 +279,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.Yellow,
-    paddingTop: 20,
     padding: 10,
   },
   buttonContainer: {
@@ -296,7 +295,7 @@ const styles = StyleSheet.create({
     width: "80%",
     backgroundColor: "white",
     borderRadius: 8,
-    padding: 20,
+    padding: 10,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
