@@ -23,7 +23,7 @@ export default function EditCCEntry() {
   const [totalLitres, setTotalLitres] = useState("");
   const [FAT, setFAT] = useState("");
   const [SNF, setSNF] = useState("");
-  const [selectedValue, setSelectedValue] = useState("AM"); // Default to AM
+  const [selectedValue, setSelectedValue] = useState("AM");
 
   useEffect(() => {
     async function fetchEntryData() {
@@ -41,9 +41,7 @@ export default function EditCCEntry() {
         setSNF("");
       } else {
         if (data) {
-          setTotalLitres(data.Total_liter.toString());
-          setFAT(data.FAT.toString());
-          setSNF(data.SNF.toString());
+          setTotalLitres(data.Total_litre.toString() || "");
         }
       }
     }
@@ -62,7 +60,7 @@ export default function EditCCEntry() {
   };
 
   async function handleUpdateData() {
-    if (totalLiters === "" || FAT === "" || SNF === "") {
+    if (totalLitres === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
@@ -165,7 +163,7 @@ export default function EditCCEntry() {
       <Button
         title="Go Back"
         onPress={() => router.back()}
-        color={Colors.DarkBlue} // You can change the color to match your design
+        color={Colors.DarkBlue}
         style={styles.goBackButton}
       />
     </ScrollView>
@@ -190,6 +188,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     marginBottom: 20,
+    marginTop: 40,
   },
   input: {
     height: 40,
@@ -218,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   radioLabel: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#333",
   },
   buttonContainer: {

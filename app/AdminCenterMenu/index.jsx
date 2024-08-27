@@ -2,31 +2,24 @@ import { View, StyleSheet, Button, Text, Alert } from "react-native";
 import React from "react";
 import Colors from "../../Services/Colors";
 import { useRouter } from "expo-router";
-import service from "../../Services/service";
 
-export default function Menu() {
+export default function CenterStaffMenu() {
   const router = useRouter();
 
-  const handleLogout = async () => {
-    await service.clearUserData();
-    Alert.alert("Logout", "You have been logged out.");
-    router.push("/Login");
+  const handleSwitchFinanceApp = () => {
+    router.push("(tabs)");
   };
 
-  const handleSwitchMilkApp = () => {
-    router.push("/AdminCenterShift");
+  const handleCenterSales = () => {
+    router.push("/CenterSales");
   };
 
-  const handleEditUser = () => {
-    router.push("/EditUser");
+  const handleCenterSalesReport = () => {
+    router.push("/CenterSalesReport");
   };
 
-  const handleAddNewUser = () => {
-    router.push("/AddNewUser");
-  };
-
-  const handleChangePassword = () => {
-    router.push("/ChangePassword");
+  const handleCenterReport = () => {
+    router.push("/CenterReport");
   };
 
   return (
@@ -36,33 +29,37 @@ export default function Menu() {
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.Green}
-            title="Switch Milk App"
-            onPress={handleSwitchMilkApp}
+            title="Switch Finance APP"
+            onPress={handleSwitchFinanceApp}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
-            title="Edit User"
-            onPress={handleEditUser}
+            title="Center Sales"
+            onPress={handleCenterSales}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
-            title="Add New User"
-            onPress={handleAddNewUser}
+            title="Center Sales Report"
+            onPress={handleCenterSalesReport}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
-            title="Change Password"
-            onPress={handleChangePassword}
+            title="Center Report"
+            onPress={handleCenterReport}
           />
         </View>
-        <View style={styles.logoutButtonContainer}>
-          <Button color={Colors.Red} title="Logout" onPress={handleLogout} />
+        <View style={styles.goBackButton}>
+          <Button
+            title="Go Back"
+            onPress={() => router.back()}
+            color={Colors.DarkBlue}
+          />
         </View>
       </View>
     </View>
@@ -99,5 +96,9 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 26,
     alignSelf: "center",
+  },
+  goBackButton: {
+    width: "60%",
+    marginTop: 20,
   },
 });

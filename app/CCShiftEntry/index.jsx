@@ -38,7 +38,7 @@ export default function Menu() {
   };
 
   async function handleSaveData() {
-    if (totalLitres === "" || FAT === "" || SNF === "") {
+    if (totalLitres === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
@@ -160,8 +160,15 @@ export default function Menu() {
           />
         </View>
         <View style={styles.outsideButton}>
-          <Button color={Colors.Red} title="Logout" onPress={handleLogout} />
+          <Button
+            color={Colors.DarkBlue}
+            title="Center Report"
+            onPress={() => router.push("/CenterReport")}
+          />
         </View>
+      </View>
+      <View style={styles.logoutButton}>
+        <Button color={Colors.Red} title="Logout" onPress={handleLogout} />
       </View>
     </ScrollView>
   );
@@ -184,29 +191,30 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
-    marginBottom: 20,
+    marginBottom: 15,
+    marginTop: 40,
   },
   input: {
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 10,
+    marginBottom: 5,
     paddingHorizontal: 8,
     borderRadius: 4,
   },
   heading: {
     fontSize: 24,
     alignSelf: "center",
-    marginBottom: 10,
+    marginBottom: 8,
     fontWeight: "bold",
   },
   datePickerContainer: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   radioGroup: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   radioButton: {
     flexDirection: "row",
@@ -226,10 +234,15 @@ const styles = StyleSheet.create({
   outsideButtonsContainer: {
     width: "100%",
     marginBottom: 10,
+    gap: 10,
+    flexDirection: "row",
   },
   outsideButton: {
     width: "45%",
-    alignSelf: "center",
     marginBottom: 10,
+    marginStart: 10,
+  },
+  logoutButton: {
+    width: "50%",
   },
 });

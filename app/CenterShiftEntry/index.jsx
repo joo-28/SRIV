@@ -57,25 +57,23 @@ export default function Menu() {
     if (error) {
       console.log("Error inserting data:", error);
       Alert.alert("Error", "Already Data updated on this date");
-      setTotalLiters("");
+      setTotalLitres("");
       setFAT("");
       setSNF("");
       setTotalAmount("");
     } else {
       console.log("Inserted data:", data);
       Alert.alert("Success", "Data saved successfully");
-      setTotalLiters("");
+      setTotalLitres("");
       setFAT("");
       setSNF("");
       setTotalAmount("");
     }
   }
 
-  async function handleLogout() {
+  async function handleMenu() {
     // Handle logout functionality here
-    Alert.alert("Logout", "You have been logged out.");
-    await service.clearUserData();
-    router.replace("/Login");
+    router.push("/CenterStaffMenu");
   }
 
   function handleEditEntry() {
@@ -175,7 +173,7 @@ export default function Menu() {
           />
         </View>
         <View style={styles.outsideButton}>
-          <Button color={Colors.Red} title="Logout" onPress={handleLogout} />
+          <Button color={Colors.DarkBlue} title="Menu" onPress={handleMenu} />
         </View>
       </View>
     </ScrollView>

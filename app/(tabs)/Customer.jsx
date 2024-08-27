@@ -55,12 +55,12 @@ export default function Customer() {
   };
 
   const handleNavigateToNewCustomer = () => {
-    router.push("/AddNewCustomer");
+    router.replace("/AddNewCustomer");
     console.log(customerDetails);
   };
 
   const handleNavigateToEditCustomer = () => {
-    router.push("/EditCustomer");
+    router.replace("/EditCustomer");
   };
 
   return (

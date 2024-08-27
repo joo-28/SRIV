@@ -7,17 +7,20 @@ import {
   Platform,
   Alert,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import service from "../../Services/service";
 import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton } from "react-native-paper";
 
-export default function EditCenterShift() {
+export default function Menu() {
+  // State Variables
   const router = useRouter();
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [totalLitres, setTotalLitres] = useState("");
   const [FAT, setFAT] = useState("");
@@ -25,39 +28,12 @@ export default function EditCenterShift() {
   const [totalAmount, setTotalAmount] = useState("");
   const [selectedValue, setSelectedValue] = useState("AM");
 
-  useEffect(() => {
-    async function fetchEntryData() {
-      const { data, error } = await supabase
-        .from("center_shift_entry")
-        .select("*")
-        .eq("DATE", currentDate.toISOString().split("T")[0])
-        .eq("AM_PM", selectedValue)
-        .single();
-      if (error) {
-        console.log("Error fetching data:", error);
-        Alert.alert("Error", "Failed to fetch data");
-        setFAT("");
-        setSNF("");
-        setTotalAmount("");
-        setTotalLitres("");
-      } else {
-        if (data) {
-          setTotalLitres(data.Total_litre.toString());
-          setFAT(data.FAT.toString());
-          setSNF(data.SNF.toString());
-          setTotalAmount(data.total_amt.toString());
-        }
-      }
-    }
-
-    fetchEntryData();
-  }, [currentDate, selectedValue]);
-
-  const onChangeDate = (event, selectedDate) => {
+  // State Functions
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
-    setCurrentDate(selectedDate || currentDate);
+    setDate(currentDate);
   };
-
   const showDatePicker = () => {
     setShow(true);
   };
@@ -68,37 +44,58 @@ export default function EditCenterShift() {
       return;
     }
 
-    const { data, error } = await supabase.from("center_shift_entry").upsert({
-      DATE: currentDate.toISOString().split("T")[0],
-      AM_PM: selectedValue,
-      Total_litre: parseFloat(totalLitres),
-      FAT: parseFloat(FAT),
-      SNF: parseFloat(SNF),
-      total_amt: parseFloat(totalAmount),
-    });
-
+    const { data, error } = await supabase.from("center_shift_entry").insert([
+      {
+        DATE: date,
+        AM_PM: selectedValue,
+        Total_litre: parseFloat(totalLitres),
+        FAT: parseFloat(FAT),
+        SNF: parseFloat(SNF),
+        total_amt: parseFloat(totalAmount),
+      },
+    ]);
     if (error) {
-      console.log("Error updating data:", error);
-      Alert.alert("Error", "Failed to update data");
+      console.log("Error inserting data:", error);
+      Alert.alert("Error", "Already Data updated on this date");
+      setTotalLitres("");
+      setFAT("");
+      setSNF("");
+      setTotalAmount("");
     } else {
-      console.log("Updated data:", data);
-      Alert.alert("Success", "Data updated successfully");
+      console.log("Inserted data:", data);
+      Alert.alert("Success", "Data saved successfully");
+      setTotalLitres("");
+      setFAT("");
+      setSNF("");
+      setTotalAmount("");
     }
   }
 
+  async function handleMenu() {
+    // Handle logout functionality here
+    router.push("/AdminCenterMenu");
+  }
+
+  function handleEditEntry() {
+    // Handle edit entry functionality here
+    router.push("/EditCenterShift");
+  }
+
+  const { width } = useWindowDimensions();
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.formDesign}>
-        <Text style={styles.heading}>Edit Center Shift Entry</Text>
+      <View style={[styles.formDesign, { width: width * 0.9 }]}>
+        <Text style={styles.heading}>Center Shift Entry</Text>
         <View style={styles.datePickerContainer}>
-          <Button onPress={showDatePicker} title={currentDate.toDateString()} />
+          <Button onPress={showDatePicker} title={date.toDateString()} />
           {show && (
             <DateTimePicker
               testID="dateTimePicker"
-              value={currentDate}
+              value={date}
               mode="date"
               display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={onChangeDate}
+              onChange={onChange}
               maximumDate={new Date()} // Restrict future dates
               style={styles.datePicker}
             />
@@ -167,12 +164,18 @@ export default function EditCenterShift() {
           </View>
         </View>
       </View>
-      <Button
-        title="Go Back"
-        onPress={() => router.back()}
-        color={Colors.DarkBlue} // You can change the color to match your design
-        style={styles.goBackButton}
-      />
+      <View style={styles.outsideButtonsContainer}>
+        <View style={styles.outsideButton}>
+          <Button
+            color={Colors.Blue}
+            title="Edit Entry"
+            onPress={handleEditEntry}
+          />
+        </View>
+        <View style={styles.outsideButton}>
+          <Button color={Colors.DarkBlue} title="Menu" onPress={handleMenu} />
+        </View>
+      </View>
     </ScrollView>
   );
 }
@@ -183,26 +186,25 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.Yellow,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 20,
-    paddingHorizontal: 5,
+    padding: 10,
   },
   formDesign: {
     backgroundColor: "white",
     borderRadius: 8,
-    width: "90%",
     padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop: 40,
   },
   input: {
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 10,
+    marginBottom: 5,
     paddingHorizontal: 8,
     borderRadius: 4,
   },
@@ -235,12 +237,13 @@ const styles = StyleSheet.create({
   saveButton: {
     width: "45%",
   },
-  datePicker: {
+  outsideButtonsContainer: {
     width: "100%",
-    marginTop: 10,
+    marginBottom: 10,
   },
-  goBackButton: {
-    marginBottom: 20,
-    width: "100%",
+  outsideButton: {
+    width: "45%",
+    alignSelf: "center",
+    marginBottom: 10,
   },
 });
