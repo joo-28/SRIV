@@ -1,4 +1,4 @@
-import { View, StyleSheet, Button, Text, Alert } from "react-native";
+import { View, StyleSheet, Button, Text } from "react-native";
 import React from "react";
 import Colors from "../../Services/Colors";
 import { useRouter } from "expo-router";

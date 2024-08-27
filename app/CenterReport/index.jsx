@@ -105,42 +105,44 @@ export default function CenterReport() {
   return (
     <View style={styles.container}>
       <View style={styles.form}>
-        <Text style={styles.label}>From</Text>
-        <View style={styles.datePickerContainer}>
-          <Button
-            onPress={() => setShowFromPicker(true)}
-            title={fromDate.toDateString()}
-          />
-          {showFromPicker && (
-            <DateTimePicker
-              value={fromDate}
-              mode="date"
-              display="default"
-              onChange={handleFromDateChange}
-              maximumDate={new Date()} // Restrict future dates
-              style={styles.datePicker}
+        <View style={styles.userField}>
+          <Text style={styles.label}>From</Text>
+          <View style={styles.datePickerContainer}>
+            <Button
+              onPress={() => setShowFromPicker(true)}
+              title={fromDate.toDateString()}
             />
-          )}
+            {showFromPicker && (
+              <DateTimePicker
+                value={fromDate}
+                mode="date"
+                display="default"
+                onChange={handleFromDateChange}
+                maximumDate={new Date()} // Restrict future dates
+                style={styles.datePicker}
+              />
+            )}
+          </View>
         </View>
-
-        <Text style={styles.label}>To</Text>
-        <View style={styles.datePickerContainer}>
-          <Button
-            onPress={() => setShowToPicker(true)}
-            title={toDate.toDateString()}
-          />
-          {showToPicker && (
-            <DateTimePicker
-              value={toDate}
-              mode="date"
-              display="default"
-              onChange={handleToDateChange}
-              maximumDate={new Date()} // Restrict future dates
-              style={styles.datePicker}
+        <View style={styles.userField}>
+          <Text style={styles.label}>To</Text>
+          <View style={styles.datePickerContainer}>
+            <Button
+              onPress={() => setShowToPicker(true)}
+              title={toDate.toDateString()}
             />
-          )}
+            {showToPicker && (
+              <DateTimePicker
+                value={toDate}
+                mode="date"
+                display="default"
+                onChange={handleToDateChange}
+                maximumDate={new Date()} // Restrict future dates
+                style={styles.datePicker}
+              />
+            )}
+          </View>
         </View>
-
         <View style={styles.searchButton}>
           <Button
             color={Colors.Green}
@@ -216,10 +218,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    paddingTop: 8,
     marginBottom: 5,
+    width: "25%",
   },
   datePickerContainer: {
     marginBottom: 10,
+    width: "70%",
   },
   searchButton: {
     alignItems: "center",
@@ -229,6 +234,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 5,
     flex: 1,
+  },
+  userField: {
+    flexDirection: "row",
   },
   scrollView: {
     flex: 1,
