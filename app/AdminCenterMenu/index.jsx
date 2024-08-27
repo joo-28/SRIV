@@ -21,7 +21,9 @@ export default function CenterStaffMenu() {
   const handleCenterReport = () => {
     router.push("/CenterReport");
   };
-
+  const handleMilkRate = () => {
+    router.push("/SetMilkRate");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -31,6 +33,13 @@ export default function CenterStaffMenu() {
             color={Colors.Green}
             title="Switch Finance APP"
             onPress={handleSwitchFinanceApp}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.Blue}
+            title="Set Milk Rate"
+            onPress={handleMilkRate}
           />
         </View>
         <View style={styles.buttonContainer}>

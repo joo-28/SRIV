@@ -105,6 +105,7 @@ export default function CenterReport() {
   return (
     <View style={styles.container}>
       <View style={styles.form}>
+        <Text style={styles.heading}>Center Report</Text>
         <View style={styles.userField}>
           <Text style={styles.label}>From</Text>
           <View style={styles.datePickerContainer}>
@@ -137,7 +138,7 @@ export default function CenterReport() {
                 mode="date"
                 display="default"
                 onChange={handleToDateChange}
-                maximumDate={new Date()} // Restrict future dates
+                maximumDate={new Date()}
                 style={styles.datePicker}
               />
             )}
@@ -291,5 +292,11 @@ const styles = StyleSheet.create({
   },
   addButton: {
     flex: 1,
+  },
+  heading: {
+    fontSize: 24,
+    alignSelf: "center",
+    marginBottom: 8,
+    fontWeight: "bold",
   },
 });
