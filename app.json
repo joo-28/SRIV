@@ -3,12 +3,11 @@
     "name": "SRIV",
     "slug": "SRIV",
     "version": "1.0.0",
-    "scheme": "SRIV-scheme",
+    "scheme": "sriv-scheme",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,13 +16,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.joo28.SRIV"
     },
     "web": {
-      "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "plugins": ["expo-router"],
