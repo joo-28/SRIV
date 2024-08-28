@@ -1,3 +1,5 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
+
 import { View, StyleSheet, Button, Text, Alert } from "react-native";
 import React from "react";
 import Colors from "../../Services/Colors";
@@ -6,29 +8,20 @@ import service from "../../Services/service";
 
 export default function Menu() {
   const router = useRouter();
-
   const handleLogout = async () => {
     await service.clearUserData();
     Alert.alert("Logout", "You have been logged out.");
     router.push("/Login");
   };
-
   const handleSwitchMilkApp = () => {
     router.push("/AdminCenterShift");
   };
-
-  const handleEditUser = () => {
-    router.push("/EditUser");
-  };
-
   const handleAddNewUser = () => {
     router.push("/AddNewUser");
   };
-
   const handleChangePassword = () => {
     router.push("/ChangePassword");
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -38,13 +31,6 @@ export default function Menu() {
             color={Colors.Green}
             title="Switch Milk App"
             onPress={handleSwitchMilkApp}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Edit User"
-            onPress={handleEditUser}
           />
         </View>
         <View style={styles.buttonContainer}>

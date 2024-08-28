@@ -1,3 +1,5 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
+
 import React, { useEffect, useState } from "react";
 import service from "../../Services/service";
 import { useRouter } from "expo-router";
@@ -17,7 +19,6 @@ import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
 const { width, height } = Dimensions.get("window");
 
 export default function Index() {
@@ -28,7 +29,6 @@ export default function Index() {
   const [selectedValue, setSelectedValue] = useState("debit");
   const [amount, setAmount] = useState("");
   const [outstandingFund, setOutstandingFund] = useState(0);
-
   useEffect(() => {
     const checkLoginStatus = async () => {
       const username = await service.getUserData();
@@ -39,66 +39,53 @@ export default function Index() {
     checkLoginStatus();
     fetchOutstandingFund();
   }, []);
-
   const fetchOutstandingFund = async () => {
     try {
       const { data: customers, error } = await supabase
         .from("customer")
         .select("balance");
-
       if (error) {
         throw error;
       }
-
       const totalOutstanding = customers.reduce(
         (sum, customer) => sum + parseFloat(customer.balance || 0),
         0
       );
       setOutstandingFund(totalOutstanding);
     } catch (error) {
-      console.error("Error fetching outstanding fund:", error);
+      Alert.alert("Error", "Error fetching outstanding fund");
     }
   };
-
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
     setDate(currentDate);
   };
-
   const showDatePicker = () => {
     setShow(true);
   };
-
   const handleInsertData = async () => {
     const { data: customerData, error: customerError } = await supabase
       .from("customer")
       .select("customer_number, active, balance, total_paid, total_amount")
       .eq("customer_number", customerNumber)
       .single();
-
     if (customerError) {
       Alert.alert("Error", "Error fetching customer details.");
-      console.log("Error fetching customer:", customerError);
       return;
     }
-
     if (!customerData) {
       Alert.alert("Error", "No customer found with this customer number.");
       return;
     }
-
     if (customerData.active === "false") {
       Alert.alert("Error", "This Customer Account is Closed.");
       return;
     }
-
     let updatedTotalAmount = parseFloat(customerData.total_amount) || 0;
     let updatedBalanceAmount = parseFloat(customerData.balance) || 0;
     let updatedTotalDuePaid = parseFloat(customerData.total_paid) || 0;
-
     const transactionAmount = parseFloat(amount);
-
     if (selectedValue === "credit" || selectedValue === "Miscellaneous") {
       updatedBalanceAmount += transactionAmount;
       updatedTotalAmount += transactionAmount;
@@ -106,7 +93,6 @@ export default function Index() {
       updatedBalanceAmount -= transactionAmount;
       updatedTotalDuePaid += transactionAmount;
     }
-
     try {
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("ledger")
@@ -144,11 +130,9 @@ export default function Index() {
       setAmount("");
       fetchOutstandingFund();
     } catch (error) {
-      console.error("Error handling transaction:", error);
       Alert.alert("Error", "Failed to record the transaction.");
     }
   };
-
   return (
     <KeyboardAvoidingView
       style={styles.bg}

@@ -2,57 +2,62 @@
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Colors from "../../Services/Colors";
-export default function AddNewUser() {
+export default function UpdateCenterSecret() {
   const router = useRouter();
-  const [centerNumber, setCenterNumber] = useState("");
-  const [milkRate, setMilkRate] = useState("");
+  const [value, setValue] = useState("");
+  const [existingValue, setExistingValue] = useState("");
+
+  useEffect(() => {
+    const fetchExistingValue = async () => {
+      const { data, error } = await supabase
+        .from("center_secret")
+        .select("value")
+        .single();
+      if (error) {
+        Alert.alert("Error", "Failed to fetch existing value.");
+      } else if (data) {
+        setExistingValue(data.value);
+        setValue(data.value);
+      }
+    };
+    fetchExistingValue();
+  }, []);
+  const handleSaveData = async () => {
+    const { error } = await supabase
+      .from("center_secret")
+      .upsert({ value })
+      .eq("id", 1);
+    if (error) {
+      Alert.alert("Error", "Failed to update value.");
+    } else {
+      Alert.alert("Success", "Value updated successfully.");
+      setExistingValue(value);
+    }
+  };
   const goBack = () => {
     router.back();
   };
-  async function handleSaveData() {
-    if (!centerNumber || !milkRate) {
-      Alert.alert("Error", "Please fill out all fields");
-      return;
-    }
-    try {
-      const { data, error } = await supabase
-        .from("milk_booth")
-        .insert([{ center_number: centerNumber, milk_rate: milkRate }]);
-      if (error) {
-        Alert.alert("Error", "An error occurred while adding the data");
-      } else {
-        Alert.alert("Success", "New center added");
-        setCenterNumber("");
-        setMilkRate("");
-      }
-    } catch (error) {
-      Alert.alert("Error", "An unexpected error occurred");
-    }
-  }
   return (
     <View style={styles.container}>
       <View style={styles.formDesign}>
-        <Text style={styles.heading}>Create New Center</Text>
+        <Text style={styles.heading}>Center Secret</Text>
+        <Text style={styles.subHeading}>Previous Value: {existingValue}</Text>
         <TextInput
           style={styles.input}
-          placeholder="Center Number"
-          value={centerNumber}
-          onChangeText={setCenterNumber}
+          placeholder="Enter New Value"
+          value={value}
+          onChangeText={setValue}
           keyboardType="numeric"
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Milk Rate"
-          value={milkRate}
-          onChangeText={setMilkRate}
-          keyboardType="numeric"
-        />
-
         <View style={styles.buttonContainer}>
           <View style={styles.saveButton}>
-            <Button color={Colors.Green} title="ADD" onPress={handleSaveData} />
+            <Button
+              color={Colors.Green}
+              title="Update"
+              onPress={handleSaveData}
+            />
           </View>
           <View style={styles.goBackButton}>
             <Button title="Go Back" onPress={goBack} />
@@ -95,18 +100,19 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
     alignSelf: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     fontWeight: "bold",
+  },
+  subHeading: {
+    fontSize: 18,
+    alignSelf: "center",
+    marginBottom: 20,
+    color: "gray",
   },
   buttonContainer: {
     justifyContent: "space-around",
   },
   saveButton: {
-    width: "45%",
-    marginBottom: 10,
-    alignSelf: "center",
-  },
-  editButton: {
     width: "45%",
     marginBottom: 10,
     alignSelf: "center",

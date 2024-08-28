@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -7,7 +8,6 @@ import {
   Platform,
   Alert,
   ScrollView,
-  TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -18,22 +18,19 @@ import { RadioButton } from "react-native-paper";
 import Colors from "../../Services/Colors";
 
 export default function Menu() {
-  // State Variables
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [litres, setLitres] = useState({});
   const [selectedValue, setSelectedValue] = useState("AM");
-
-  // Fetch customers from the fixed_rate_customer table
   useEffect(() => {
     async function fetchCustomers() {
       const { data, error } = await supabase
         .from("fixed_rate_customer")
         .select("*");
       if (error) {
-        console.log("Error fetching customers:", error);
+        Alert.alert("Error", "Error fetching customers");
       } else {
         setCustomers(data);
         fetchExistingLitres(data);
@@ -41,19 +38,15 @@ export default function Menu() {
     }
     fetchCustomers();
   }, [date, selectedValue]);
-
-  // Fetch existing litres data for each customer
   async function fetchExistingLitres(customers) {
-    const dateFormatted = date.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
-
+    const dateFormatted = date.toISOString().split("T")[0];
     const { data, error } = await supabase
       .from("fixed_rate_customer_shift_details")
       .select("customer_number, litre")
       .eq("DATE", dateFormatted)
       .eq("AM_PM", selectedValue);
-
     if (error) {
-      console.log("Error fetching existing litres:", error);
+      Alert.alert("Error", "Error fetching customers");
     } else {
       const initialLitres = {};
       for (const customer of customers) {
@@ -67,8 +60,6 @@ export default function Menu() {
       setLitres(initialLitres);
     }
   }
-
-  // Handle date picker change
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
@@ -77,25 +68,19 @@ export default function Menu() {
   const showDatePicker = () => {
     setShow(true);
   };
-
-  // Handle input change for each customer
   const handleInputChange = (customerNumber, value) => {
     setLitres((prevLitres) => ({
       ...prevLitres,
       [customerNumber]: value,
     }));
   };
-
-  // Handle save data
   async function handleSaveData() {
     for (const customer of customers) {
       const customerNumber = customer.customer_number;
       const litreInput = litres[customerNumber];
-
       if (!litreInput) {
         continue;
       }
-
       const { data: rateData, error: rateError } = await supabase
         .from("fixed_rate_customer")
         .select("litre_rate")
@@ -103,13 +88,11 @@ export default function Menu() {
         .single();
 
       if (rateError) {
-        console.log("Error fetching litre rate:", rateError);
+        Alert.alert("Error", "Error fetching customers");
         continue;
       }
-
       const litreRate = rateData.litre_rate;
       const amount = parseFloat(litreInput) * litreRate;
-
       const { error: insertError } = await supabase
         .from("fixed_rate_customer_shift_details")
         .upsert([
@@ -124,15 +107,9 @@ export default function Menu() {
         ]);
 
       if (insertError) {
-        console.log(
-          `Error inserting data for customer ${customerNumber}:`,
-          insertError
-        );
-      } else {
-        console.log(`Inserted data for customer ${customerNumber}`);
+        Alert.alert("Error", "Error Inserting customers");
       }
     }
-
     Alert.alert("Success", "Data saved successfully");
   }
 

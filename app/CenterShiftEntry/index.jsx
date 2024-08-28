@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -12,13 +13,11 @@ import {
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
 import React, { useState } from "react";
-import service from "../../Services/service";
 import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton } from "react-native-paper";
 
 export default function Menu() {
-  // State Variables
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
@@ -27,8 +26,6 @@ export default function Menu() {
   const [SNF, setSNF] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
   const [selectedValue, setSelectedValue] = useState("AM");
-
-  // State Functions
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
@@ -37,13 +34,11 @@ export default function Menu() {
   const showDatePicker = () => {
     setShow(true);
   };
-
   async function handleSaveData() {
     if (totalLitres === "" || FAT === "" || SNF === "" || totalAmount === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
-
     const { data, error } = await supabase.from("center_shift_entry").insert([
       {
         DATE: date,
@@ -55,14 +50,12 @@ export default function Menu() {
       },
     ]);
     if (error) {
-      console.log("Error inserting data:", error);
       Alert.alert("Error", "Already Data updated on this date");
       setTotalLitres("");
       setFAT("");
       setSNF("");
       setTotalAmount("");
     } else {
-      console.log("Inserted data:", data);
       Alert.alert("Success", "Data saved successfully");
       setTotalLitres("");
       setFAT("");
@@ -70,19 +63,13 @@ export default function Menu() {
       setTotalAmount("");
     }
   }
-
   async function handleMenu() {
-    // Handle logout functionality here
     router.push("/CenterStaffMenu");
   }
-
   function handleEditEntry() {
-    // Handle edit entry functionality here
     router.push("/EditCenterShift");
   }
-
   const { width } = useWindowDimensions();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={[styles.formDesign, { width: width * 0.9 }]}>

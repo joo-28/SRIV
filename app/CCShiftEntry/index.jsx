@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -15,10 +16,7 @@ import React, { useState } from "react";
 import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton } from "react-native-paper";
-import service from "../../Services/service";
-
 export default function Menu() {
-  // State Variables
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
@@ -26,8 +24,6 @@ export default function Menu() {
   const [FAT, setFAT] = useState("");
   const [SNF, setSNF] = useState("");
   const [selectedValue, setSelectedValue] = useState("AM");
-
-  // State Functions
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
@@ -36,13 +32,11 @@ export default function Menu() {
   const showDatePicker = () => {
     setShow(true);
   };
-
   async function handleSaveData() {
     if (totalLitres === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
-
     const { data, error } = await supabase.from("cc_shift_entry").insert([
       {
         DATE: date,
@@ -53,31 +47,21 @@ export default function Menu() {
       },
     ]);
     if (error) {
-      console.log("Error inserting data:", error);
-      Alert.alert("Error", "Failed to save data");
+      Alert.alert("Error", "Already Data inserted in this shift");
     } else {
-      console.log("Inserted data:", data);
       Alert.alert("Success", "Data saved successfully");
       setTotalLitres("");
       setFAT("");
       setSNF("");
     }
   }
-
-  async function handleLogout() {
-    // Handle logout functionality here
-    Alert.alert("Logout", "You have been logged out.");
-    await service.clearUserData();
-    router.replace("/Login");
+  async function handleMenu() {
+    router.push("/CCUserMenu");
   }
-
   function handleEditEntry() {
-    // Route to EditCCEntry page
     router.push("/EditCCShiftEntry");
   }
-
   const { width } = useWindowDimensions();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={[styles.formDesign, { width: width * 0.9 }]}>
@@ -154,21 +138,15 @@ export default function Menu() {
       <View style={styles.outsideButtonsContainer}>
         <View style={styles.outsideButton}>
           <Button
+            style={styles.outsideButton}
             color={Colors.Blue}
             title="Edit Entry"
             onPress={handleEditEntry}
           />
         </View>
-        <View style={styles.outsideButton}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Center Report"
-            onPress={() => router.push("/CenterReport")}
-          />
-        </View>
       </View>
-      <View style={styles.logoutButton}>
-        <Button color={Colors.Red} title="Logout" onPress={handleLogout} />
+      <View style={styles.menuButton}>
+        <Button color={Colors.DarkBlue} title="menu" onPress={handleMenu} />
       </View>
     </ScrollView>
   );
@@ -234,15 +212,13 @@ const styles = StyleSheet.create({
   outsideButtonsContainer: {
     width: "100%",
     marginBottom: 10,
-    gap: 10,
-    flexDirection: "row",
   },
   outsideButton: {
     width: "45%",
     marginBottom: 10,
-    marginStart: 10,
+    alignSelf: "center",
   },
-  logoutButton: {
-    width: "50%",
+  menuButton: {
+    width: "45%",
   },
 });

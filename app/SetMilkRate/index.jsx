@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -23,31 +24,25 @@ export default function UpdateMilkRate() {
   const [newMilkRate, setNewMilkRate] = useState("");
   const router = useRouter();
   const { width } = useWindowDimensions();
-
   useEffect(() => {
     if (selectedCenter) {
       fetchMilkRate();
     }
   }, [selectedCenter]);
-
   const fetchCenters = async () => {
     try {
       const { data, error } = await supabase
         .from("milk_booth")
         .select("center_number");
-
       if (error) {
         throw error;
       }
-
       setCenters(data);
       setShowModal(true);
     } catch (error) {
-      console.error("Error fetching centers:", error);
       Alert.alert("Error", "Failed to fetch center numbers");
     }
   };
-
   const fetchMilkRate = async () => {
     try {
       const { data: milkBoothData, error: milkBoothError } = await supabase
@@ -55,48 +50,38 @@ export default function UpdateMilkRate() {
         .select("milk_rate")
         .eq("center_number", selectedCenter.center_number)
         .single();
-
       if (milkBoothError) {
         throw milkBoothError;
       }
-
       setMilkRate(milkBoothData.milk_rate.toString());
     } catch (error) {
-      console.log("Error fetching milk rate:", error);
       Alert.alert("Error", "Failed to fetch the milk rate");
     }
   };
-
   const handleCenterSelect = (center) => {
     setSelectedCenter(center);
     setShowModal(false);
   };
-
   const handleSaveMilkRate = async () => {
     if (!selectedCenter) {
       Alert.alert("Error", "Please select a center");
       return;
     }
-
     try {
       const { error } = await supabase
         .from("milk_booth")
         .update({ milk_rate: parseFloat(newMilkRate) })
         .eq("center_number", selectedCenter.center_number);
-
       if (error) {
         throw error;
       }
-
       Alert.alert("Success", "Milk rate updated successfully");
       setMilkRate(newMilkRate);
       setNewMilkRate("");
     } catch (error) {
-      console.log("Error updating milk rate:", error);
       Alert.alert("Error", "Failed to update the milk rate");
     }
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>

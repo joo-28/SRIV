@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -24,7 +25,6 @@ export default function EditCenterShift() {
   const [SNF, setSNF] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
   const [selectedValue, setSelectedValue] = useState("AM");
-
   useEffect(() => {
     async function fetchEntryData() {
       const { data, error } = await supabase
@@ -34,7 +34,6 @@ export default function EditCenterShift() {
         .eq("AM_PM", selectedValue)
         .single();
       if (error) {
-        console.log("Error fetching data:", error);
         Alert.alert("Error", "Failed to fetch data");
         setFAT("");
         setSNF("");
@@ -49,25 +48,20 @@ export default function EditCenterShift() {
         }
       }
     }
-
     fetchEntryData();
   }, [currentDate, selectedValue]);
-
   const onChangeDate = (event, selectedDate) => {
     setShow(Platform.OS === "ios");
     setCurrentDate(selectedDate || currentDate);
   };
-
   const showDatePicker = () => {
     setShow(true);
   };
-
   async function handleSaveData() {
     if (totalLitres === "" || FAT === "" || SNF === "" || totalAmount === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
-
     const { data, error } = await supabase.from("center_shift_entry").upsert({
       DATE: currentDate.toISOString().split("T")[0],
       AM_PM: selectedValue,
@@ -78,14 +72,11 @@ export default function EditCenterShift() {
     });
 
     if (error) {
-      console.log("Error updating data:", error);
       Alert.alert("Error", "Failed to update data");
     } else {
-      console.log("Updated data:", data);
       Alert.alert("Success", "Data updated successfully");
     }
   }
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.formDesign}>

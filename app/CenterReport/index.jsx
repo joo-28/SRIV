@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -21,7 +22,6 @@ export default function CenterReport() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalDiff, setTotalDiff] = useState(0);
   const router = useRouter();
-
   const fetchReportData = async () => {
     try {
       const { data: centerShiftData, error: centerShiftError } = await supabase
@@ -29,42 +29,31 @@ export default function CenterReport() {
         .select("DATE, AM_PM, Total_litre, FAT, SNF, total_amt")
         .gte("DATE", fromDate.toISOString())
         .lte("DATE", toDate.toISOString());
-
       if (centerShiftError) throw centerShiftError;
-
       const { data: ccShiftData, error: ccShiftError } = await supabase
         .from("cc_shift_entry")
         .select("DATE, AM_PM, Total_litre")
         .gte("DATE", fromDate.toISOString())
         .lte("DATE", toDate.toISOString());
-
       if (ccShiftError) throw ccShiftError;
-
       let totalAmt = 0;
       let totalDiffSum = 0;
-
       const combinedData = centerShiftData.map((centerEntry) => {
         const ccEntry = ccShiftData.find(
           (cc) => cc.DATE === centerEntry.DATE && cc.AM_PM === centerEntry.AM_PM
         );
-
         const diff = (ccEntry?.Total_litre || 0) - centerEntry.Total_litre;
-
-        totalAmt += centerEntry.total_amt; // Sum up total_amt
-        totalDiffSum += diff; // Sum up diff
-
-        // Format the date and AM_PM
+        totalAmt += centerEntry.total_amt;
+        totalDiffSum += diff;
         const formattedDate = new Date(centerEntry.DATE)
           .toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "2-digit",
           })
           .replace(/\//g, "-");
-
-        const formattedAMPM = centerEntry.AM_PM.toUpperCase(); // Ensure AM_PM is uppercase
-
+        const formattedAMPM = centerEntry.AM_PM.toUpperCase();
         return {
-          date: `${formattedDate}-${formattedAMPM}`, // Combine date and AM_PM
+          date: `${formattedDate}-${formattedAMPM}`,
           AM_PM: centerEntry.AM_PM,
           Total_litre: centerEntry.Total_litre,
           diff,
@@ -73,35 +62,29 @@ export default function CenterReport() {
           total_amount: centerEntry.total_amt,
         };
       });
-
       setReportEntries(combinedData);
-      setTotalAmount(totalAmt); // Update total amount state
-      setTotalDiff(totalDiffSum); // Update total diff state
+      setTotalAmount(totalAmt);
+      setTotalDiff(totalDiffSum);
     } catch (error) {
-      console.log("Error fetching report data:", error.message);
       Alert.alert(
         "Error fetching report data",
         "There was an error retrieving the report data. Please try again."
       );
     }
   };
-
   const handleSearch = () => {
     fetchReportData();
   };
-
   const handleFromDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fromDate;
     setShowFromPicker(false);
     setFromDate(currentDate);
   };
-
   const handleToDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || toDate;
     setShowToPicker(false);
     setToDate(currentDate);
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.form}>

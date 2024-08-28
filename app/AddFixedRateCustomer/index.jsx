@@ -1,42 +1,34 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
+
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
 import React, { useState } from "react";
 import Colors from "../../Services/Colors";
-
 export default function AddNewUser() {
-  // State Variables
   const router = useRouter();
   const [customerNumber, setCustomerNumber] = useState("");
   const [litreRate, setLitreRate] = useState("");
-
-  // State Functions
   const goBack = () => {
     router.back();
   };
-
   async function handleSaveData() {
     if (!customerNumber || !litreRate) {
       Alert.alert("Error", "Please fill out all fields");
       return;
     }
-
     try {
       const { data, error } = await supabase
         .from("fixed_rate_customer")
         .insert([{ customer_number: customerNumber, litre_rate: litreRate }]);
-
       if (error) {
-        console.error("Error inserting data:", error);
         Alert.alert("Error", "An error occurred while adding the data");
       } else {
-        console.log("Inserted data:", data);
         Alert.alert("Success", "New customer added");
         setCustomerNumber("");
         setLitreRate("");
       }
     } catch (error) {
-      console.error("Error:", error);
       Alert.alert("Error", "An unexpected error occurred");
     }
   }

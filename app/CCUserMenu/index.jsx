@@ -11,12 +11,6 @@ export default function CenterStaffMenu() {
     Alert.alert("Logout", "You have been logged out.");
     router.push("/Login");
   };
-  const handleCenterSales = () => {
-    router.push("/CenterSales");
-  };
-  const handleCenterSalesReport = () => {
-    router.push("/CenterSalesReport");
-  };
   const handleCenterReport = () => {
     router.push("/CenterReport");
   };
@@ -26,10 +20,6 @@ export default function CenterStaffMenu() {
   const handleCalculator = () => {
     router.push("/Calculator");
   };
-  const handleMilkCheck = () => {
-    router.push("/CenterMilkCheck");
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -48,33 +38,12 @@ export default function CenterStaffMenu() {
             onPress={handleFixedRateCustomer}
           />
         </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Center Sales"
-            onPress={handleCenterSales}
-          />
-        </View>
 
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Center Sales Report"
-            onPress={handleCenterSalesReport}
-          />
-        </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Center Report"
             onPress={handleCenterReport}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Center Milk Check"
-            onPress={handleMilkCheck}
           />
         </View>
         <View style={styles.goBackButton}>

@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -15,7 +16,6 @@ import React, { useState, useEffect } from "react";
 import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton } from "react-native-paper";
-
 export default function EditCCEntry() {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -24,7 +24,6 @@ export default function EditCCEntry() {
   const [FAT, setFAT] = useState("");
   const [SNF, setSNF] = useState("");
   const [selectedValue, setSelectedValue] = useState("AM");
-
   useEffect(() => {
     async function fetchEntryData() {
       const { data, error } = await supabase
@@ -34,7 +33,6 @@ export default function EditCCEntry() {
         .eq("AM_PM", selectedValue)
         .single();
       if (error) {
-        console.log("Error fetching data:", error);
         Alert.alert("Error", "Failed to fetch data");
         setTotalLitres("");
         setFAT("");
@@ -45,26 +43,21 @@ export default function EditCCEntry() {
         }
       }
     }
-
     fetchEntryData();
   }, [currentDate, selectedValue]);
-
   const onChange = (event, selectedDate) => {
     const date = selectedDate || currentDate;
     setShow(Platform.OS === "ios");
     setCurrentDate(date);
   };
-
   const showDatePicker = () => {
     setShow(true);
   };
-
   async function handleUpdateData() {
     if (totalLitres === "") {
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
-
     const { data, error } = await supabase.from("cc_shift_entry").upsert({
       DATE: currentDate.toISOString().split("T")[0],
       AM_PM: selectedValue,
@@ -72,21 +65,16 @@ export default function EditCCEntry() {
       FAT: parseFloat(FAT),
       SNF: parseFloat(SNF),
     });
-
     if (error) {
-      console.log("Error updating data:", error);
       Alert.alert("Error", "Failed to update data");
       setTotalLitres("");
       setFAT("");
       setSNF("");
     } else {
-      console.log("Updated data:", data);
       Alert.alert("Success", "Data updated successfully");
     }
   }
-
   const { width } = useWindowDimensions();
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={[styles.formDesign, { width: width * 0.9 }]}>

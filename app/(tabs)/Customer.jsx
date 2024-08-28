@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -11,13 +12,11 @@ import {
 } from "react-native";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
-
 export default function Customer() {
   const [inputValue, setInputValue] = useState("");
   const [customerDetails, setCustomerDetails] = useState(null);
   const [ledgerEntries, setLedgerEntries] = useState([]);
   const router = useRouter();
-
   const fetchCustomerDetails = async (customerNumber) => {
     try {
       const { data: customerData, error: customerError } = await supabase
@@ -25,52 +24,41 @@ export default function Customer() {
         .select("customer_number")
         .eq("customer_number", customerNumber)
         .single();
-
       if (customerError) throw customerError;
-
       const { data: ledgerData, error: ledgerError } = await supabase
         .from("ledger")
         .select(
           "due_paid_date, transaction, amount,total_due_paid,balance_amount"
         )
         .eq("customer_number", customerNumber);
-
       if (ledgerError) throw ledgerError;
-
       setCustomerDetails(customerData);
       setLedgerEntries(ledgerData);
     } catch (error) {
-      console.log("Error fetching customer details:", error.message);
       Alert.alert(
         "Error fetching customer details",
         "Customer does not Exists or Incorrect Customer Number"
       );
     }
   };
-
   const handleSearch = () => {
     if (inputValue) {
       fetchCustomerDetails(inputValue);
     }
   };
-
   const handleNavigateToNewCustomer = () => {
     router.push("/AddNewCustomer");
-    console.log(customerDetails);
   };
 
   const handleNavigateToEditCustomer = () => {
     router.push("/EditCustomer");
   };
-
-  // Get the last balance value from the ledger entries
   const getLastBalance = () => {
     if (ledgerEntries.length > 0) {
       return ledgerEntries[ledgerEntries.length - 1].balance_amount;
     }
     return "0";
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -88,7 +76,6 @@ export default function Customer() {
           />
         </View>
       </View>
-
       <View style={styles.dataContainer}>
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Customer Number:</Text>

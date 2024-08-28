@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -21,20 +22,15 @@ export default function CenterReport() {
   const [totalAmount, setTotalAmount] = useState({});
   const [centerList, setCenterList] = useState([]);
   const router = useRouter();
-
   const fetchCenterNumbers = async () => {
     try {
       const { data: milkBoothData, error: milkBoothError } = await supabase
         .from("milk_booth")
         .select("center_number");
-
       if (milkBoothError) throw milkBoothError;
-
-      // Extract center numbers
       const centerNumbers = milkBoothData.map((booth) => booth.center_number);
       return centerNumbers;
     } catch (error) {
-      console.log("Error fetching center numbers:", error.message);
       Alert.alert(
         "Error fetching center numbers",
         "There was an error retrieving the center numbers. Please try again."
@@ -42,11 +38,9 @@ export default function CenterReport() {
       return [];
     }
   };
-
   const fetchReportData = async () => {
     try {
       const centerNumbers = await fetchCenterNumbers();
-
       if (centerNumbers.length === 0) {
         Alert.alert(
           "No centers available",
@@ -54,25 +48,20 @@ export default function CenterReport() {
         );
         return;
       }
-
       const { data: milkSalesData, error: milkSalesError } = await supabase
         .from("center_milk_sales")
         .select("center_number, DATE, AM_PM, cash, credit, amount, litre")
         .in("center_number", centerNumbers)
         .gte("DATE", fromDate.toISOString())
         .lte("DATE", toDate.toISOString());
-
       if (milkSalesError) throw milkSalesError;
-
       let centers = new Set(centerNumbers);
       const report = {};
       const totalAmt = {};
-
       centers.forEach((center) => {
         report[center] = [];
         totalAmt[center] = { cash: 0, credit: 0, amount: 0, litre: 0 };
       });
-
       milkSalesData.forEach((sale) => {
         const center = sale.center_number;
         const formattedDate = new Date(sale.DATE)
@@ -81,9 +70,7 @@ export default function CenterReport() {
             month: "2-digit",
           })
           .replace(/\//g, "-");
-
         const formattedAMPM = sale.AM_PM.toUpperCase();
-
         report[center].push({
           date: `${formattedDate}-${formattedAMPM}`,
           cash: sale.cash,
@@ -91,42 +78,34 @@ export default function CenterReport() {
           amount: sale.amount,
           litre: sale.litre,
         });
-
-        // Update totals
         totalAmt[center].cash += sale.cash || 0;
         totalAmt[center].credit += sale.credit || 0;
         totalAmt[center].amount += sale.amount || 0;
         totalAmt[center].litre += sale.litre || 0;
       });
-
       setCenterList([...centers]);
       setReportEntries(report);
       setTotalAmount(totalAmt);
     } catch (error) {
-      console.log("Error fetching report data:", error.message);
       Alert.alert(
         "Error fetching report data",
         "There was an error retrieving the report data. Please try again."
       );
     }
   };
-
   const handleSearch = () => {
     fetchReportData();
   };
-
   const handleFromDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fromDate;
     setShowFromPicker(false);
     setFromDate(currentDate);
   };
-
   const handleToDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || toDate;
     setShowToPicker(false);
     setToDate(currentDate);
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -177,8 +156,39 @@ export default function CenterReport() {
           />
         </View>
       </View>
-
       <ScrollView style={styles.scrollView}>
+        <View style={styles.summaryTableContainer}>
+          <View style={styles.tableHeader}>
+            <Text style={styles.tableHeaderText}>Center Number</Text>
+            <Text style={styles.tableHeaderText}>Total Cash</Text>
+            <Text style={styles.tableHeaderText}>Total Credit</Text>
+            <Text style={styles.tableHeaderText}>Total Amount</Text>
+            <Text style={styles.tableHeaderText}>Total Litre</Text>
+          </View>
+
+          {centerList.length > 0 ? (
+            centerList.map((center, index) => (
+              <View key={index} style={styles.tableRow}>
+                <Text style={styles.tableCell}>{center}</Text>
+                <Text style={styles.tableCell}>
+                  {totalAmount[center]?.cash?.toFixed(2) || 0}
+                </Text>
+                <Text style={styles.tableCell}>
+                  {totalAmount[center]?.credit?.toFixed(2) || 0}
+                </Text>
+                <Text style={styles.tableCell}>
+                  {totalAmount[center]?.amount?.toFixed(2) || 0}
+                </Text>
+                <Text style={styles.tableCell}>
+                  {totalAmount[center]?.litre?.toFixed(2) || 0}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noDataText}>No data available.</Text>
+          )}
+        </View>
+
         {centerList.map((center, index) => (
           <View key={index} style={styles.dataContainer}>
             <Text style={styles.centerTitle}>{`Center: ${center}`}</Text>
@@ -348,5 +358,11 @@ const styles = StyleSheet.create({
   },
   addButton: {
     flex: 1,
+  },
+  summaryTableContainer: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    elevation: 5,
+    marginBottom: 16,
   },
 });

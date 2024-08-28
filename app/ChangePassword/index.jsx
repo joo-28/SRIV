@@ -1,55 +1,43 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
 import React, { useState } from "react";
 import Colors from "../../Services/Colors";
-
 export default function ChangeUserPassword() {
-  // State Variables
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  // State Functions
   const goBack = () => {
     router.back();
   };
-
   async function handleChangePassword() {
     if (!username || !oldPassword || !newPassword || !confirmPassword) {
       Alert.alert("Error", "Please fill out all fields");
       return;
     }
-
     if (newPassword !== confirmPassword) {
       Alert.alert("Error", "New passwords do not match");
       return;
     }
-
     try {
-      // Check if username and old password are correct
       const { data, error } = await supabase
         .from("User")
         .select("*")
         .eq("USERNAME", username)
         .eq("PASSWORD", oldPassword)
         .single();
-
       if (error || !data) {
         Alert.alert("Error", "Invalid username or old password");
         return;
       }
-
-      // Update the user's password
       const { error: updateError } = await supabase
         .from("User")
         .update({ PASSWORD: newPassword })
         .eq("USERNAME", username);
-
       if (updateError) {
-        console.error("Error updating password:", updateError);
         Alert.alert("Error", "An error occurred while updating the password");
       } else {
         Alert.alert("Success", "Password updated successfully");
@@ -59,11 +47,9 @@ export default function ChangeUserPassword() {
         setConfirmPassword("");
       }
     } catch (error) {
-      console.error("Error:", error);
       Alert.alert("Error", "An unexpected error occurred");
     }
   }
-
   return (
     <View style={styles.container}>
       <View style={styles.formDesign}>

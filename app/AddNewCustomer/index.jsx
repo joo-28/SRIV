@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -15,15 +16,12 @@ import Colors from "../../Services/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function AddNewCustomer() {
-  // State Variables
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [customerNumber, setCustomerNumber] = useState("");
   const [customerContactNumber, setCustomerContactNumber] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
-
-  // State Functions
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
@@ -32,11 +30,9 @@ export default function AddNewCustomer() {
   const showDatePicker = () => {
     setShow(true);
   };
-
   const goBack = () => {
     router.back();
   };
-
   async function handleSaveData() {
     async function checkCustomerNumberExists(customerNumber) {
       const { data, error } = await supabase
@@ -46,12 +42,10 @@ export default function AddNewCustomer() {
         .single();
 
       if (error && error.code !== "PGRST116") {
-        console.error("Error checking customer number:", error);
+        Alert.alert("Error", "Error Checking Customer Number");
         return false;
       }
-
       if (data) {
-        console.log(`Customer number ${customerNumber} already exists.`);
         Alert.alert("Already exists.", `Customer number ${customerNumber}`);
         return true;
       } else {
@@ -70,9 +64,7 @@ export default function AddNewCustomer() {
             ])
             .select();
           if (customerError) {
-            console.error("Error inserting customer:", customerError);
-          } else {
-            console.log("Inserted customer:", customerData);
+            Alert.alert("Error", "Error inserting customer:");
           }
           const { data: ledgerData, error: ledgerError } = await supabase
             .from("ledger")
@@ -86,12 +78,9 @@ export default function AddNewCustomer() {
               },
             ])
             .select();
-
           if (ledgerError) {
-            console.error("Error inserting into ledger:", ledgerError);
+            Alert.alert("Error", "Error inserting customer:");
             return;
-          } else {
-            console.log("Inserted customer:", ledgerData);
           }
           Alert.alert("Successful", "New Customer Created");
           setCustomerNumber("");
@@ -102,7 +91,6 @@ export default function AddNewCustomer() {
     }
     checkCustomerNumberExists(customerNumber);
   }
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.formDesign}>

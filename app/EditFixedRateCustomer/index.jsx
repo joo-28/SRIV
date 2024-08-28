@@ -1,52 +1,41 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
 import React, { useState, useEffect } from "react";
 import Colors from "../../Services/Colors";
-
 export default function ManageCustomer() {
-  // State Variables
   const router = useRouter();
   const [customerNumber, setCustomerNumber] = useState("");
   const [litreRate, setLitreRate] = useState("");
-  const [oldRate, setOldRate] = useState(""); // State for old rate
-
-  // State Functions
+  const [oldRate, setOldRate] = useState("");
   const goBack = () => {
     router.back();
   };
-
   useEffect(() => {
     const fetchLitreRate = async () => {
       if (customerNumber) {
         try {
-          console.log(
-            `Fetching litre rate for customer number: ${customerNumber}`
-          );
           const { data, error } = await supabase
             .from("fixed_rate_customer")
             .select("litre_rate")
             .eq("customer_number", customerNumber)
             .single();
-
           if (error) {
             setLitreRate("");
             setOldRate("No Customer found");
           } else if (data) {
-            console.log("Fetched litre rate:", data.litre_rate);
             setLitreRate(data.litre_rate);
-            setOldRate(data.litre_rate); // Update old rate
+            setOldRate(data.litre_rate);
           } else {
             setLitreRate("");
             setOldRate("");
           }
         } catch (error) {
-          console.error("Error:", error);
           Alert.alert("Error", "An unexpected error occurred");
         }
       }
     };
-
     fetchLitreRate();
   }, [customerNumber]);
 
@@ -55,27 +44,20 @@ export default function ManageCustomer() {
       Alert.alert("Error", "Please fill out all fields");
       return;
     }
-
     try {
-      console.log(`Updating litre rate for customer number: ${customerNumber}`);
       const { data, error } = await supabase
         .from("fixed_rate_customer")
         .update({ litre_rate: litreRate })
         .eq("customer_number", customerNumber);
-
       if (error) {
-        console.error("Error updating data:", error);
         Alert.alert("Error", "An error occurred while updating the data");
       } else {
-        console.log("Updated data:", data);
         Alert.alert("Success", "Customer details updated");
       }
     } catch (error) {
-      console.error("Error:", error);
       Alert.alert("Error", "An unexpected error occurred");
     }
   }
-
   return (
     <View style={styles.container}>
       <View style={styles.formDesign}>

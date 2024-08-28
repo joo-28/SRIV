@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -11,7 +12,6 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
-
 export default function EditCustomer() {
   const router = useRouter();
   const [customerNumber, setCustomerNumber] = useState("");
@@ -19,7 +19,6 @@ export default function EditCustomer() {
   const [newContactNumber, setNewContactNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [isActive, setIsActive] = useState(null);
-
   const searchCustomer = async (customerNumber) => {
     if (customerNumber.trim() === "") {
       setContactNumber("");
@@ -35,7 +34,7 @@ export default function EditCustomer() {
 
     setTimeout(() => {
       if (error && error.code !== "PGRST116") {
-        console.error("Error fetching customer:", error);
+        Alert.alert("Error", "Error fetching customer");
         setContactNumber("");
         setIsActive(null);
       } else if (data) {
@@ -48,29 +47,24 @@ export default function EditCustomer() {
       setLoading(false);
     }, 2000);
   };
-
   const updateCustomerContactNumber = async () => {
     if (newContactNumber.trim() === "") {
       Alert.alert("Error", "Please enter a new contact number.");
       return;
     }
-
     const { data, error } = await supabase
       .from("customer")
       .update({ customer_contact_number: newContactNumber })
       .eq("customer_number", customerNumber);
 
     if (error) {
-      console.error("Error updating contact number:", error);
       Alert.alert("Error", "Failed to update contact number.");
     } else {
       setContactNumber(newContactNumber);
       setNewContactNumber("");
       Alert.alert("Success", "Contact number updated successfully.");
-      console.log("Updated customer contact number:", data);
     }
   };
-
   const handleDeleteOrActivateCustomer = async () => {
     const newStatus = !isActive;
     const { data, error } = await supabase
@@ -79,10 +73,6 @@ export default function EditCustomer() {
       .eq("customer_number", customerNumber);
 
     if (error) {
-      console.error(
-        `Error ${newStatus ? "activating" : "deactivating"} customer:`,
-        error
-      );
       Alert.alert(
         "Error",
         `Failed to ${newStatus ? "activate" : "deactivate"} customer.`
@@ -93,14 +83,11 @@ export default function EditCustomer() {
         "Success",
         `Customer has been ${newStatus ? "activated" : "deactivated"}.`
       );
-      console.log(`Customer ${newStatus ? "activated" : "deactivated"}:`, data);
     }
   };
-
   const goBack = () => {
     router.back();
   };
-
   return (
     <View style={styles.bg}>
       <View style={styles.formDesign}>
@@ -156,7 +143,6 @@ export default function EditCustomer() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   bg: {
     width: "100%",

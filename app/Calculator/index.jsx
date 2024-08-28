@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import {
   View,
@@ -14,21 +15,15 @@ import Colors from "../../Services/Colors";
 export default function TenInputSum() {
   const router = useRouter();
   const { width } = useWindowDimensions();
-
-  const [values, setValues] = useState(Array(10).fill("")); // Initialize 10 input fields
-
-  // Calculate the total sum of all input values
+  const [values, setValues] = useState(Array(10).fill(""));
   const calculateTotal = () => {
     return values.reduce((sum, value) => sum + parseFloat(value || 0), 0);
   };
-
-  // Handle input change for each text box
   const handleInputChange = (index, text) => {
     const newValues = [...values];
     newValues[index] = text;
     setValues(newValues);
   };
-
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>

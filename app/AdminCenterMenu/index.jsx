@@ -1,3 +1,5 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
+
 import { View, StyleSheet, Button, Text } from "react-native";
 import React from "react";
 import Colors from "../../Services/Colors";
@@ -5,19 +7,15 @@ import { useRouter } from "expo-router";
 
 export default function CenterStaffMenu() {
   const router = useRouter();
-
   const handleSwitchFinanceApp = () => {
     router.push("(tabs)");
   };
-
   const handleCenterSales = () => {
     router.push("/CenterSales");
   };
-
   const handleCenterSalesReport = () => {
     router.push("/CenterSalesReport");
   };
-
   const handleCenterReport = () => {
     router.push("/CenterReport");
   };
@@ -35,6 +33,9 @@ export default function CenterStaffMenu() {
   };
   const handleFixedRateCustomer = () => {
     router.push("/FixedRateCustomer");
+  };
+  const handleCenterSecret = () => {
+    router.push("/AdminCenterMilkCheck");
   };
   return (
     <View style={styles.container}>
@@ -59,6 +60,13 @@ export default function CenterStaffMenu() {
             color={Colors.Blue}
             title="Create Center"
             onPress={handleCreateCenter}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.Blue}
+            title="Center Milk Check"
+            onPress={handleCenterSecret}
           />
         </View>
         <View style={styles.buttonContainer}>
@@ -140,7 +148,7 @@ const styles = StyleSheet.create({
   },
   logoutButtonContainer: {
     width: "60%",
-    marginTop: 20,
+    marginTop: 10,
   },
   heading: {
     fontSize: 26,
@@ -148,6 +156,6 @@ const styles = StyleSheet.create({
   },
   goBackButton: {
     width: "60%",
-    marginTop: 20,
+    marginTop: 10,
   },
 });

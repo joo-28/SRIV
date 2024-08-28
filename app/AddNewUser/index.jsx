@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -11,46 +12,36 @@ import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
 import React, { useState } from "react";
 import Colors from "../../Services/Colors";
-
 export default function AddNewUser() {
-  // State Variables
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
-
-  // State Functions
   const goBack = () => {
     router.back();
   };
-
   async function handleSaveData() {
     if (!username || !password || !confirmPassword) {
       Alert.alert("Error", "Please fill out all fields");
       return;
     }
-
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
-
     if (!role) {
       Alert.alert("Error", "Please select a role");
       return;
     }
-
     try {
       const { data, error } = await supabase
         .from("User")
         .insert([{ USERNAME: username, PASSWORD: password, ROLE: role }]);
 
       if (error) {
-        console.error("Error inserting user:", error);
         Alert.alert("Error", "An error occurred while adding the user");
       } else {
-        console.log("Inserted user:", data);
         Alert.alert("Successful", "New User Created");
         setUsername("");
         setPassword("");
@@ -62,7 +53,6 @@ export default function AddNewUser() {
       Alert.alert("Error", "An unexpected error occurred");
     }
   }
-
   const renderRadioButton = (selectedRole, label) => (
     <TouchableOpacity
       style={styles.radioButtonContainer}

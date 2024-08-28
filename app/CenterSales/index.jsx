@@ -1,3 +1,4 @@
+//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import {
   View,
@@ -32,17 +33,14 @@ export default function SelectCenter() {
   const [liters, setLiters] = useState("");
   const router = useRouter();
   const { width } = useWindowDimensions();
-
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
     setDate(currentDate);
   };
-
   const showDatePicker = () => {
     setShow(true);
   };
-
   const fetchCenters = async () => {
     try {
       const { data, error } = await supabase
@@ -52,24 +50,19 @@ export default function SelectCenter() {
       if (error) {
         throw error;
       }
-
       setCenters(data);
       setShowModal(true);
     } catch (error) {
-      console.error("Error fetching centers:", error);
       Alert.alert("Error", "Failed to fetch center numbers");
     }
   };
-
   const handleCenterSelect = (center) => {
     setSelectedCenter(center);
     setShowModal(false);
   };
-
   const calculateAndSetValues = () => {
     const totalAmount = parseFloat(cash || "0") + parseFloat(credit || "0");
     setAmount(totalAmount.toFixed(2));
-
     const fetchMilkRate = async () => {
       try {
         const { data: milkBoothData, error: milkBoothError } = await supabase
@@ -77,49 +70,38 @@ export default function SelectCenter() {
           .select("milk_rate")
           .eq("center_number", selectedCenter.center_number)
           .single();
-
         if (milkBoothError) {
           throw milkBoothError;
         }
-
         const milkRate = milkBoothData.milk_rate;
         const litersCalculated = (totalAmount / milkRate).toFixed(2);
         setLiters(litersCalculated);
       } catch (error) {
-        console.log("Error fetching milk rate:", error);
         Alert.alert("Error", "Please Select the Center First");
       }
     };
-
     fetchMilkRate();
   };
-
   const handleSaveData = async () => {
     if (!selectedCenter) {
       Alert.alert("Error", "Please select a center");
       return;
     }
-
     calculateAndSetValues();
-
     const totalAmount = parseFloat(cash || "0") + parseFloat(credit || "0");
     setAmount(totalAmount.toFixed(2));
-
     try {
       const { data: milkBoothData, error: milkBoothError } = await supabase
         .from("milk_booth")
         .select("milk_rate")
         .eq("center_number", selectedCenter.center_number)
         .single();
-
       if (milkBoothError) {
         throw milkBoothError;
       }
-
       const milkRate = milkBoothData.milk_rate;
       const litersCalculated = (totalAmount / milkRate).toFixed(2);
       setLiters(litersCalculated);
-
       const { error: insertError } = await supabase
         .from("center_milk_sales")
         .insert({
@@ -131,23 +113,18 @@ export default function SelectCenter() {
           amount: totalAmount,
           litre: parseFloat(litersCalculated),
         });
-
       if (insertError) {
         throw insertError;
       }
-
       Alert.alert("Success", "Data saved successfully");
-
       setCash("");
       setCredit("");
       setAmount("");
       setLiters("");
     } catch (error) {
-      console.log("Error saving data:", error);
       Alert.alert("Error", "Data Already Updated on this Shift");
     }
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
