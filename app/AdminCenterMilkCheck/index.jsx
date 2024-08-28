@@ -105,8 +105,6 @@ export default function CenterMilkCheck() {
   return (
     <View style={styles.container}>
       <View style={styles.form}>
-        <Text style={styles.heading}>Center Milk Check</Text>
-
         <View style={styles.userField}>
           <TouchableOpacity
             style={styles.dateButton}
@@ -122,7 +120,7 @@ export default function CenterMilkCheck() {
               mode="date"
               display="default"
               onChange={handleDateChange}
-              maximumDate={new Date()} // Restrict future dates
+              maximumDate={new Date()}
               style={styles.datePicker}
             />
           )}
@@ -158,26 +156,29 @@ export default function CenterMilkCheck() {
       <ScrollView style={styles.scrollView}>
         <View style={styles.resultContainer}>
           <Text style={styles.resultText}>
-            Total Fixed Customer Litre: {totalFixedCustomer.toFixed(2)}
+            Total Fixed Customer Litre:{"                  "}
+            <Text style={styles.resultValue}>
+              {totalFixedCustomer.toFixed(2)}
+            </Text>
           </Text>
 
-          <Text style={styles.resultText}>Centers:</Text>
           {Object.keys(centerValues).map((center) => (
             <Text key={center} style={styles.resultText}>
-              Center {center}: {centerValues[center].toFixed(2)} litre
+              Center{" "}
+              <Text style={styles.resultValue}>
+                {center}:{"                                                   "}
+                {centerValues[center].toFixed(2)}
+              </Text>
             </Text>
           ))}
 
           <Text style={styles.resultText}>
-            Fixed Value: {fixedValue.toFixed(2)} litre
+            Total Litre Required : {"                            "}
+            <Text style={styles.resultValue}>{totalLitre.toFixed(2)}</Text>
           </Text>
-
           <Text style={styles.resultText}>
-            Total Litre: {totalLitre.toFixed(2)} litre
-          </Text>
-
-          <Text style={styles.resultText}>
-            Difference: {diff.toFixed(2)} litre
+            Difference:{"                                               "}
+            <Text style={styles.resultValueDiff}>{diff.toFixed(2)} </Text>
           </Text>
         </View>
       </ScrollView>
@@ -187,6 +188,15 @@ export default function CenterMilkCheck() {
             color={Colors.Blue}
             title="Center Secret"
             onPress={handleCenterSecret}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.Blue}
+            title="Go Back"
+            onPress={() => {
+              router.back();
+            }}
           />
         </View>
       </View>
@@ -259,6 +269,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    marginBottom: 30,
+    marginBottom: 20,
+  },
+  resultValue: {
+    fontWeight: "bold",
+  },
+  resultValueDiff: {
+    fontWeight: "bold",
+    fontSize: 20,
   },
 });

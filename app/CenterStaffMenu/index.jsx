@@ -29,6 +29,9 @@ export default function CenterStaffMenu() {
   const handleMilkCheck = () => {
     router.push("/CenterMilkCheck");
   };
+  const handleExpenses = () => {
+    router.push("/Expenses");
+  };
 
   return (
     <View style={styles.container}>
@@ -44,7 +47,21 @@ export default function CenterStaffMenu() {
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
-            title="Fixed Rate Customer"
+            title="Center Report"
+            onPress={handleCenterReport}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Center Sales Report"
+            onPress={handleCenterSalesReport}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Fixed Rate Customer Shift Entry"
             onPress={handleFixedRateCustomer}
           />
         </View>
@@ -59,22 +76,15 @@ export default function CenterStaffMenu() {
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
-            title="Center Sales Report"
-            onPress={handleCenterSalesReport}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Center Report"
-            onPress={handleCenterReport}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Center Milk Check"
+            title="Center Shift Check"
             onPress={handleMilkCheck}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Expenses"
+            onPress={handleExpenses}
           />
         </View>
         <View style={styles.goBackButton}>

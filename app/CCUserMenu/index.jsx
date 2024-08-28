@@ -20,6 +20,9 @@ export default function CenterStaffMenu() {
   const handleCalculator = () => {
     router.push("/Calculator");
   };
+  const handleExpenses = () => {
+    router.push("/Expenses");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -44,6 +47,13 @@ export default function CenterStaffMenu() {
             color={Colors.DarkBlue}
             title="Center Report"
             onPress={handleCenterReport}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Expenses"
+            onPress={handleExpenses}
           />
         </View>
         <View style={styles.goBackButton}>

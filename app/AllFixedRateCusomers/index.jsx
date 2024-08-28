@@ -1,4 +1,3 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -22,6 +21,7 @@ export default function CustomerReport() {
   const [totalAmount, setTotalAmount] = useState({});
   const [customerList, setCustomerList] = useState([]);
   const router = useRouter();
+
   const fetchCustomerNumbers = async () => {
     try {
       const { data: customerData, error: customerError } = await supabase
@@ -40,6 +40,7 @@ export default function CustomerReport() {
       return [];
     }
   };
+
   const fetchReportData = async () => {
     try {
       const customerNumbers = await fetchCustomerNumbers();
@@ -58,6 +59,7 @@ export default function CustomerReport() {
           .gte("DATE", fromDate.toISOString())
           .lte("DATE", toDate.toISOString());
       if (customerShiftError) throw customerShiftError;
+
       let customers = new Set(customerNumbers);
       const report = {};
       const totalAmt = {};
@@ -65,6 +67,7 @@ export default function CustomerReport() {
         report[customer] = [];
         totalAmt[customer] = { litre: 0, amount: 0 };
       });
+
       customerShiftData.forEach((shift) => {
         const customer = shift.customer_number;
         const formattedDate = new Date(shift.DATE)
@@ -74,15 +77,18 @@ export default function CustomerReport() {
           })
           .replace(/\//g, "-");
         const formattedAMPM = shift.AM_PM.toUpperCase();
+
         report[customer].push({
           date: `${formattedDate}-${formattedAMPM}`,
           litre: shift.litre,
           litreRate: shift.litre_rate,
           amount: shift.amount,
         });
+
         totalAmt[customer].litre += shift.litre || 0;
         totalAmt[customer].amount += shift.amount || 0;
       });
+
       setCustomerList([...customers]);
       setReportEntries(report);
       setTotalAmount(totalAmt);
@@ -93,23 +99,45 @@ export default function CustomerReport() {
       );
     }
   };
+
   const handleSearch = () => {
     fetchReportData();
   };
+
   const handleFromDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fromDate;
     setShowFromPicker(false);
     setFromDate(currentDate);
   };
+
   const handleToDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || toDate;
     setShowToPicker(false);
     setToDate(currentDate);
   };
+
+  // Function to calculate total litres and total amount across all customers
+  const calculateTotalLitresAndAmount = () => {
+    let totalLitres = 0;
+    let totalAmt = 0;
+
+    Object.values(totalAmount).forEach(({ litre, amount }) => {
+      totalLitres += litre;
+      totalAmt += amount;
+    });
+
+    return {
+      totalLitres: totalLitres.toFixed(2),
+      totalAmt: totalAmt.toFixed(2),
+    };
+  };
+
+  const { totalLitres, totalAmt } = calculateTotalLitresAndAmount();
+
   return (
     <View style={styles.container}>
       <View style={styles.form}>
-        <Text style={styles.heading}>All Fixed Rate Customer</Text>
+        <Text style={styles.heading}>Fixed Rate Customer Report</Text>
         <View style={styles.userField}>
           <Text style={styles.label}>From</Text>
           <View style={styles.datePickerContainer}>
@@ -159,9 +187,10 @@ export default function CustomerReport() {
       <ScrollView style={styles.scrollView}>
         <View style={styles.summaryTableContainer}>
           <View style={styles.tableHeader}>
-            <Text style={styles.SummarytableHeaderText}>Customer Number</Text>
-            <Text style={styles.SummarytableHeaderText}>Total Litre</Text>
-            <Text style={styles.SummarytableHeaderText}>Total Amount</Text>
+            <Text style={styles.SummarytableHeaderText}>
+              {"         "}
+              Total Litre: {totalLitres} {"       "}Total Amount: ₹{totalAmt}
+            </Text>
           </View>
 
           {customerList.length > 0 ? (
@@ -183,7 +212,14 @@ export default function CustomerReport() {
 
         {customerList.map((customer, index) => (
           <View key={index} style={styles.dataContainer}>
-            <Text style={styles.customerTitle}>{`${customer}`}</Text>
+            <Text style={styles.customerTitle}>{`${customer} `}</Text>
+            <Text style={styles.customerTitleText}>
+              {`           Total Litre: ${
+                totalAmount[customer]?.litre?.toFixed(2) || 0
+              }    Total Amount: ₹${
+                totalAmount[customer]?.amount?.toFixed(2) || 0
+              }`}
+            </Text>
             <View style={styles.tableHeader}>
               <Text style={styles.tableHeaderText}>Date</Text>
               <Text style={styles.tableHeaderText}>Litre</Text>
@@ -269,7 +305,6 @@ const styles = StyleSheet.create({
   },
   customerTitle: {
     fontSize: 18,
-    fontWeight: "bold",
     padding: 5,
     textAlign: "center",
   },
@@ -322,5 +357,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  customerTitleText: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

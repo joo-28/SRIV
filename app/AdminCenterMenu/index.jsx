@@ -37,6 +37,9 @@ export default function CenterStaffMenu() {
   const handleCenterSecret = () => {
     router.push("/AdminCenterMilkCheck");
   };
+  const handleExpenses = () => {
+    router.push("/AdminExpenses");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -50,51 +53,9 @@ export default function CenterStaffMenu() {
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            color={Colors.Blue}
-            title="Set Milk Rate"
-            onPress={handleMilkRate}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.Blue}
-            title="Create Center"
-            onPress={handleCreateCenter}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.Blue}
-            title="Center Milk Check"
-            onPress={handleCenterSecret}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
             color={Colors.DarkBlue}
-            title="Add New Fixed Rate Customer"
-            onPress={handleAddFixedRateCustomer}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Fixed Rate Customer"
-            onPress={handleFixedRateCustomer}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="ALL Fixed Rate Customer"
-            onPress={handleFixedRate}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.DarkBlue}
-            title="Center Sales"
-            onPress={handleCenterSales}
+            title="Center Report"
+            onPress={handleCenterReport}
           />
         </View>
         <View style={styles.buttonContainer}>
@@ -107,15 +68,65 @@ export default function CenterStaffMenu() {
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
-            title="Center Report"
-            onPress={handleCenterReport}
+            title="Fixed Customer Report"
+            onPress={handleFixedRate}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Center Shift Check"
+            onPress={handleCenterSecret}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Fixed Rate Customer Shift Entry"
+            onPress={handleFixedRateCustomer}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Center Sales"
+            onPress={handleCenterSales}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Add Fixed Rate Customer"
+            onPress={handleAddFixedRateCustomer}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Set Milk Rate"
+            onPress={handleMilkRate}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Create Center"
+            onPress={handleCreateCenter}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Expenses"
+            onPress={handleExpenses}
           />
         </View>
         <View style={styles.goBackButton}>
           <Button
             title="Go Back"
             onPress={() => router.back()}
-            color={Colors.DarkBlue}
+            color={Colors.Blue}
           />
         </View>
       </View>

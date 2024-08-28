@@ -129,7 +129,7 @@ export default function Menu() {
               mode="date"
               display={Platform.OS === "ios" ? "spinner" : "default"}
               onChange={onChange}
-              maximumDate={new Date()} // Restrict future dates
+              maximumDate={new Date()}
               style={styles.datePicker}
             />
           )}
@@ -157,9 +157,7 @@ export default function Menu() {
         </View>
         {customers.map((customer) => (
           <View key={customer.customer_number} style={styles.inputContainer}>
-            <Text style={styles.label}>
-              Customer {customer.customer_number} - {customer.customer_name}
-            </Text>
+            <Text style={styles.label}>{customer.customer_number}</Text>
             <TextInput
               style={styles.input}
               keyboardType="numeric"
@@ -239,8 +237,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 5,
+    textAlign: "center",
   },
   input: {
     height: 40,
