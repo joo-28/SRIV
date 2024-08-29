@@ -108,9 +108,10 @@ export default function Menu() {
 
       if (insertError) {
         Alert.alert("Error", "Error Inserting customers");
+      } else {
+        Alert.alert("Success", "Data saved successfully");
       }
     }
-    Alert.alert("Success", "Data saved successfully");
   }
 
   const { width } = useWindowDimensions();

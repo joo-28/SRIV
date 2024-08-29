@@ -34,6 +34,10 @@ export default function Index() {
       const username = await service.getUserData();
       if (!username) {
         router.replace("/Login");
+      } else if (username === "cstaff") {
+        router.push("CenterShiftEntry");
+      } else if (username === "ccstaff") {
+        router.push("CCShiftEntry");
       }
     };
     checkLoginStatus();

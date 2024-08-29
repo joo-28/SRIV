@@ -17,6 +17,7 @@ import supabase from "../../Services/supabaseConfig";
 export default function LoginScreen() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const router = useRouter();
 
   const handleSubmit = async () => {
@@ -32,9 +33,9 @@ export default function LoginScreen() {
     }
 
     const { USERNAME, PASSWORD, ROLE } = data;
-
+    setRole(ROLE);
     if (userName === USERNAME && password === PASSWORD) {
-      service.storeUserData(userName);
+      service.storeUserData(role);
       switch (ROLE) {
         case "admin":
           router.push("(tabs)");

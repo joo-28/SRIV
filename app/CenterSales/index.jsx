@@ -1,4 +1,3 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import {
   View,
@@ -127,49 +126,18 @@ export default function SelectCenter() {
   };
   return (
     <View style={styles.container}>
-      <View style={styles.buttonContainer}>
-        <Button
-          title={
-            selectedCenter
-              ? `Center ${selectedCenter.center_number}`
-              : "Select Center"
-          }
-          color={Colors.Green}
-          onPress={fetchCenters}
-        />
-      </View>
-
-      <Modal
-        transparent={true}
-        visible={showModal}
-        animationType="slide"
-        onRequestClose={() => setShowModal(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Center Number</Text>
-            <FlatList
-              data={centers}
-              keyExtractor={(item) => item.center_number.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.centerItem}
-                  onPress={() => handleCenterSelect(item)}
-                >
-                  <Text style={styles.centerText}>{item.center_number}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <Button
-              title="Close"
-              color={Colors.DarkBlue}
-              onPress={() => setShowModal(false)}
-            />
-          </View>
-        </View>
-      </Modal>
-
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.buttonContainer}>
+          <Button
+            title={
+              selectedCenter
+                ? `Center ${selectedCenter.center_number}`
+                : "Select Center"
+            }
+            color={Colors.Green}
+            onPress={fetchCenters}
+          />
+        </View>
         <View style={[styles.formDesign, { width: width * 0.9 }]}>
           <Text style={styles.heading}>Center Milk Sales</Text>
           <View style={styles.datePickerContainer}>
@@ -248,6 +216,35 @@ export default function SelectCenter() {
           color={Colors.DarkBlue}
         />
       </View>
+      <Modal
+        transparent={true}
+        visible={showModal}
+        animationType="slide"
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Center Number</Text>
+            <FlatList
+              data={centers}
+              keyExtractor={(item) => item.center_number.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.centerItem}
+                  onPress={() => handleCenterSelect(item)}
+                >
+                  <Text style={styles.centerText}>{item.center_number}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <Button
+              title="Close"
+              color={Colors.DarkBlue}
+              onPress={() => setShowModal(false)}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -337,10 +334,6 @@ const styles = StyleSheet.create({
   radioLabel: {
     fontSize: 16,
     color: "#333",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
   },
   saveButton: {
     marginTop: 10,
