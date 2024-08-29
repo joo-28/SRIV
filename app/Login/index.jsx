@@ -35,7 +35,7 @@ export default function LoginScreen() {
     const { USERNAME, PASSWORD, ROLE } = data;
     setRole(ROLE);
     if (userName === USERNAME && password === PASSWORD) {
-      service.storeUserData(role);
+      service.storeUserData(userName);
       switch (ROLE) {
         case "admin":
           router.push("(tabs)");

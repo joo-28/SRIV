@@ -20,6 +20,7 @@ export default function ExpensesReport() {
   const [showFromDatePicker, setShowFromDatePicker] = useState(false);
   const [showToDatePicker, setShowToDatePicker] = useState(false);
   const [expenses, setExpenses] = useState([]);
+  const [summaryTotals, setSummaryTotals] = useState({});
   const { width } = useWindowDimensions();
 
   const onFromDateChange = (event, selectedDate) => {
@@ -58,7 +59,23 @@ export default function ExpensesReport() {
       Alert.alert("Error", "There was an error fetching the expenses.");
     } else {
       setExpenses(data);
+      calculateSummary(data);
     }
+  };
+
+  const calculateSummary = (expenses) => {
+    const categories = ["Can", "Vehicle", "Misc", "Reward"];
+    const summary = {};
+
+    categories.forEach((category) => {
+      const total = expenses
+        .filter((expense) => expense.type === category)
+        .reduce((sum, expense) => sum + parseFloat(expense.amount || 0), 0);
+
+      summary[category] = total.toFixed(2); // Ensure amount is formatted
+    });
+
+    setSummaryTotals(summary);
   };
 
   return (
@@ -111,7 +128,17 @@ export default function ExpensesReport() {
             onPress={fetchExpenses}
           />
         </View>
-
+        <View style={styles.summaryContainer}>
+          <Text style={styles.summaryHeading}>Expense Summary</Text>
+          <View style={styles.summaryTable}>
+            {Object.entries(summaryTotals).map(([category, amount]) => (
+              <View key={category} style={styles.summaryRow}>
+                <Text style={styles.summaryLabel}>{category}</Text>
+                <Text style={styles.summaryAmount}>{amount}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
         <View style={styles.tableContainer}>
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderText, styles.tableColumnDate]}>
@@ -145,7 +172,7 @@ export default function ExpensesReport() {
                   {expense.comment}
                 </Text>
                 <Text style={[styles.tableText, styles.tableColumnAmount]}>
-                  {expense.amount}
+                  {(parseFloat(expense.amount) || 0).toFixed(2)}
                 </Text>
               </View>
             ))
@@ -246,6 +273,40 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: "#666",
+  },
+  summaryContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  summaryHeading: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  summaryTable: {
+    marginTop: 10,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 5,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#ccc",
+  },
+  summaryLabel: {
+    fontSize: 16,
+  },
+  summaryAmount: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
   outsideButtonsContainer: {
     flexDirection: "row",

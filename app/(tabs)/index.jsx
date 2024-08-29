@@ -1,5 +1,3 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
-
 import React, { useEffect, useState } from "react";
 import service from "../../Services/service";
 import { useRouter } from "expo-router";
@@ -19,6 +17,7 @@ import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
 const { width, height } = Dimensions.get("window");
 
 export default function Index() {
@@ -29,20 +28,50 @@ export default function Index() {
   const [selectedValue, setSelectedValue] = useState("debit");
   const [amount, setAmount] = useState("");
   const [outstandingFund, setOutstandingFund] = useState(0);
+  const [loading, setLoading] = useState(true); // For loading state
+
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      const username = await service.getUserData();
-      if (!username) {
-        router.replace("/Login");
-      } else if (username === "cstaff") {
-        router.push("CenterShiftEntry");
-      } else if (username === "ccstaff") {
-        router.push("CCShiftEntry");
+    const checkUserStatus = async () => {
+      try {
+        const username = await service.getUserData();
+        if (!username) {
+          router.replace("/Login");
+          return;
+        }
+
+        // Fetch user role
+        const { data: userData, error: userError } = await supabase
+          .from("User")
+          .select("ROLE")
+          .eq("USERNAME", username)
+          .single();
+
+        if (userError || !userData) {
+          Alert.alert("Error", "Error fetching user role.");
+          return;
+        }
+
+        const { ROLE } = userData;
+        if (ROLE === "admin") {
+          router.replace("(tabs)");
+        } else if (ROLE === "ccstaff") {
+          router.replace("/CCShiftEntry");
+        } else if (ROLE === "cstaff") {
+          router.replace("/CenterShiftEntry");
+        } else {
+          Alert.alert("Error", "Unknown role.");
+        }
+      } catch (error) {
+        Alert.alert("Error", "Error checking user status.");
+      } finally {
+        setLoading(false);
       }
     };
-    checkLoginStatus();
+
+    checkUserStatus();
     fetchOutstandingFund();
   }, []);
+
   const fetchOutstandingFund = async () => {
     try {
       const { data: customers, error } = await supabase
@@ -60,14 +89,17 @@ export default function Index() {
       Alert.alert("Error", "Error fetching outstanding fund");
     }
   };
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
     setDate(currentDate);
   };
+
   const showDatePicker = () => {
     setShow(true);
   };
+
   const handleInsertData = async () => {
     const { data: customerData, error: customerError } = await supabase
       .from("customer")
@@ -137,6 +169,15 @@ export default function Index() {
       Alert.alert("Error", "Failed to record the transaction.");
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.bg}
