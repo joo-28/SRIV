@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
@@ -64,7 +65,7 @@ export default function ExpensesReport() {
   };
 
   const calculateSummary = (expenses) => {
-    const categories = ["Can", "Vehicle", "Misc", "Reward"];
+    const categories = ["Can", "Vehicle", "Misc", "Rewards"];
     const summary = {};
 
     categories.forEach((category) => {

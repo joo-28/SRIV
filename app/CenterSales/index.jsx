@@ -32,14 +32,17 @@ export default function SelectCenter() {
   const [liters, setLiters] = useState("");
   const router = useRouter();
   const { width } = useWindowDimensions();
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
     setDate(currentDate);
   };
+
   const showDatePicker = () => {
     setShow(true);
   };
+
   const fetchCenters = async () => {
     try {
       const { data, error } = await supabase
@@ -55,10 +58,12 @@ export default function SelectCenter() {
       Alert.alert("Error", "Failed to fetch center numbers");
     }
   };
+
   const handleCenterSelect = (center) => {
     setSelectedCenter(center);
     setShowModal(false);
   };
+
   const calculateAndSetValues = () => {
     const totalAmount = parseFloat(cash || "0") + parseFloat(credit || "0");
     setAmount(totalAmount.toFixed(2));
@@ -81,6 +86,7 @@ export default function SelectCenter() {
     };
     fetchMilkRate();
   };
+
   const handleSaveData = async () => {
     if (!selectedCenter) {
       Alert.alert("Error", "Please select a center");
@@ -124,6 +130,7 @@ export default function SelectCenter() {
       Alert.alert("Error", "Data Already Updated on this Shift");
     }
   };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -198,15 +205,17 @@ export default function SelectCenter() {
             <Text style={styles.Label}>Liters: {liters}</Text>
           </View>
 
-          <View style={styles.buttonContainer}>
-            <View style={styles.saveButton}>
-              <Button
-                color={Colors.Green}
-                title="Save"
-                onPress={handleSaveData}
-              />
+          {cash || credit ? (
+            <View style={styles.buttonContainer}>
+              <View style={styles.saveButton}>
+                <Button
+                  color={Colors.Green}
+                  title="Save"
+                  onPress={handleSaveData}
+                />
+              </View>
             </View>
-          </View>
+          ) : null}
         </View>
       </ScrollView>
       <View style={styles.goBackButton}>
