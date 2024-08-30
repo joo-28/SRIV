@@ -106,13 +106,13 @@ export default function CenterStaffMenu() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     justifyContent: "center",
     alignItems: "center",
   },
   form: {
     width: "90%",
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 20,
     shadowColor: "#000",

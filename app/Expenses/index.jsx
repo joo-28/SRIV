@@ -139,13 +139,13 @@ export default function ExpenseEntry() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     alignItems: "center",
     justifyContent: "center",
     padding: 10,
   },
   formDesign: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 10,
     shadowColor: "#000",

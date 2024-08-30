@@ -163,7 +163,7 @@ export default function UpdateMilkRate() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     paddingTop: 20,
     padding: 20,
     justifyContent: "center",
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "80%",
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 20,
     alignItems: "center",

@@ -261,7 +261,7 @@ export default function SelectCenter() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     padding: 10,
   },
   buttonContainer: {
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "80%",
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 10,
     alignItems: "center",
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   formDesign: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 10,
     shadowColor: "#000",

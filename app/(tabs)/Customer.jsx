@@ -139,12 +139,12 @@ export default function Customer() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     paddingHorizontal: 16,
     paddingTop: 40,
   },
   form: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 16,
     elevation: 5,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   dataContainer: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     elevation: 5,
     flex: 1,

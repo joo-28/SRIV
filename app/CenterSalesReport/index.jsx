@@ -253,12 +253,12 @@ export default function CenterReport() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     paddingHorizontal: 16,
     paddingTop: 40,
   },
   form: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 16,
     elevation: 5,
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   dataContainer: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     elevation: 5,
     marginBottom: 10,
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   summaryTableContainer: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     elevation: 5,
     marginBottom: 16,

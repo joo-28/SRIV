@@ -272,7 +272,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   bg: {
     flex: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
   },
   scrollViewContent: {
     flexGrow: 1,
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     marginHorizontal: "5%",
     height: height * 0.47,
     minWidth: 320,
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     position: "relative",
     padding: 10,
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   dataDesign: {
     marginHorizontal: "20%",
     height: height * 0.2,
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     marginTop: 20,
     padding: 20,

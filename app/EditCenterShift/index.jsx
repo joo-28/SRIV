@@ -171,14 +171,14 @@ export default function EditCenterShift() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 20,
     paddingHorizontal: 5,
   },
   formDesign: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     width: "90%",
     padding: 10,

@@ -200,13 +200,13 @@ export default function ExpensesReport() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     alignItems: "center",
     justifyContent: "center",
     padding: 10,
   },
   formDesign: {
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 10,
     shadowColor: "#000",
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   summaryContainer: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

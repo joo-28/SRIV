@@ -149,7 +149,7 @@ export default function AddNewCustomer() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   formDesign: {
     width: "100%",
     maxWidth: 400,
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 16,
     shadowColor: "#000",

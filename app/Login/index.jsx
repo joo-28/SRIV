@@ -65,6 +65,7 @@ export default function LoginScreen() {
         resizeMode="cover"
       >
         <Text style={styles.heading}>SRIV</Text>
+        <Text style={styles.headingTwo}>MILK PROCUREMENT STATION</Text>
 
         <View style={styles.formContainer}>
           <Text style={styles.label}>User ID:</Text>
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.Yellow,
+    backgroundColor: Colors.bg,
   },
   backgroundImage: {
     width: "100%",
@@ -109,12 +110,17 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 45,
     color: Colors.Green,
+    textAlign: "center",
+  },
+  headingTwo: {
+    fontSize: 20,
+    color: Colors.Green,
     marginBottom: 20,
     textAlign: "center",
   },
   formContainer: {
     width: "90%",
-    backgroundColor: "white",
+    backgroundColor: Colors.Yellow,
     borderRadius: 8,
     padding: 20,
     borderColor: Colors.Green,
