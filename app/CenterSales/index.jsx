@@ -214,19 +214,19 @@ export default function SelectCenter() {
                   onPress={handleSaveData}
                 />
               </View>
-              <View style={styles.saveButton}>
-                <Button
-                  color={Colors.DarkBlue}
-                  title="Edit"
-                  onPress={() => {
-                    router.push("/EditCenterMilk");
-                  }}
-                />
-              </View>
             </View>
           ) : null}
         </View>
       </ScrollView>
+      <View style={styles.saveButton}>
+        <Button
+          color={Colors.DarkBlue}
+          title="Edit"
+          onPress={() => {
+            router.push("/EditCenterMilk");
+          }}
+        />
+      </View>
       <View style={styles.goBackButton}>
         <Button
           title="Go Back"

@@ -11,6 +11,7 @@ import {
   Platform,
   Button,
   useWindowDimensions,
+  FlatList,
 } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
@@ -40,7 +41,7 @@ export default function UpdateCenterData() {
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios");
+    setShow(false);
     setDate(currentDate);
   };
 
@@ -80,7 +81,7 @@ export default function UpdateCenterData() {
         .single();
 
       if (error) {
-        if (error.code !== "PGRST116") {  // PGRST116 means no data found
+        if (error.code !== "PGRST116") {
           throw error;
         } else {
           // Clear the fields if no data is found for the selected date and shift
@@ -100,8 +101,10 @@ export default function UpdateCenterData() {
   };
 
   const calculateAndSetValues = (cashValue = cash, creditValue = credit) => {
-    const totalAmount = parseFloat(cashValue || "0") + parseFloat(creditValue || "0");
+    const totalAmount =
+      parseFloat(cashValue || "0") + parseFloat(creditValue || "0");
     setAmount(totalAmount.toFixed(2));
+
     const fetchMilkRate = async () => {
       try {
         const { data: milkBoothData, error: milkBoothError } = await supabase
@@ -119,6 +122,7 @@ export default function UpdateCenterData() {
         Alert.alert("Error", "Failed to fetch milk rate");
       }
     };
+
     fetchMilkRate();
   };
 
@@ -127,13 +131,13 @@ export default function UpdateCenterData() {
       Alert.alert("Error", "Please select a center");
       return;
     }
-    calculateAndSetValues();
+
     const totalAmount = parseFloat(cash || "0") + parseFloat(credit || "0");
     setAmount(totalAmount.toFixed(2));
+
     try {
-      const { data, error } = await supabase
-        .from("center_milk_sales")
-        .upsert({
+      const { data, error } = await supabase.from("center_milk_sales").upsert(
+        {
           center_number: selectedCenter.center_number,
           DATE: date.toISOString().split("T")[0],
           AM_PM: selectedValue,
@@ -141,11 +145,14 @@ export default function UpdateCenterData() {
           credit: parseFloat(credit),
           amount: totalAmount,
           litre: parseFloat(liters),
-        }, { onConflict: ['center_number', 'DATE', 'AM_PM'] });
+        },
+        { onConflict: ["center_number", "DATE", "AM_PM"] }
+      );
 
       if (error) {
         throw error;
       }
+
       Alert.alert("Success", "Data updated successfully");
     } catch (error) {
       Alert.alert("Error", "Failed to update data");
@@ -281,118 +288,116 @@ export default function UpdateCenterData() {
   );
 }
 
-
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: Colors.bg,
-      padding: 10,
-    },
-    buttonContainer: {
-      alignItems: "center",
-      padding: 10,
-    },
-    modalContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "rgba(0,0,0,0.5)",
-    },
-    modalContent: {
-      width: "80%",
-      backgroundColor: Colors.Yellow,
-      borderRadius: 8,
-      padding: 10,
-      alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    modalTitle: {
-      fontSize: 18,
-      fontWeight: "bold",
-      marginBottom: 10,
-    },
-    centerItem: {
-      padding: 10,
-      marginVertical: 5,
-      borderRadius: 5,
-      backgroundColor: Colors.LightGray,
-      width: "100%",
-      alignItems: "center",
-    },
-    centerText: {
-      fontSize: 16,
-    },
-    formDesign: {
-      backgroundColor: Colors.Yellow,
-      borderRadius: 8,
-      padding: 10,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 4,
-      elevation: 5,
-      marginBottom: 15,
-      marginTop: 40,
-    },
-    input: {
-      height: 40,
-      borderColor: "gray",
-      borderWidth: 1,
-      marginBottom: 5,
-      paddingHorizontal: 8,
-      borderRadius: 4,
-    },
-    heading: {
-      fontSize: 24,
-      alignSelf: "center",
-      marginBottom: 8,
-      fontWeight: "bold",
-    },
-    datePickerContainer: {
-      marginBottom: 8,
-    },
-    radioGroup: {
-      flexDirection: "row",
-      justifyContent: "space-around",
-      marginBottom: 8,
-    },
-    radioButton: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    radioLabel: {
-      fontSize: 16,
-      color: "#333",
-    },
-    saveButton: {
-      marginTop: 10,
-      width: "45%",
-    },
-    datePicker: {
-      width: "100%",
-      height: 150,
-    },
-    Label: {
-      paddingTop: 10,
-    },
-    textContainer: {
-      flexDirection: "row",
-      justifyContent: "space-around",
-      marginTop: 10,
-    },
-    scrollContainer: {
-      flexGrow: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    goBackButton: {
-      width: "60%",
-      marginBottom: 20,
-      alignSelf: "center",
-    },
-  });
-  
+  container: {
+    flex: 1,
+    backgroundColor: Colors.bg,
+    padding: 10,
+  },
+  buttonContainer: {
+    alignItems: "center",
+    padding: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: Colors.Yellow,
+    borderRadius: 8,
+    padding: 10,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  centerItem: {
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
+    backgroundColor: Colors.LightGray,
+    width: "100%",
+    alignItems: "center",
+  },
+  centerText: {
+    fontSize: 16,
+  },
+  formDesign: {
+    backgroundColor: Colors.Yellow,
+    borderRadius: 8,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    marginBottom: 15,
+    marginTop: 40,
+  },
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 5,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+  },
+  heading: {
+    fontSize: 24,
+    alignSelf: "center",
+    marginBottom: 8,
+    fontWeight: "bold",
+  },
+  datePickerContainer: {
+    marginBottom: 8,
+  },
+  radioGroup: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 8,
+  },
+  radioButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  radioLabel: {
+    fontSize: 16,
+    color: "#333",
+  },
+  saveButton: {
+    marginTop: 10,
+    width: "45%",
+  },
+  datePicker: {
+    width: "100%",
+    height: 150,
+  },
+  Label: {
+    paddingTop: 10,
+  },
+  textContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 10,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  goBackButton: {
+    width: "60%",
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+});

@@ -1,4 +1,3 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import {
   View,
   Text,
@@ -24,6 +23,7 @@ export default function Menu() {
   const [customers, setCustomers] = useState([]);
   const [litres, setLitres] = useState({});
   const [selectedValue, setSelectedValue] = useState("AM");
+
   useEffect(() => {
     async function fetchCustomers() {
       const { data, error } = await supabase
@@ -38,6 +38,7 @@ export default function Menu() {
     }
     fetchCustomers();
   }, [date, selectedValue]);
+
   async function fetchExistingLitres(customers) {
     const dateFormatted = date.toISOString().split("T")[0];
     const { data, error } = await supabase
@@ -60,35 +61,38 @@ export default function Menu() {
       setLitres(initialLitres);
     }
   }
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
     setDate(currentDate);
   };
+
   const showDatePicker = () => {
     setShow(true);
   };
+
   const handleInputChange = (customerNumber, value) => {
     setLitres((prevLitres) => ({
       ...prevLitres,
       [customerNumber]: value,
     }));
   };
+
   async function handleSaveData() {
     for (const customer of customers) {
       const customerNumber = customer.customer_number;
       const litreInput = litres[customerNumber];
 
-      // Convert the input to a floating-point number
+      // Parse float value from the input and handle edge cases
       const litreValue = parseFloat(litreInput);
 
-      // Skip if input is empty or not a number
       if (isNaN(litreValue)) {
-        continue;
+        continue; // Skip if the input is not a valid number
       }
 
+      // Handle the case where litreValue is 0 by deleting the entry
       if (litreValue === 0) {
-        // If the litre value is 0, delete the existing entry for the customer
         const { error: deleteError } = await supabase
           .from("fixed_rate_customer_shift_details")
           .delete()
@@ -102,7 +106,7 @@ export default function Menu() {
         continue;
       }
 
-      // Fetch the litre rate for the customer
+      // Fetch the litre rate from the fixed_rate_customer table
       const { data: rateData, error: rateError } = await supabase
         .from("fixed_rate_customer")
         .select("litre_rate")
@@ -117,7 +121,7 @@ export default function Menu() {
       const litreRate = rateData.litre_rate;
       const amount = litreValue * litreRate;
 
-      // Insert or update the entry for the customer
+      // Insert or update the record in fixed_rate_customer_shift_details
       const { error: insertError } = await supabase
         .from("fixed_rate_customer_shift_details")
         .upsert([
@@ -138,7 +142,6 @@ export default function Menu() {
 
     Alert.alert("Success", "Data saved successfully");
   }
-
   const { width } = useWindowDimensions();
 
   return (

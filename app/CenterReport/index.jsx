@@ -1,4 +1,3 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -22,6 +21,7 @@ export default function CenterReport() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalDiff, setTotalDiff] = useState(0);
   const router = useRouter();
+
   const fetchReportData = async () => {
     try {
       const { data: centerShiftData, error: centerShiftError } = await supabase
@@ -30,21 +30,27 @@ export default function CenterReport() {
         .gte("DATE", fromDate.toISOString())
         .lte("DATE", toDate.toISOString());
       if (centerShiftError) throw centerShiftError;
+
       const { data: ccShiftData, error: ccShiftError } = await supabase
         .from("cc_shift_entry")
         .select("DATE, AM_PM, Total_litre")
         .gte("DATE", fromDate.toISOString())
         .lte("DATE", toDate.toISOString());
       if (ccShiftError) throw ccShiftError;
+
       let totalAmt = 0;
       let totalDiffSum = 0;
+
       const combinedData = centerShiftData.map((centerEntry) => {
         const ccEntry = ccShiftData.find(
           (cc) => cc.DATE === centerEntry.DATE && cc.AM_PM === centerEntry.AM_PM
         );
-        const diff = (ccEntry?.Total_litre || 0) - centerEntry.Total_litre;
+        const diff = (
+          (ccEntry?.Total_litre || 0) - centerEntry.Total_litre
+        ).toFixed(2);
         totalAmt += centerEntry.total_amt;
-        totalDiffSum += diff;
+        totalDiffSum += parseFloat(diff);
+
         const formattedDate = new Date(centerEntry.DATE)
           .toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -52,6 +58,7 @@ export default function CenterReport() {
           })
           .replace(/\//g, "-");
         const formattedAMPM = centerEntry.AM_PM.toUpperCase();
+
         return {
           date: `${formattedDate}-${formattedAMPM}`,
           AM_PM: centerEntry.AM_PM,
@@ -62,6 +69,7 @@ export default function CenterReport() {
           total_amount: centerEntry.total_amt,
         };
       });
+
       setReportEntries(combinedData);
       setTotalAmount(totalAmt);
       setTotalDiff(totalDiffSum);
@@ -72,19 +80,23 @@ export default function CenterReport() {
       );
     }
   };
+
   const handleSearch = () => {
     fetchReportData();
   };
+
   const handleFromDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fromDate;
     setShowFromPicker(false);
     setFromDate(currentDate);
   };
+
   const handleToDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || toDate;
     setShowToPicker(false);
     setToDate(currentDate);
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.form}>
