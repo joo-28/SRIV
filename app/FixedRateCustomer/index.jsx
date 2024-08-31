@@ -78,9 +78,31 @@ export default function Menu() {
     for (const customer of customers) {
       const customerNumber = customer.customer_number;
       const litreInput = litres[customerNumber];
-      if (!litreInput) {
+
+      // Convert the input to a floating-point number
+      const litreValue = parseFloat(litreInput);
+
+      // Skip if input is empty or not a number
+      if (isNaN(litreValue)) {
         continue;
       }
+
+      if (litreValue === 0) {
+        // If the litre value is 0, delete the existing entry for the customer
+        const { error: deleteError } = await supabase
+          .from("fixed_rate_customer_shift_details")
+          .delete()
+          .eq("DATE", date.toISOString().split("T")[0])
+          .eq("AM_PM", selectedValue)
+          .eq("customer_number", customerNumber);
+
+        if (deleteError) {
+          Alert.alert("Error", "Error deleting customer entry");
+        }
+        continue;
+      }
+
+      // Fetch the litre rate for the customer
       const { data: rateData, error: rateError } = await supabase
         .from("fixed_rate_customer")
         .select("litre_rate")
@@ -88,11 +110,14 @@ export default function Menu() {
         .single();
 
       if (rateError) {
-        Alert.alert("Error", "Error fetching customers");
+        Alert.alert("Error", "Error fetching customer rate");
         continue;
       }
+
       const litreRate = rateData.litre_rate;
-      const amount = parseFloat(litreInput) * litreRate;
+      const amount = litreValue * litreRate;
+
+      // Insert or update the entry for the customer
       const { error: insertError } = await supabase
         .from("fixed_rate_customer_shift_details")
         .upsert([
@@ -100,16 +125,17 @@ export default function Menu() {
             DATE: date,
             AM_PM: selectedValue,
             customer_number: customerNumber,
-            litre: parseFloat(litreInput),
+            litre: litreValue,
             litre_rate: litreRate,
             amount: amount,
           },
         ]);
 
       if (insertError) {
-        Alert.alert("Error", "Error Inserting Value");
+        Alert.alert("Error", "Error inserting value");
       }
     }
+
     Alert.alert("Success", "Data saved successfully");
   }
 
