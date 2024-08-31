@@ -107,7 +107,7 @@ export default function Menu() {
         ]);
 
       if (insertError) {
-        Alert.alert("Error", "Error Inserting customers");
+        Alert.alert("Error", "Error Inserting Value");
       }
     }
     Alert.alert("Success", "Data saved successfully");
