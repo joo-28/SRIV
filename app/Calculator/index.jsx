@@ -1,4 +1,3 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import {
   View,
@@ -16,14 +15,18 @@ export default function TenInputSum() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const [values, setValues] = useState(Array(10).fill(""));
+
   const calculateTotal = () => {
-    return values.reduce((sum, value) => sum + parseFloat(value || 0), 0);
+    const sum = values.reduce((sum, value) => sum + parseFloat(value || 0), 0);
+    return sum.toFixed(1);
   };
+
   const handleInputChange = (index, text) => {
     const newValues = [...values];
     newValues[index] = text;
     setValues(newValues);
   };
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>

@@ -47,7 +47,7 @@ export default function Menu() {
       .eq("DATE", dateFormatted)
       .eq("AM_PM", selectedValue);
     if (error) {
-      Alert.alert("Error", "Error fetching customers");
+      Alert.alert("Error", "Error fetching customer data");
     } else {
       const initialLitres = {};
       for (const customer of customers) {
@@ -80,6 +80,27 @@ export default function Menu() {
   };
 
   async function handleSaveData() {
+    const dateFormatted = date.toISOString().split("T")[0];
+    const dataToUpsert = [];
+    const customerNumbersToDelete = [];
+
+    // Fetch existing entries for the current date and AM/PM period
+    const { data: existingData, error: fetchError } = await supabase
+      .from("fixed_rate_customer_shift_details")
+      .select("customer_number")
+      .eq("DATE", dateFormatted)
+      .eq("AM_PM", selectedValue);
+
+    if (fetchError) {
+      Alert.alert("Error", "Error fetching existing data");
+      return;
+    }
+
+    // Collect customer numbers that need to be deleted
+    const existingCustomerNumbers = existingData.map(
+      (entry) => entry.customer_number
+    );
+
     for (const customer of customers) {
       const customerNumber = customer.customer_number;
       const litreInput = litres[customerNumber];
@@ -91,19 +112,12 @@ export default function Menu() {
         continue; // Skip if the input is not a valid number
       }
 
-      // Handle the case where litreValue is 0 by deleting the entry
       if (litreValue === 0) {
-        const { error: deleteError } = await supabase
-          .from("fixed_rate_customer_shift_details")
-          .delete()
-          .eq("DATE", date.toISOString().split("T")[0])
-          .eq("AM_PM", selectedValue)
-          .eq("customer_number", customerNumber);
-
-        if (deleteError) {
-          Alert.alert("Error", "Error deleting customer entry");
+        if (existingCustomerNumbers.includes(customerNumber)) {
+          // Mark for deletion if the value is zero and exists in the database
+          customerNumbersToDelete.push(customerNumber);
         }
-        continue;
+        continue; // Skip zero values in the upsert operation
       }
 
       // Fetch the litre rate from the fixed_rate_customer table
@@ -121,33 +135,53 @@ export default function Menu() {
       const litreRate = rateData.litre_rate;
       const amount = litreValue * litreRate;
 
-      // Insert or update the record in fixed_rate_customer_shift_details
-      const { error: insertError } = await supabase
-        .from("fixed_rate_customer_shift_details")
-        .upsert([
-          {
-            DATE: date,
-            AM_PM: selectedValue,
-            customer_number: customerNumber,
-            litre: litreValue,
-            litre_rate: litreRate,
-            amount: amount,
-          },
-        ]);
+      // Prepare the data to upsert
+      dataToUpsert.push({
+        DATE: dateFormatted,
+        AM_PM: selectedValue,
+        customer_number: customerNumber,
+        litre: litreValue,
+        litre_rate: litreRate,
+        amount: amount,
+      });
+    }
 
-      if (insertError) {
-        Alert.alert("Error", "Error inserting value");
+    // Perform deletion operation if there are customer numbers to delete
+    if (customerNumbersToDelete.length > 0) {
+      const { error: deleteError } = await supabase
+        .from("fixed_rate_customer_shift_details")
+        .delete()
+        .eq("DATE", dateFormatted)
+        .eq("AM_PM", selectedValue)
+        .in("customer_number", customerNumbersToDelete);
+
+      if (deleteError) {
+        Alert.alert("Error", "Error deleting data");
+        return;
+      } else {
+        Alert.alert("Success", "data Updated");
       }
     }
 
-    Alert.alert("Success", "Data saved successfully");
+    // Perform upsert operation if there is data to upsert
+    if (dataToUpsert.length > 0) {
+      const { error: upsertError } = await supabase
+        .from("fixed_rate_customer_shift_details")
+        .upsert(dataToUpsert);
+
+      if (upsertError) {
+        Alert.alert("Error", "Error saving data");
+      } else {
+        Alert.alert("Success", "Data saved successfully");
+      }
+    }
   }
+
   const { width } = useWindowDimensions();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={[styles.formDesign, { width: width * 0.9 }]}>
-        {/* Go Back Button */}
         <Text style={styles.heading}>Fixed Rate Customer</Text>
         <View style={styles.datePickerContainer}>
           <Button onPress={showDatePicker} title={date.toDateString()} />

@@ -1,17 +1,19 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import supabase from "../../Services/supabaseConfig";
 import React, { useState, useEffect } from "react";
 import Colors from "../../Services/Colors";
+
 export default function ManageCustomer() {
   const router = useRouter();
   const [customerNumber, setCustomerNumber] = useState("");
   const [litreRate, setLitreRate] = useState("");
   const [oldRate, setOldRate] = useState("");
+
   const goBack = () => {
     router.back();
   };
+
   useEffect(() => {
     const fetchLitreRate = async () => {
       if (customerNumber) {
@@ -58,6 +60,29 @@ export default function ManageCustomer() {
       Alert.alert("Error", "An unexpected error occurred");
     }
   }
+
+  async function handleDeleteCustomer() {
+    if (!customerNumber) {
+      Alert.alert("Error", "Please enter a customer number to delete");
+      return;
+    }
+    try {
+      const { data, error } = await supabase
+        .from("fixed_rate_customer")
+        .delete()
+        .eq("customer_number", customerNumber);
+      if (error) {
+        Alert.alert("Error", "An error occurred while deleting the customer");
+      } else {
+        setLitreRate("");
+        setOldRate("");
+        Alert.alert("Success", "Customer deleted successfully");
+      }
+    } catch (error) {
+      Alert.alert("Error", "An unexpected error occurred");
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.formDesign}>
@@ -85,6 +110,13 @@ export default function ManageCustomer() {
               color={Colors.Green}
               title="Save"
               onPress={handleSaveData}
+            />
+          </View>
+          <View style={styles.button}>
+            <Button
+              color={Colors.Red}
+              title="Delete"
+              onPress={handleDeleteCustomer}
             />
           </View>
         </View>

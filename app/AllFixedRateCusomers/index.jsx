@@ -127,8 +127,8 @@ export default function CustomerReport() {
     });
 
     return {
-      totalLitres: totalLitres.toFixed(2),
-      totalAmt: totalAmt.toFixed(2),
+      totalLitres: totalLitres.toFixed(1),
+      totalAmt: totalAmt.toFixed(1),
     };
   };
 
@@ -198,10 +198,10 @@ export default function CustomerReport() {
               <View key={index} style={styles.tableRow}>
                 <Text style={styles.tableCell}>{customer}</Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[customer]?.litre?.toFixed(2) || 0}
+                  {totalAmount[customer]?.litre?.toFixed(1) || 0}
                 </Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[customer]?.amount?.toFixed(2) || 0}
+                  {totalAmount[customer]?.amount?.toFixed(1) || 0}
                 </Text>
               </View>
             ))
@@ -214,10 +214,10 @@ export default function CustomerReport() {
           <View key={index} style={styles.dataContainer}>
             <Text style={styles.customerTitle}>{`${customer} `}</Text>
             <Text style={styles.customerTitleText}>
-              {`           Total Litre: ${
-                totalAmount[customer]?.litre?.toFixed(2) || 0
+              {`      Total Litre: ${
+                totalAmount[customer]?.litre?.toFixed(1) || 0
               }    Total Amount: ₹${
-                totalAmount[customer]?.amount?.toFixed(2) || 0
+                totalAmount[customer]?.amount?.toFixed(1) || 0
               }`}
             </Text>
             <View style={styles.tableHeader}>

@@ -73,7 +73,7 @@ export default function ExpensesReport() {
         .filter((expense) => expense.type === category)
         .reduce((sum, expense) => sum + parseFloat(expense.amount || 0), 0);
 
-      summary[category] = total.toFixed(2); // Ensure amount is formatted
+      summary[category] = total.toFixed(1); // Ensure amount is formatted
     });
 
     setSummaryTotals(summary);
@@ -173,7 +173,7 @@ export default function ExpensesReport() {
                   {expense.comment}
                 </Text>
                 <Text style={[styles.tableText, styles.tableColumnAmount]}>
-                  {(parseFloat(expense.amount) || 0).toFixed(2)}
+                  {(parseFloat(expense.amount) || 0).toFixed(1)}
                 </Text>
               </View>
             ))

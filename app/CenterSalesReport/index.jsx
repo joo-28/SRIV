@@ -1,4 +1,3 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -21,7 +20,9 @@ export default function CenterReport() {
   const [reportEntries, setReportEntries] = useState({});
   const [totalAmount, setTotalAmount] = useState({});
   const [centerList, setCenterList] = useState([]);
+  const [overallTotals, setOverallTotals] = useState({ amount: 0, litre: 0 });
   const router = useRouter();
+
   const fetchCenterNumbers = async () => {
     try {
       const { data: milkBoothData, error: milkBoothError } = await supabase
@@ -38,6 +39,7 @@ export default function CenterReport() {
       return [];
     }
   };
+
   const fetchReportData = async () => {
     try {
       const centerNumbers = await fetchCenterNumbers();
@@ -55,13 +57,18 @@ export default function CenterReport() {
         .gte("DATE", fromDate.toISOString())
         .lte("DATE", toDate.toISOString());
       if (milkSalesError) throw milkSalesError;
+
       let centers = new Set(centerNumbers);
       const report = {};
       const totalAmt = {};
+      let totalOverallAmount = 0;
+      let totalOverallLitre = 0;
+
       centers.forEach((center) => {
         report[center] = [];
         totalAmt[center] = { cash: 0, credit: 0, amount: 0, litre: 0 };
       });
+
       milkSalesData.forEach((sale) => {
         const center = sale.center_number;
         const formattedDate = new Date(sale.DATE)
@@ -82,10 +89,19 @@ export default function CenterReport() {
         totalAmt[center].credit += sale.credit || 0;
         totalAmt[center].amount += sale.amount || 0;
         totalAmt[center].litre += sale.litre || 0;
+
+        // Calculate overall totals
+        totalOverallAmount += sale.amount || 0;
+        totalOverallLitre += sale.litre || 0;
       });
+
       setCenterList([...centers]);
       setReportEntries(report);
       setTotalAmount(totalAmt);
+      setOverallTotals({
+        amount: totalOverallAmount.toFixed(1),
+        litre: totalOverallLitre.toFixed(1),
+      });
     } catch (error) {
       Alert.alert(
         "Error fetching report data",
@@ -93,19 +109,23 @@ export default function CenterReport() {
       );
     }
   };
+
   const handleSearch = () => {
     fetchReportData();
   };
+
   const handleFromDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fromDate;
     setShowFromPicker(false);
     setFromDate(currentDate);
   };
+
   const handleToDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || toDate;
     setShowToPicker(false);
     setToDate(currentDate);
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -159,28 +179,33 @@ export default function CenterReport() {
       <ScrollView style={styles.scrollView}>
         <View style={styles.summaryTableContainer}>
           <View style={styles.tableHeader}>
+            <Text style={styles.tableHeaderText}>Overall TL</Text>
+            <Text style={styles.tableHeaderText}>{overallTotals.litre}</Text>
+            <Text style={styles.tableHeaderText}>Overall TA</Text>
+            <Text style={styles.tableHeaderText}>{overallTotals.amount}</Text>
+          </View>
+          <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderText}>Center Number</Text>
             <Text style={styles.tableHeaderText}>Total Cash</Text>
             <Text style={styles.tableHeaderText}>Total Credit</Text>
             <Text style={styles.tableHeaderText}>Total Amount</Text>
             <Text style={styles.tableHeaderText}>Total Litre</Text>
           </View>
-
           {centerList.length > 0 ? (
             centerList.map((center, index) => (
               <View key={index} style={styles.tableRow}>
                 <Text style={styles.tableCell}>{center}</Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[center]?.cash?.toFixed(2) || 0}
+                  {totalAmount[center]?.cash?.toFixed(1) || 0}
                 </Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[center]?.credit?.toFixed(2) || 0}
+                  {totalAmount[center]?.credit?.toFixed(1) || 0}
                 </Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[center]?.amount?.toFixed(2) || 0}
+                  {totalAmount[center]?.amount?.toFixed(1) || 0}
                 </Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[center]?.litre?.toFixed(2) || 0}
+                  {totalAmount[center]?.litre?.toFixed(1) || 0}
                 </Text>
               </View>
             ))
@@ -195,18 +220,18 @@ export default function CenterReport() {
             <View style={styles.tableHeading}>
               <View style={styles.totalRow}>
                 <Text style={styles.totalHeadingText}>
-                  Total Cash: {totalAmount[center]?.cash?.toFixed(2) || 0}
+                  Total Cash: {totalAmount[center]?.cash?.toFixed(1) || 0}
                 </Text>
                 <Text style={styles.totalHeadingText}>
-                  Total Amount: {totalAmount[center]?.amount?.toFixed(2) || 0}
+                  Total Amount: {totalAmount[center]?.amount?.toFixed(1) || 0}
                 </Text>
               </View>
               <View style={styles.totalRow}>
                 <Text style={styles.totalHeadingText}>
-                  Total Credit: {totalAmount[center]?.credit?.toFixed(2) || 0}
+                  Total Credit: {totalAmount[center]?.credit?.toFixed(1) || 0}
                 </Text>
                 <Text style={styles.totalHeadingText}>
-                  Total Litre: {totalAmount[center]?.litre?.toFixed(2) || 0}
+                  Total Litre: {totalAmount[center]?.litre?.toFixed(1) || 0}
                 </Text>
               </View>
             </View>
@@ -223,10 +248,18 @@ export default function CenterReport() {
               reportEntries[center].map((entry, index) => (
                 <View key={index} style={styles.tableRow}>
                   <Text style={styles.tableCell}>{entry.date}</Text>
-                  <Text style={styles.tableCell}>{entry.cash || "-"}</Text>
-                  <Text style={styles.tableCell}>{entry.credit || "-"}</Text>
-                  <Text style={styles.tableCell}>{entry.amount || "-"}</Text>
-                  <Text style={styles.tableCell}>{entry.litre || "-"}</Text>
+                  <Text style={styles.tableCell}>
+                    {entry.cash?.toFixed(1) || "-"}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {entry.credit?.toFixed(1) || "-"}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {entry.amount?.toFixed(1) || "-"}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {entry.litre?.toFixed(1) || "-"}
+                  </Text>
                 </View>
               ))
             ) : (
@@ -250,6 +283,7 @@ export default function CenterReport() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -317,7 +351,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     width: "48%",
     fontSize: 12,
-    width: "50%",
     padding: 3,
   },
   tableHeader: {
@@ -325,7 +358,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: Colors.DarkBlue,
     padding: 5,
-    borderRadius: 5,
   },
   tableHeaderText: {
     color: "white",

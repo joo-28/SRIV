@@ -12,6 +12,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
@@ -172,8 +173,8 @@ export default function Index() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color={Colors.Primary} />
       </View>
     );
   }
@@ -261,7 +262,7 @@ export default function Index() {
         <View style={styles.dataDesign}>
           <Text style={styles.reportTitle}>Outstanding Fund</Text>
           <Text style={styles.reportAmount}>
-            RS.{outstandingFund.toFixed(2)}
+            RS.{outstandingFund.toFixed(1)}
           </Text>
         </View>
       </ScrollView>

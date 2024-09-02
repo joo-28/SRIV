@@ -11,7 +11,7 @@ export default function CenterStaffMenu() {
     router.push("(tabs)");
   };
   const handleCenterSales = () => {
-    router.push("/CenterSales");
+    router.push("/EditCenterMilk");
   };
   const handleCenterSalesReport = () => {
     router.push("/CenterSalesReport");

@@ -12,7 +12,7 @@ export default function CenterStaffMenu() {
     router.push("/Login");
   };
   const handleCenterSales = () => {
-    router.push("/CenterSales");
+    router.push("/EditCenterMilk");
   };
   const handleCenterSalesReport = () => {
     router.push("/CenterSalesReport");

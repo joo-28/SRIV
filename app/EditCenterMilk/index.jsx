@@ -30,6 +30,7 @@ export default function UpdateCenterData() {
   const [credit, setCredit] = useState("");
   const [amount, setAmount] = useState("");
   const [liters, setLiters] = useState("");
+  const [isDataExisting, setIsDataExisting] = useState(false);
   const router = useRouter();
   const { width } = useWindowDimensions();
 
@@ -56,12 +57,13 @@ export default function UpdateCenterData() {
         .select("center_number");
 
       if (error) {
-        throw error;
+        console.error(error);
+        return;
       }
       setCenters(data);
       setShowModal(true);
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch center numbers");
+      console.error("Failed to fetch center numbers", error);
     }
   };
 
@@ -81,29 +83,30 @@ export default function UpdateCenterData() {
         .single();
 
       if (error) {
-        if (error.code !== "PGRST116") {
-          throw error;
-        } else {
-          // Clear the fields if no data is found for the selected date and shift
+        if (error.code === "PGRST116") {
           setCash("");
           setCredit("");
           setAmount("");
           setLiters("");
+          setIsDataExisting(false);
+        } else {
+          throw error;
         }
       } else {
-        setCash(data.cash.toString());
-        setCredit(data.credit.toString());
+        setCash(data.cash ? data.cash.toString() : "");
+        setCredit(data.credit ? data.credit.toString() : "");
         calculateAndSetValues(data.cash, data.credit);
+        setIsDataExisting(true);
       }
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch center data");
+      console.error("Failed to fetch center data", error);
     }
   };
 
   const calculateAndSetValues = (cashValue = cash, creditValue = credit) => {
     const totalAmount =
       parseFloat(cashValue || "0") + parseFloat(creditValue || "0");
-    setAmount(totalAmount.toFixed(2));
+    setAmount(totalAmount.toFixed(1));
 
     const fetchMilkRate = async () => {
       try {
@@ -116,35 +119,46 @@ export default function UpdateCenterData() {
           throw milkBoothError;
         }
         const milkRate = milkBoothData.milk_rate;
-        const litersCalculated = (totalAmount / milkRate).toFixed(2);
+        const litersCalculated = (totalAmount / milkRate).toFixed(1);
         setLiters(litersCalculated);
       } catch (error) {
-        Alert.alert("Error", "Failed to fetch milk rate");
+        console.error("Failed to fetch milk rate", error);
       }
     };
 
     fetchMilkRate();
   };
 
-  const handleUpdateData = async () => {
+  const handleSaveOrUpdateData = async () => {
     if (!selectedCenter) {
       Alert.alert("Error", "Please select a center");
       return;
     }
 
-    const totalAmount = parseFloat(cash || "0") + parseFloat(credit || "0");
-    setAmount(totalAmount.toFixed(2));
+    const cashValue = parseFloat(cash || "0");
+    const creditValue = parseFloat(credit || "0");
+    const totalAmount = cashValue + creditValue;
+
+    if (totalAmount === 0) {
+      Alert.alert(
+        "Error",
+        "Please enter at least one valid cash or credit amount"
+      );
+      return;
+    }
+
+    setAmount(totalAmount.toFixed(1));
 
     try {
-      const { data, error } = await supabase.from("center_milk_sales").upsert(
+      const { error } = await supabase.from("center_milk_sales").upsert(
         {
           center_number: selectedCenter.center_number,
           DATE: date.toISOString().split("T")[0],
           AM_PM: selectedValue,
-          cash: parseFloat(cash),
-          credit: parseFloat(credit),
+          cash: cashValue,
+          credit: creditValue,
           amount: totalAmount,
-          litre: parseFloat(liters),
+          litre: parseFloat(liters || "0"),
         },
         { onConflict: ["center_number", "DATE", "AM_PM"] }
       );
@@ -153,10 +167,22 @@ export default function UpdateCenterData() {
         throw error;
       }
 
-      Alert.alert("Success", "Data updated successfully");
+      Alert.alert(
+        "Success",
+        isDataExisting ? "Data updated successfully" : "Data saved successfully"
+      );
     } catch (error) {
-      Alert.alert("Error", "Failed to update data");
+      Alert.alert("Error", "Failed to save or update data");
     }
+  };
+  const handleNumericInput = (value, setStateFunction) => {
+    const numericValue = value.replace(/[^0-9.]/g, "");
+
+    if (numericValue.split(".").length > 2) {
+      return;
+    }
+
+    setStateFunction(numericValue);
   };
 
   return (
@@ -174,7 +200,7 @@ export default function UpdateCenterData() {
           />
         </View>
         <View style={[styles.formDesign, { width: width * 0.9 }]}>
-          <Text style={styles.heading}>Update Center Milk Sales</Text>
+          <Text style={styles.heading}> Center Milk Sales</Text>
           <View style={styles.datePickerContainer}>
             <Button onPress={showDatePicker} title={date.toDateString()} />
             {show && (
@@ -216,18 +242,18 @@ export default function UpdateCenterData() {
             placeholder="Cash"
             value={cash}
             onChangeText={(value) => {
-              setCash(value);
+              handleNumericInput(value, setCash);
               calculateAndSetValues(value, credit);
             }}
             keyboardType="numeric"
           />
-          <Text style={styles.radioLabel}>Credit</Text>
+
           <TextInput
             style={styles.input}
             placeholder="Credit"
             value={credit}
             onChangeText={(value) => {
-              setCredit(value);
+              handleNumericInput(value, setCredit);
               calculateAndSetValues(cash, value);
             }}
             keyboardType="numeric"
@@ -241,8 +267,8 @@ export default function UpdateCenterData() {
             <View style={styles.saveButton}>
               <Button
                 color={Colors.Green}
-                title="Update"
-                onPress={handleUpdateData}
+                title={isDataExisting ? "Update" : "Save"}
+                onPress={handleSaveOrUpdateData}
               />
             </View>
           </View>

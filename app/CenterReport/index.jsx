@@ -47,7 +47,7 @@ export default function CenterReport() {
         );
         const diff = (
           (ccEntry?.Total_litre || 0) - centerEntry.Total_litre
-        ).toFixed(2);
+        ).toFixed(1);
         totalAmt += centerEntry.total_amt;
         totalDiffSum += parseFloat(diff);
 
@@ -62,17 +62,17 @@ export default function CenterReport() {
         return {
           date: `${formattedDate}-${formattedAMPM}`,
           AM_PM: centerEntry.AM_PM,
-          Total_litre: centerEntry.Total_litre,
-          diff,
-          FAT: centerEntry.FAT,
-          SNF: centerEntry.SNF,
-          total_amount: centerEntry.total_amt,
+          Total_litre: centerEntry.Total_litre.toFixed(1),
+          diff: diff,
+          FAT: centerEntry.FAT.toFixed(2),
+          SNF: centerEntry.SNF.toFixed(2),
+          total_amount: centerEntry.total_amt.toFixed(1),
         };
       });
 
       setReportEntries(combinedData);
-      setTotalAmount(totalAmt);
-      setTotalDiff(totalDiffSum);
+      setTotalAmount(totalAmt.toFixed(1));
+      setTotalDiff(totalDiffSum.toFixed(1));
     } catch (error) {
       Alert.alert(
         "Error fetching report data",
@@ -152,11 +152,9 @@ export default function CenterReport() {
         <ScrollView style={styles.scrollView}>
           <View style={styles.tableHeading}>
             <Text style={styles.tableHeadingText}>
-              Total Amt: {totalAmount.toFixed(2)}
+              Total Amt: {totalAmount}
             </Text>
-            <Text style={styles.tableHeadingText}>
-              Total Diff: {totalDiff.toFixed(2)}
-            </Text>
+            <Text style={styles.tableHeadingText}>Total Diff: {totalDiff}</Text>
           </View>
 
           <View style={styles.tableHeader}>
