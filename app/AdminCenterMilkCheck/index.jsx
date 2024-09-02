@@ -1,5 +1,3 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
-
 import React, { useState } from "react";
 import {
   View,
@@ -15,21 +13,24 @@ import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
 import { RadioButton } from "react-native-paper";
 import { useRouter } from "expo-router";
+
 export default function CenterMilkCheck() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [amPm, setAmPm] = useState("AM");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [totalFixedCustomer, setTotalFixedCustomer] = useState(0);
-  const [centerValues, setCenterValues] = useState([]);
+  const [centerValues, setCenterValues] = useState({});
   const [fixedValue, setFixedValue] = useState(0);
-  const [totalLitre, setTotalLitre] = useState(0);
-  const [diff, setDiff] = useState(0);
+  const [externalSales, setExternalSales] = useState(0);
+  const [difference, setDifference] = useState(0);
   const router = useRouter();
+
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDatePicker(false);
     setSelectedDate(currentDate);
   };
+
   const fetchFixedCustomerData = async () => {
     try {
       const { data, error } = await supabase
@@ -37,6 +38,7 @@ export default function CenterMilkCheck() {
         .select("litre")
         .eq("DATE", selectedDate.toISOString().split("T")[0])
         .eq("AM_PM", amPm);
+
       if (error) throw error;
       const totalLitre = data.reduce((total, entry) => total + entry.litre, 0);
       setTotalFixedCustomer(totalLitre);
@@ -46,6 +48,7 @@ export default function CenterMilkCheck() {
       return 0;
     }
   };
+
   const fetchCenterData = async () => {
     try {
       const { data, error } = await supabase
@@ -71,6 +74,7 @@ export default function CenterMilkCheck() {
       return {};
     }
   };
+
   const fetchFixedValue = async () => {
     try {
       const { data, error } = await supabase
@@ -86,22 +90,54 @@ export default function CenterMilkCheck() {
       return 0;
     }
   };
+
+  const fetchExternalSales = async () => {
+    try {
+      const { data: companyData, error: companyError } = await supabase
+        .from("external_company_sales")
+        .select("company_name");
+
+      if (companyError) throw companyError;
+
+      const companies = companyData.map((company) => company.company_name);
+
+      const { data: salesData, error: salesError } = await supabase
+        .from("external_company_sales_report")
+        .select("company_name, total_litre")
+        .in("company_name", companies)
+        .eq("AM_PM", amPm);
+
+      if (salesError) throw salesError;
+
+      const totalExternalSales = salesData.reduce(
+        (total, entry) => total + entry.total_litre,
+        0
+      );
+      setExternalSales(totalExternalSales);
+      return totalExternalSales;
+    } catch (error) {
+      Alert.alert("Error", "There was an error fetching external sales data.");
+      return 0;
+    }
+  };
+
   const handleCheck = async () => {
     const fixedCustomerLitre = await fetchFixedCustomerData();
     const centerData = await fetchCenterData();
     const fixedVal = await fetchFixedValue();
+    const externalSalesValue = await fetchExternalSales();
+
     const totalCenterLitre = Object.values(centerData).reduce(
       (total, litre) => total + litre,
       0
     );
-    const totalLitres = totalCenterLitre + fixedVal;
-    const difference = totalLitres - fixedCustomerLitre;
-    setTotalLitre(totalLitres);
-    setDiff(difference);
+
+    const difference =
+      fixedCustomerLitre - totalCenterLitre - fixedVal - externalSalesValue;
+
+    setDifference(difference);
   };
-  const handleCenterSecret = () => {
-    router.push("/CenterSecret");
-  };
+
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -127,7 +163,6 @@ export default function CenterMilkCheck() {
         </View>
 
         <View style={styles.userField}>
-          <Text style={styles.label}>AM/PM</Text>
           <View style={styles.radioGroup}>
             <View style={styles.radioButtonContainer}>
               <RadioButton
@@ -156,9 +191,10 @@ export default function CenterMilkCheck() {
       <ScrollView style={styles.scrollView}>
         <View style={styles.resultContainer}>
           <Text style={styles.resultText}>
-            Total Fixed Customer Litre:{"                  "}
+            Fixed Customer Total Milk:{" "}
             <Text style={styles.resultValue}>
-              {totalFixedCustomer.toFixed(2)}
+              {"                      "}
+              {totalFixedCustomer.toFixed(1)}
             </Text>
           </Text>
 
@@ -166,19 +202,37 @@ export default function CenterMilkCheck() {
             <Text key={center} style={styles.resultText}>
               Center{" "}
               <Text style={styles.resultValue}>
-                {center}:{"                                                   "}
-                {centerValues[center].toFixed(2)}
+                {center}:{" "}
+                {"                                                       "}-
+                {centerValues[center].toFixed(1)}
               </Text>
             </Text>
           ))}
 
           <Text style={styles.resultText}>
-            Total Litre Required : {"                            "}
-            <Text style={styles.resultValue}>{totalLitre.toFixed(2)}</Text>
+            Center Standard Milk:{" "}
+            <Text style={styles.resultValue}>
+              {" "}
+              {"                              "}-{fixedValue.toFixed(1)}
+            </Text>
           </Text>
+
           <Text style={styles.resultText}>
-            Difference:{"                                               "}
-            <Text style={styles.resultValueDiff}>{diff.toFixed(2)} </Text>
+            External Sales:{" "}
+            <Text style={styles.resultValue}>
+              {" "}
+              {"                                           "}-
+              {externalSales.toFixed(1)}
+            </Text>
+          </Text>
+
+          <Text style={styles.resultText}>
+            Difference:{" "}
+            <Text style={styles.resultValueDiff}>
+              {" "}
+              {"                                      "}
+              {difference.toFixed(1)}
+            </Text>
           </Text>
         </View>
       </ScrollView>
@@ -187,7 +241,9 @@ export default function CenterMilkCheck() {
           <Button
             color={Colors.Blue}
             title="Center Secret"
-            onPress={handleCenterSecret}
+            onPress={() => {
+              router.push("/CenterSecret");
+            }}
           />
         </View>
         <View style={styles.buttonContainer}>
@@ -203,7 +259,6 @@ export default function CenterMilkCheck() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

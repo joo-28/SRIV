@@ -32,6 +32,9 @@ export default function CenterStaffMenu() {
   const handleExpenses = () => {
     router.push("/Expenses");
   };
+  const handleExCompanyEntry = () => {
+    router.push("/ExCompanyEntry");
+  };
 
   return (
     <View style={styles.container}>
@@ -63,6 +66,13 @@ export default function CenterStaffMenu() {
             color={Colors.DarkBlue}
             title="Fixed Rate Customer Shift Entry"
             onPress={handleFixedRateCustomer}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="External Sales Entry"
+            onPress={handleExCompanyEntry}
           />
         </View>
         <View style={styles.buttonContainer}>

@@ -40,6 +40,12 @@ export default function CenterStaffMenu() {
   const handleExpenses = () => {
     router.push("/AdminExpenses");
   };
+  const handleExCompanySales = () => {
+    router.push("/AddExternalCompanySales");
+  };
+  const handleExSalesReport = () => {
+    router.push("/ExCompanySalesReport");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.form}>
@@ -72,7 +78,13 @@ export default function CenterStaffMenu() {
             onPress={handleFixedRate}
           />
         </View>
-
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="External Sales Report"
+            onPress={handleExSalesReport}
+          />
+        </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
@@ -94,11 +106,19 @@ export default function CenterStaffMenu() {
             onPress={handleCenterSales}
           />
         </View>
+
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Add Fixed Rate Customer"
             onPress={handleAddFixedRateCustomer}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Add External Company"
+            onPress={handleExCompanySales}
           />
         </View>
         <View style={styles.buttonContainer}>
