@@ -1,154 +1,118 @@
-//Completed NO Changes Required - Test Completed - Logs and Blank space Removed
-
-import { View, StyleSheet, Button, Text } from "react-native";
+import { View, StyleSheet, Button, Text, ScrollView } from "react-native";
 import React from "react";
 import Colors from "../../Services/Colors";
 import { useRouter } from "expo-router";
 
 export default function CenterStaffMenu() {
   const router = useRouter();
-  const handleSwitchFinanceApp = () => {
-    router.push("(tabs)");
-  };
-  const handleCenterSales = () => {
-    router.push("/EditCenterMilk");
-  };
-  const handleCenterSalesReport = () => {
-    router.push("/CenterSalesReport");
-  };
-  const handleCenterReport = () => {
-    router.push("/CenterReport");
-  };
-  const handleMilkRate = () => {
-    router.push("/SetMilkRate");
-  };
-  const handleCreateCenter = () => {
-    router.push("/CreateCenter");
-  };
-  const handleFixedRate = () => {
-    router.push("/AllFixedRateCusomers");
-  };
-  const handleAddFixedRateCustomer = () => {
-    router.push("/AddFixedRateCustomer");
-  };
-  const handleFixedRateCustomer = () => {
-    router.push("/FixedRateCustomer");
-  };
-  const handleCenterSecret = () => {
-    router.push("/AdminCenterMilkCheck");
-  };
-  const handleExpenses = () => {
-    router.push("/AdminExpenses");
-  };
-  const handleExCompanySales = () => {
-    router.push("/AddExternalCompanySales");
-  };
-  const handleExSalesReport = () => {
-    router.push("/ExCompanySalesReport");
-  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.form}>
         <Text style={styles.heading}>Menu</Text>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.Green}
             title="Switch Finance APP"
-            onPress={handleSwitchFinanceApp}
+            onPress={() => router.push("(tabs)")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Center Report"
-            onPress={handleCenterReport}
+            onPress={() => router.push("/CenterReport")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Center Sales Report"
-            onPress={handleCenterSalesReport}
+            onPress={() => router.push("/CenterSalesReport")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Fixed Customer Report"
-            onPress={handleFixedRate}
+            onPress={() => router.push("/AllFixedRateCusomers")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="External Sales Report"
-            onPress={handleExSalesReport}
+            onPress={() => router.push("/ExCompanySalesReport")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Center Shift Check"
-            onPress={handleCenterSecret}
+            onPress={() => router.push("/AdminCenterMilkCheck")}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="Center CC Quality Comparison"
+            onPress={() => router.push("/CenterCCQualityComp")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Fixed Rate Customer Shift Entry"
-            onPress={handleFixedRateCustomer}
+            onPress={() => router.push("/FixedRateCustomer")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Center Sales"
-            onPress={handleCenterSales}
+            onPress={() => router.push("/EditCenterMilk")}
           />
         </View>
-
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Add Fixed Rate Customer"
-            onPress={handleAddFixedRateCustomer}
+            onPress={() => router.push("/AddFixedRateCustomer")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Add External Company"
-            onPress={handleExCompanySales}
+            onPress={() => router.push("/AddExternalCompanySales")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Set Milk Rate"
-            onPress={handleMilkRate}
+            onPress={() => router.push("/SetMilkRate")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Create Center"
-            onPress={handleCreateCenter}
+            onPress={() => router.push("/CreateCenter")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            color={Colors.Green}
+            color={Colors.DarkBlue}
             title="Average Calculator"
-            onPress={() => {
-              router.push("/AverageCalculator");
-            }}
+            onPress={() => router.push("/AverageCalculator")}
           />
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
             title="Expenses"
-            onPress={handleExpenses}
+            onPress={() => router.push("/AdminExpenses")}
           />
         </View>
         <View style={styles.goBackButton}>
@@ -159,16 +123,17 @@ export default function CenterStaffMenu() {
           />
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: Colors.bg,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingVertical: 20,
+    backgroundColor: Colors.bg,
   },
   form: {
     width: "90%",
@@ -186,13 +151,10 @@ const styles = StyleSheet.create({
     width: "100%",
     marginVertical: 5,
   },
-  logoutButtonContainer: {
-    width: "60%",
-    marginTop: 10,
-  },
   heading: {
     fontSize: 26,
     alignSelf: "center",
+    marginBottom: 20,
   },
   goBackButton: {
     width: "60%",
