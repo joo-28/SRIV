@@ -49,6 +49,15 @@ export default function CenterStaffMenu() {
         </View>
         <View style={styles.buttonContainer}>
           <Button
+            color={Colors.Green}
+            title="Average Calculator"
+            onPress={() => {
+              router.push("/AverageCalculator");
+            }}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
             color={Colors.DarkBlue}
             title="Center Report"
             onPress={handleCenterReport}
@@ -59,6 +68,15 @@ export default function CenterStaffMenu() {
             color={Colors.DarkBlue}
             title="Center Sales Report"
             onPress={handleCenterSalesReport}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
+            title="External Sales Report"
+            onPress={() => {
+              router.push("/ExCompanySalesReport");
+            }}
           />
         </View>
         <View style={styles.buttonContainer}>
