@@ -64,18 +64,6 @@ export default function EditCenterShift() {
     setShow(true);
   };
 
-  const formatDecimal = (value) => {
-    const number = parseFloat(value);
-    if (isNaN(number)) return "";
-    return number.toFixed(1);
-  };
-
-  const handleTextChange = (setter) => (text) => {
-    if (/^\d*\.?\d*$/.test(text)) {
-      setter(formatDecimal(text));
-    }
-  };
-
   async function handleSaveData() {
     if (!totalLitres || !FAT || !SNF || !totalAmount) {
       Alert.alert("Error", "Please fill all the fields");
@@ -162,7 +150,7 @@ export default function EditCenterShift() {
           style={styles.input}
           placeholder="Total Litre"
           value={totalLitres}
-          onChangeText={handleTextChange(setTotalLitres)}
+          onChangeText={setTotalLitres}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>FAT</Text>
@@ -170,7 +158,7 @@ export default function EditCenterShift() {
           style={styles.input}
           placeholder="FAT"
           value={FAT}
-          onChangeText={handleTextChange(setFAT)}
+          onChangeText={setFAT}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>SNF</Text>
@@ -178,7 +166,7 @@ export default function EditCenterShift() {
           style={styles.input}
           placeholder="SNF"
           value={SNF}
-          onChangeText={handleTextChange(setSNF)}
+          onChangeText={setSNF}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>Total Amount</Text>
@@ -186,7 +174,7 @@ export default function EditCenterShift() {
           style={styles.input}
           placeholder="Amount"
           value={totalAmount}
-          onChangeText={handleTextChange(setTotalAmount)}
+          onChangeText={setTotalAmount}
           keyboardType="numeric"
         />
         <View style={styles.buttonContainer}>

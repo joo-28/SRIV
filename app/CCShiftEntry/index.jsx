@@ -104,12 +104,6 @@ export default function EditCCEntry() {
     }
   };
 
-  const handleTextChange = (setter) => (text) => {
-    if (/^\d*\.?\d{0,1}$/.test(text)) {
-      setter(text);
-    }
-  };
-
   const { width } = useWindowDimensions();
 
   const buttonTitle = existingData ? "Update" : "Save";
@@ -158,7 +152,7 @@ export default function EditCCEntry() {
           style={styles.input}
           placeholder="Total Litres"
           value={totalLitres}
-          onChangeText={handleTextChange(setTotalLitres)}
+          onChangeText={setTotalLitres}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>FAT</Text>
@@ -166,7 +160,7 @@ export default function EditCCEntry() {
           style={styles.input}
           placeholder="FAT"
           value={FAT}
-          onChangeText={handleTextChange(setFAT)}
+          onChangeText={setFAT}
           keyboardType="numeric"
         />
         <Text style={styles.radioLabel}>SNF</Text>
@@ -174,7 +168,7 @@ export default function EditCCEntry() {
           style={styles.input}
           placeholder="SNF"
           value={SNF}
-          onChangeText={handleTextChange(setSNF)}
+          onChangeText={setSNF}
           keyboardType="numeric"
         />
         <View style={styles.buttonContainer}>

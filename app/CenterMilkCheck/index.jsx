@@ -105,7 +105,8 @@ export default function CenterMilkCheck() {
         .from("external_company_sales_report")
         .select("company_name, total_litre")
         .in("company_name", companies)
-        .eq("AM_PM", amPm);
+        .eq("AM_PM", amPm)
+        .eq("DATE", selectedDate.toISOString().split("T")[0]);
 
       if (salesError) throw salesError;
 

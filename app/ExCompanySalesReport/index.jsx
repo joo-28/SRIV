@@ -23,103 +23,75 @@ export default function ExternalCompanyReport() {
   const [overallTotalLitres, setOverallTotalLitres] = useState(0);
   const router = useRouter();
 
-  const fetchCompanyData = async () => {
-    try {
-      const { data: companyData, error: companyError } = await supabase
-        .from("external_company_sales")
-        .select("company_")
-        .distinct();
-      if (companyError) throw companyError;
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        let { data, error } = await supabase
+          .from("external_company_sales")
+          .select("company_name");
 
-      return companyData;
-    } catch (error) {
-      Alert.alert(
-        "Error fetching company data",
-        "There was an error retrieving the company data. Please try again."
-      );
-      return [];
-    }
-  };
+        if (error) {
+          throw error;
+        }
 
-  const fetchReportDataForCompany = async (companyNumber) => {
-    try {
-      const { data: salesReportData, error: salesReportError } = await supabase
-        .from("external_company_sales_report")
-        .select("DATE, AM_PM, FAT, SNF, total_litre,company_name")
-        .eq("company_number", companyNumber)
-        .gte("DATE", fromDate.toISOString())
-        .lte("DATE", toDate.toISOString());
-      if (salesReportError) throw salesReportError;
+        const companies = data.map((row) => row.company_name);
+        setCompanyList(companies);
 
-      return salesReportData;
-    } catch (error) {
-      Alert.alert(
-        "Error fetching report data",
-        "There was an error retrieving the report data. Please try again."
-      );
-      return [];
-    }
-  };
-
-  const fetchAllReportData = async () => {
-    try {
-      const companyData = await fetchCompanyData();
-      if (companyData.length === 0) {
-        Alert.alert(
-          "No companies available",
-          "No companies were found to generate reports."
-        );
-        return;
+        fetchReportDetails(companies);
+      } catch (error) {
+        Alert.alert("Error fetching companies", error.message);
       }
+    };
 
-      const report = {};
-      const totalLitre = {};
-      let totalOverallLitres = 0;
+    fetchCompanies();
+  }, []);
 
-      for (const { company_number } of companyData) {
-        const salesReportData = await fetchReportDataForCompany(company_number);
+  const fetchReportDetails = async (companies) => {
+    try {
+      const entries = {};
+      const litres = {};
 
-        report[company_number] = salesReportData.map((sale) => {
-          const formattedDate = new Date(sale.DATE)
-            .toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "2-digit",
-            })
-            .replace(/\//g, "-");
-          const formattedAMPM = sale.AM_PM.toUpperCase();
+      for (const company of companies) {
+        let { data, error } = await supabase
+          .from("external_company_sales_report")
+          .select("DATE, AM_PM, total_litre, FAT, SNF")
+          .eq("company_name", company)
+          .gte("DATE", fromDate.toISOString().split("T")[0])
+          .lte("DATE", toDate.toISOString().split("T")[0]);
 
-          return {
-            date: `${formattedDate}-${formattedAMPM}`,
-            FAT: sale.FAT,
-            SNF: sale.SNF,
-            total_litre: sale.total_litre,
-          };
+        if (error) {
+          throw error;
+        }
+
+    
+        const formattedData = data.map((entry) => {
+          const date = new Date(entry.DATE);
+          const day = date.getDate().toString().padStart(2, "0");
+          const month = (date.getMonth() + 1).toString().padStart(2, "0");
+          const shift = `${day}-${month}-${entry.AM_PM}`;
+          return { ...entry, Shift: shift };
         });
 
-        totalLitre[company_name] = salesReportData.reduce(
-          (acc, sale) => acc + (sale.total_litre || 0),
+        entries[company] = formattedData;
+
+        const total = formattedData.reduce(
+          (acc, entry) => acc + (entry.total_litre || 0),
           0
         );
-
-        totalOverallLitres += totalLitre[company_name];
+        litres[company] = total;
       }
 
-      const companies = companyData.map((c) => c.company_name);
+      setReportEntries(entries);
+      setTotalLitres(litres);
 
-      setCompanyList(companies);
-      setReportEntries(report);
-      setTotalLitres(totalLitre);
-      setOverallTotalLitres(totalOverallLitres.toFixed(1));
-    } catch (error) {
-      Alert.alert(
-        "Error fetching all report data",
-        "There was an error retrieving the report data for all companies. Please try again."
+      const overallTotal = Object.values(litres).reduce(
+        (acc, total) => acc + total,
+        0
       );
+      setOverallTotalLitres(overallTotal);
+    } catch (error) {
+      Alert.alert("Error fetching report details", error.message);
     }
-  };
-
-  const handleSearch = () => {
-    fetchAllReportData();
   };
 
   const handleFromDateChange = (event, selectedDate) => {
@@ -132,6 +104,10 @@ export default function ExternalCompanyReport() {
     const currentDate = selectedDate || toDate;
     setShowToPicker(false);
     setToDate(currentDate);
+  };
+
+  const handleSearch = () => {
+    fetchReportDetails(companyList);
   };
 
   return (
@@ -188,7 +164,9 @@ export default function ExternalCompanyReport() {
         <View style={styles.summaryTableContainer}>
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderText}>Overall TL</Text>
-            <Text style={styles.tableHeaderText}>{overallTotalLitres}</Text>
+            <Text style={styles.tableHeaderText}>
+              {overallTotalLitres.toFixed(1)}
+            </Text>
           </View>
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderText}>Company Name</Text>
@@ -210,9 +188,14 @@ export default function ExternalCompanyReport() {
 
         {companyList.map((company, index) => (
           <View key={index} style={styles.dataContainer}>
-            <Text style={styles.centerTitle}>{`Company: ${company}`}</Text>
+            <View style={styles.dataHeader}>
+              <Text style={styles.centerTitle}>{`Company: ${company}`}</Text>
+              <Text style={styles.totalLitresHeader}>
+                Total Litres: {totalLitres[company]?.toFixed(1) || 0}
+              </Text>
+            </View>
             <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderText}>Date</Text>
+              <Text style={styles.tableHeaderText}>Shift</Text>
               <Text style={styles.tableHeaderText}>FAT</Text>
               <Text style={styles.tableHeaderText}>SNF</Text>
               <Text style={styles.tableHeaderText}>Total Litre</Text>
@@ -220,7 +203,7 @@ export default function ExternalCompanyReport() {
             {reportEntries[company] && reportEntries[company].length > 0 ? (
               reportEntries[company].map((entry, index) => (
                 <View key={index} style={styles.tableRow}>
-                  <Text style={styles.tableCell}>{entry.date}</Text>
+                  <Text style={styles.tableCell}>{entry.Shift}</Text>
                   <Text style={styles.tableCell}>
                     {entry.FAT?.toFixed(1) || "-"}
                   </Text>
@@ -300,10 +283,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
   },
+  dataHeader: {
+    marginBottom: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "lightgray",
+  },
   centerTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
+  },
+  totalLitresHeader: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 5,
   },
   tableHeader: {
     flexDirection: "row",
