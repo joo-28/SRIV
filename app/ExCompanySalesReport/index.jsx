@@ -50,7 +50,7 @@ export default function ExternalCompanyReport() {
       for (const company of companies) {
         let { data, error } = await supabase
           .from("external_company_sales_report")
-          .select("DATE, AM_PM, total_litre, FAT, SNF")
+          .select("DATE, AM_PM, total_litre, FAT, SNF, CCFAT, CCSNF")
           .eq("company_name", company)
           .gte("DATE", fromDate.toISOString().split("T")[0])
           .lte("DATE", toDate.toISOString().split("T")[0]);
@@ -157,19 +157,19 @@ export default function ExternalCompanyReport() {
       </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.summaryTableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.tableHeaderText}>Overall TL</Text>
-            <Text style={styles.tableHeaderText}>
+          <View style={styles.summarytableHeader}>
+            <Text style={styles.summaryHeaderText}>Overall TL</Text>
+            <Text style={styles.summaryHeaderText}>
               {overallTotalLitres.toFixed(1)}
             </Text>
           </View>
           <View style={styles.tableHeader}>
-            <Text style={styles.tableHeaderText}>Company Name</Text>
-            <Text style={styles.tableHeaderText}>Total Litre</Text>
+            <Text style={styles.summaryHeaderText}>Company Name</Text>
+            <Text style={styles.summaryHeaderText}>Total Litre</Text>
           </View>
           {companyList.length > 0 ? (
             companyList.map((company, index) => (
-              <View key={index} style={styles.tableRow}>
+              <View key={index} style={styles.summarytableRow}>
                 <Text style={styles.tableCell}>{company}</Text>
                 <Text style={styles.tableCell}>
                   {totalLitres[company]?.toFixed(1) || 0}
@@ -193,7 +193,9 @@ export default function ExternalCompanyReport() {
               <Text style={styles.tableHeaderText}>Shift</Text>
               <Text style={styles.tableHeaderText}>FAT</Text>
               <Text style={styles.tableHeaderText}>SNF</Text>
-              <Text style={styles.tableHeaderText}>Total Litre</Text>
+              <Text style={styles.tableHeaderText}>CCFAT</Text>
+              <Text style={styles.tableHeaderText}>CCSNF</Text>
+              <Text style={styles.tableHeaderText}>TL</Text>
             </View>
             {reportEntries[company] && reportEntries[company].length > 0 ? (
               reportEntries[company].map((entry, index) => (
@@ -204,6 +206,12 @@ export default function ExternalCompanyReport() {
                   </Text>
                   <Text style={styles.tableCell}>
                     {entry.SNF?.toFixed(1) || "-"}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {entry.CCFAT?.toFixed(1) || "-"}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {entry.CCSNF?.toFixed(1) || "-"}
                   </Text>
                   <Text style={styles.tableCell}>
                     {entry.total_litre?.toFixed(1) || "-"}
@@ -264,6 +272,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    marginTop: 16,
   },
   heading: {
     fontSize: 24,
@@ -299,10 +308,22 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.DarkBlue,
     padding: 5,
   },
+  summarytableHeader: {
+    flexDirection: "row",
+    backgroundColor: Colors.DarkBlue,
+  },
+  summaryHeaderText: {
+    color: "white",
+    fontWeight: "bold",
+    width: "50%",
+    textAlign: "center",
+    fontSize: 16,
+    paddingVertical: 4,
+  },
   tableHeaderText: {
     color: "white",
     fontWeight: "bold",
-    width: "20%",
+    width: "16%",
     textAlign: "center",
   },
   tableRow: {
@@ -312,8 +333,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "lightgray",
   },
+  summarytableRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "lightgray",
+  },
   tableCell: {
-    width: "20%",
+    width: "16%",
     textAlign: "center",
     fontSize: 12,
   },
