@@ -137,6 +137,15 @@ export default function CenterStaffMenu() {
         </View>
         <View style={styles.buttonContainer}>
           <Button
+            color={Colors.Green}
+            title="Average Calculator"
+            onPress={() => {
+              router.push("/AverageCalculator");
+            }}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
             color={Colors.DarkBlue}
             title="Expenses"
             onPress={handleExpenses}
