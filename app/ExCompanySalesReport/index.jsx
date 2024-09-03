@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
   View,
@@ -23,28 +23,24 @@ export default function ExternalCompanyReport() {
   const [overallTotalLitres, setOverallTotalLitres] = useState(0);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        let { data, error } = await supabase
-          .from("external_company_sales")
-          .select("company_name");
+  const fetchCompanies = async () => {
+    try {
+      let { data, error } = await supabase
+        .from("external_company_sales")
+        .select("company_name");
 
-        if (error) {
-          throw error;
-        }
-
-        const companies = data.map((row) => row.company_name);
-        setCompanyList(companies);
-
-        fetchReportDetails(companies);
-      } catch (error) {
-        Alert.alert("Error fetching companies", error.message);
+      if (error) {
+        throw error;
       }
-    };
 
-    fetchCompanies();
-  }, []);
+      const companies = data.map((row) => row.company_name);
+      setCompanyList(companies);
+
+      fetchReportDetails(companies);
+    } catch (error) {
+      Alert.alert("Error fetching companies", error.message);
+    }
+  };
 
   const fetchReportDetails = async (companies) => {
     try {
@@ -63,7 +59,6 @@ export default function ExternalCompanyReport() {
           throw error;
         }
 
-    
         const formattedData = data.map((entry) => {
           const date = new Date(entry.DATE);
           const day = date.getDate().toString().padStart(2, "0");
@@ -107,7 +102,7 @@ export default function ExternalCompanyReport() {
   };
 
   const handleSearch = () => {
-    fetchReportDetails(companyList);
+    fetchCompanies();
   };
 
   return (

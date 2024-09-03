@@ -51,10 +51,10 @@ export default function CenterReport() {
 
         return {
           date: `${formattedDate}-${formattedAMPM}`,
-          CFAT: centerEntry.FAT ? centerEntry.FAT.toFixed(2) : "NULL",
-          CSNF: centerEntry.SNF ? centerEntry.SNF.toFixed(2) : "NULL",
-          CCFAT: ccShiftData.CCFAT ? ccShiftData.CCFAT.toFixed(2) : "NULL",
-          CCSNF: ccShiftData.CCSNF ? ccShiftData.CCSNF.toFixed(2) : "NULL",
+          CFAT: centerEntry.FAT ? centerEntry.FAT.toFixed(2) : "-",
+          CSNF: centerEntry.SNF ? centerEntry.SNF.toFixed(2) : "-",
+          CCFAT: ccShiftData.CCFAT ? ccShiftData.CCFAT.toFixed(2) : "-",
+          CCSNF: ccShiftData.CCSNF ? ccShiftData.CCSNF.toFixed(2) : "-",
         };
       });
 
