@@ -31,7 +31,7 @@ export default function CenterReport() {
 
       const { data: ccShiftData, error: ccShiftError } = await supabase
         .from("cc_shift_entry")
-        .select("DATE, AM_PM, FAT , SNF")
+        .select("DATE, AM_PM, FAT, SNF")
         .gte("DATE", fromDate.toISOString())
         .lte("DATE", toDate.toISOString());
       if (ccShiftError) throw ccShiftError;
@@ -51,10 +51,10 @@ export default function CenterReport() {
 
         return {
           date: `${formattedDate}-${formattedAMPM}`,
-          CFAT: centerEntry.FAT ? centerEntry.FAT.toFixed(2) : "-",
-          CSNF: centerEntry.SNF ? centerEntry.SNF.toFixed(2) : "-",
-          CCFAT: ccShiftData.CCFAT ? ccShiftData.CCFAT.toFixed(2) : "-",
-          CCSNF: ccShiftData.CCSNF ? ccShiftData.CCSNF.toFixed(2) : "-",
+          CFAT: centerEntry.FAT !== null ? centerEntry.FAT.toFixed(2) : "-",
+          CSNF: centerEntry.SNF !== null ? centerEntry.SNF.toFixed(2) : "-",
+          CCFAT: ccEntry && ccEntry.FAT !== null ? ccEntry.FAT.toFixed(2) : "-",
+          CCSNF: ccEntry && ccEntry.SNF !== null ? ccEntry.SNF.toFixed(2) : "-",
         };
       });
 

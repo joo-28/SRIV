@@ -60,6 +60,19 @@ export default function CustomerReport() {
           .lte("DATE", toDate.toISOString());
       if (customerShiftError) throw customerShiftError;
 
+      customerShiftData.sort((a, b) => {
+        const dateA = new Date(a.DATE);
+        const dateB = new Date(b.DATE);
+
+        if (dateA < dateB) return -1;
+        if (dateA > dateB) return 1;
+
+        if (a.AM_PM === "AM" && b.AM_PM === "PM") return -1;
+        if (a.AM_PM === "PM" && b.AM_PM === "AM") return 1;
+
+        return 0;
+      });
+
       let customers = new Set(customerNumbers);
       const report = {};
       const totalAmt = {};
@@ -214,7 +227,7 @@ export default function CustomerReport() {
           <View key={index} style={styles.dataContainer}>
             <Text style={styles.customerTitle}>{`${customer} `}</Text>
             <Text style={styles.customerTitleText}>
-              {`      Total Litre: ${
+              {`    Total Litre: ${
                 totalAmount[customer]?.litre?.toFixed(1) || 0
               }    Total Amount: ₹${
                 totalAmount[customer]?.amount?.toFixed(1) || 0
