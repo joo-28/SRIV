@@ -23,13 +23,17 @@ export default function EditCenterShift() {
   const [totalLitres, setTotalLitres] = useState("");
   const [FAT, setFAT] = useState("");
   const [SNF, setSNF] = useState("");
-  const [CCFAT, setCCFAT] = useState(""); // New state for CCFAT
-  const [CCSNF, setCCSNF] = useState(""); // New state for CCSNF
+  const [CCFAT, setCCFAT] = useState("");
+  const [CCSNF, setCCSNF] = useState("");
+  const [CCKG, setCCKG] = useState("");
+  const [CCLitre, setCCLitre] = useState("");
   const [selectedValue, setSelectedValue] = useState("AM");
   const [companyList, setCompanyList] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState("");
   const [selectedCompanyName, setSelectedCompanyName] = useState("");
+  const [fixedxs, setFixedxs] = useState(0);
   const [existingData, setExistingData] = useState(null);
+  const [TS, setTS] = useState(0); // State for TS value
 
   useEffect(() => {
     fetchCompanyData();
@@ -41,6 +45,10 @@ export default function EditCenterShift() {
         (comp) => comp.company_number === selectedCompany
       );
       setSelectedCompanyName(company ? company.company_name : "");
+
+      setFixedxs(company ? company.fixedxs : 0);
+
+      fetchTSValue(); // Fetch TS value when company is selected
       fetchEntryData();
     }
   }, [selectedCompany, currentDate, selectedValue]);
@@ -48,14 +56,26 @@ export default function EditCenterShift() {
   const fetchCompanyData = async () => {
     const { data, error } = await supabase
       .from("external_company_sales")
-      .select("company_number, company_name");
-
+      .select("company_number, company_name, fixedxs");
     if (error) {
       Alert.alert("Error", "Failed to fetch company data");
       console.log(error);
     } else {
       setCompanyList(data);
       setSelectedCompany("");
+    }
+  };
+
+  const fetchTSValue = async () => {
+    const { data, error } = await supabase
+      .from("external_company_sales")
+      .select("ts")
+      .eq("company_number", selectedCompany)
+      .single();
+    if (data) {
+      setTS(data.ts || 0); // Set the TS value
+    } else if (error) {
+      console.log("Failed to fetch TS value:", error);
     }
   };
 
@@ -73,15 +93,25 @@ export default function EditCenterShift() {
       setTotalLitres(data.total_litre?.toString() || "");
       setFAT(data.FAT?.toString() || "");
       setSNF(data.SNF?.toString() || "");
-      setCCFAT(data.CCFAT?.toString() || ""); // Set CCFAT value if exists
-      setCCSNF(data.CCSNF?.toString() || ""); // Set CCSNF value if exists
+      setCCFAT(data.CCFAT?.toString() || "");
+      setCCSNF(data.CCSNF?.toString() || "");
+
+      const ccLitreValue = data.cc_accurate_litre?.toString() || "";
+      setCCLitre(ccLitreValue);
+      if (!data.CCKG && ccLitreValue) {
+        setCCKG((parseFloat(ccLitreValue) / 1.03).toFixed(1));
+      } else {
+        setCCKG(data.CCKG?.toString() || "");
+      }
     } else {
       setExistingData(null);
       setTotalLitres("");
       setFAT("");
       setSNF("");
-      setCCFAT(""); // Clear CCFAT
-      setCCSNF(""); // Clear CCSNF
+      setCCFAT("");
+      setCCSNF("");
+      setCCKG("");
+      setCCLitre("");
     }
   }
 
@@ -95,8 +125,26 @@ export default function EditCenterShift() {
   };
 
   const handleTextChange = (setter) => (text) => {
-    if (/^\d*\.?\d*$/.test(text)) {
-      setter(text);
+    setter(text);
+  };
+
+  const handleCCKGChange = (value) => {
+    setCCKG(value);
+
+    if (!isNaN(parseFloat(value)) && value.trim() !== "") {
+      setCCLitre((Math.floor(parseFloat(value) * 1.03 * 10) / 10).toFixed(1));
+    } else {
+      setCCLitre("");
+    }
+  };
+
+  const handleCCLitreChange = (value) => {
+    setCCLitre(value);
+
+    if (!isNaN(parseFloat(value)) && value.trim() !== "") {
+      setCCKG((Math.floor((parseFloat(value) / 1.03) * 10) / 10).toFixed(1));
+    } else {
+      setCCKG("");
     }
   };
 
@@ -106,16 +154,29 @@ export default function EditCenterShift() {
       return;
     }
 
+    const totalLitresValue = parseFloat(totalLitres);
+
+    const accurateLitre = totalLitresValue + fixedxs;
+
+    const litreRate =
+      ((parseFloat(CCFAT) + parseFloat(CCSNF)) * parseFloat(TS)) / 100;
+
+    const totalAmount = litreRate * parseFloat(CCLitre);
+
     const entryData = {
       company_number: selectedCompany,
       company_name: selectedCompanyName,
       DATE: currentDate.toISOString().split("T")[0],
       AM_PM: selectedValue,
-      total_litre: parseFloat(totalLitres),
+      total_litre: totalLitresValue,
       FAT: parseFloat(FAT),
       SNF: parseFloat(SNF),
-      CCFAT: parseFloat(CCFAT), // Add CCFAT to entry data
-      CCSNF: parseFloat(CCSNF), // Add CCSNF to entry data
+      CCFAT: parseFloat(CCFAT),
+      CCSNF: parseFloat(CCSNF),
+      cc_accurate_litre: parseFloat(CCLitre),
+      center_accurate_litre: accurateLitre,
+      total_amount: totalAmount,
+      litre_rate: litreRate,
     };
 
     const { error } = await supabase
@@ -130,8 +191,10 @@ export default function EditCenterShift() {
       setTotalLitres("");
       setFAT("");
       setSNF("");
-      setCCFAT(""); // Clear CCFAT
-      setCCSNF(""); // Clear CCSNF
+      setCCFAT("");
+      setCCSNF("");
+      setCCKG("");
+      setCCLitre("");
     }
   }
 
@@ -236,20 +299,35 @@ export default function EditCenterShift() {
           keyboardType="numeric"
         />
 
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.Green}
-            title={existingData ? "Update" : "Save"}
-            onPress={handleSaveData}
-          />
-        </View>
-      </View>
-      <View style={styles.goBackButtonCon}>
+        <Text style={styles.label}>CC KG</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="CC KG"
+          value={CCKG}
+          onChangeText={handleCCKGChange}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.label}>CC Litre</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="CC Litre"
+          value={CCLitre}
+          onChangeText={handleCCLitreChange}
+          keyboardType="numeric"
+        />
+
         <Button
+          title={existingData ? "Update" : "Save"}
+          onPress={handleSaveData}
+          color={Colors.primary}
+        />
+      </View>
+      <View style={styles.addButton}>
+        <Button
+          color={Colors.DarkBlue}
           title="Go Back"
           onPress={() => router.back()}
-          color={Colors.DarkBlue}
-          style={styles.goBackButton}
         />
       </View>
     </ScrollView>
@@ -259,68 +337,57 @@ export default function EditCenterShift() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    justifyContent: "center",
+    padding: 16,
     backgroundColor: Colors.bg,
-    paddingTop: 70,
-    paddingHorizontal: 10,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
   },
   formDesign: {
     backgroundColor: Colors.Yellow,
-    borderRadius: 8,
-    width: "100%",
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-    marginBottom: 20,
+    padding: 20,
+    borderRadius: 10,
   },
   input: {
     height: 40,
-    borderColor: "gray",
+    borderColor: "#ccc",
     borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 10,
-    borderRadius: 4,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
   },
-  heading: {
-    fontSize: 24,
-    alignSelf: "center",
-    marginBottom: 15,
+  label: {
+    fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 5,
   },
   datePickerContainer: {
-    marginBottom: 12,
+    marginBottom: 20,
+  },
+  datePicker: {
+    width: "100%",
+    backgroundColor: "#fff",
   },
   radioGroup: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
-
-    marginBottom: 12,
+    justifyContent: "center",
+    marginBottom: 20,
   },
   radioButton: {
     flexDirection: "row",
     alignItems: "center",
+    marginHorizontal: 10,
   },
   radioLabel: {
-    fontSize: 16,
-    color: "#333",
+    marginLeft: 5,
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  buttonContainer: {
-    marginVertical: 15,
-  },
-  goBackButton: {
-    marginTop: 15,
-    width: "100%",
-  },
-  goBackButtonCon: {
-    marginTop: 20,
-    width: "60%",
+  addButton: {
+    marginTop: 10,
+    width: "90%",
     alignSelf: "center",
   },
 });

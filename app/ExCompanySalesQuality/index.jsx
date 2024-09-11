@@ -12,23 +12,20 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
 
-export default function ExternalCompanyReport() {
+export default function ExternalCompanyQuality() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
   const [showFromPicker, setShowFromPicker] = useState(false);
   const [showToPicker, setShowToPicker] = useState(false);
   const [reportEntries, setReportEntries] = useState({});
   const [totalLitres, setTotalLitres] = useState({});
-  const [totalCCAccurateLitres, setTotalCCAccurateLitres] = useState({});
-  const [totalAmount, setTotalAmount] = useState({});
   const [companyList, setCompanyList] = useState([]);
-  const [totalDiff, setTotalDiff] = useState({});
   const [overallTotalLitres, setOverallTotalLitres] = useState(0);
   const router = useRouter();
 
   const fetchCompanies = async () => {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("external_company_sales")
         .select("company_name");
 
@@ -49,16 +46,11 @@ export default function ExternalCompanyReport() {
     try {
       const entries = {};
       const litres = {};
-      const ccLitres = {};
-      const amounts = {};
-      const diffs = {};
 
       for (const company of companies) {
-        const { data, error } = await supabase
+        let { data, error } = await supabase
           .from("external_company_sales_report")
-          .select(
-            "DATE, AM_PM, center_accurate_litre, cc_accurate_litre, total_amount, litre_rate"
-          )
+          .select("DATE, AM_PM, total_litre, FAT, SNF, CCFAT, CCSNF")
           .eq("company_name", company)
           .gte("DATE", fromDate.toISOString().split("T")[0])
           .lte("DATE", toDate.toISOString().split("T")[0]);
@@ -84,38 +76,14 @@ export default function ExternalCompanyReport() {
         entries[company] = formattedData;
 
         const total = formattedData.reduce(
-          (acc, entry) => acc + (entry.center_accurate_litre || 0),
+          (acc, entry) => acc + (entry.total_litre || 0),
           0
         );
         litres[company] = total;
-
-        const totalCC = formattedData.reduce(
-          (acc, entry) => acc + (entry.cc_accurate_litre || 0),
-          0
-        );
-        ccLitres[company] = totalCC;
-
-        const totalAmt = formattedData.reduce(
-          (acc, entry) => acc + (entry.total_amount || 0),
-          0
-        );
-        amounts[company] = totalAmt;
-
-        const totalDiff = formattedData.reduce(
-          (acc, entry) =>
-            acc +
-            ((entry.cc_accurate_litre || 0) -
-              (entry.center_accurate_litre || 0)),
-          0
-        );
-        diffs[company] = totalDiff;
       }
 
       setReportEntries(entries);
       setTotalLitres(litres);
-      setTotalCCAccurateLitres(ccLitres);
-      setTotalAmount(amounts);
-      setTotalDiff(diffs);
 
       const overallTotal = Object.values(litres).reduce(
         (acc, total) => acc + total,
@@ -146,7 +114,7 @@ export default function ExternalCompanyReport() {
   return (
     <View style={styles.container}>
       <View style={styles.form}>
-        <Text style={styles.heading}>External Company Sales Report</Text>
+        <Text style={styles.heading}>External Company Quality</Text>
         <View style={styles.userField}>
           <Text style={styles.label}>From</Text>
           <View style={styles.datePickerContainer}>
@@ -179,7 +147,7 @@ export default function ExternalCompanyReport() {
                 mode="date"
                 display="default"
                 onChange={handleToDateChange}
-                maximumDate={new Date()}
+                maximumDate={new Date()} // Restrict future dates
                 style={styles.datePicker}
               />
             )}
@@ -195,12 +163,15 @@ export default function ExternalCompanyReport() {
       </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.summaryTableContainer}>
+          <View style={styles.summarytableHeader}>
+            <Text style={styles.summaryHeaderText}>Overall TL</Text>
+            <Text style={styles.summaryHeaderText}>
+              {overallTotalLitres.toFixed(1)}
+            </Text>
+          </View>
           <View style={styles.tableHeader}>
-            <Text style={styles.summaryHeaderText}>Name</Text>
-            <Text style={styles.summaryHeaderText}>C.A.Litre</Text>
-            <Text style={styles.summaryHeaderText}>CC.A.Litre</Text>
-            <Text style={styles.summaryHeaderText}>T.Diff</Text>
-            <Text style={styles.summaryHeaderText}>T.Amt</Text>
+            <Text style={styles.summaryHeaderText}>Company Name</Text>
+            <Text style={styles.summaryHeaderText}>Total Litre</Text>
           </View>
           {companyList.length > 0 ? (
             companyList.map((company, index) => (
@@ -208,15 +179,6 @@ export default function ExternalCompanyReport() {
                 <Text style={styles.tableCell}>{company}</Text>
                 <Text style={styles.tableCell}>
                   {totalLitres[company]?.toFixed(1) || 0}
-                </Text>
-                <Text style={styles.tableCell}>
-                  {totalCCAccurateLitres[company]?.toFixed(1) || 0}
-                </Text>
-                <Text style={styles.tableCell}>
-                  {totalDiff[company]?.toFixed(1) || 0}
-                </Text>
-                <Text style={styles.tableCell}>
-                  {totalAmount[company]?.toFixed(1) || 0}
                 </Text>
               </View>
             ))
@@ -230,49 +192,35 @@ export default function ExternalCompanyReport() {
             <View style={styles.dataHeader}>
               <Text style={styles.centerTitle}>{`Company: ${company}`}</Text>
               <Text style={styles.totalLitresHeader}>
-                Center Accurate Litres: {totalLitres[company]?.toFixed(1) || 0}
-              </Text>
-              <Text style={styles.totalLitresHeader}>
-                CC Accurate Litres:{" "}
-                {totalCCAccurateLitres[company]?.toFixed(1) || 0}
-              </Text>
-              <Text style={styles.totalLitresHeader}>
-                Total Diff: {totalDiff[company]?.toFixed(1) || 0}
-              </Text>
-              <Text style={styles.totalLitresHeader}>
-                Total Amount: {totalAmount[company]?.toFixed(1) || 0}
+                Total Litres: {totalLitres[company]?.toFixed(1) || 0}
               </Text>
             </View>
             <View style={styles.tableHeader}>
               <Text style={styles.tableHeaderText}>Shift</Text>
-              <Text style={styles.tableHeaderText}>C.A.Ltr</Text>
-              <Text style={styles.tableHeaderText}>CC.A.Ltr</Text>
-              <Text style={styles.tableHeaderText}>Diff</Text>
-              <Text style={styles.tableHeaderText}>L.Rate</Text>
-              <Text style={styles.tableHeaderText}>T.Amt</Text>
+              <Text style={styles.tableHeaderText}>FAT</Text>
+              <Text style={styles.tableHeaderText}>SNF</Text>
+              <Text style={styles.tableHeaderText}>CCFAT</Text>
+              <Text style={styles.tableHeaderText}>CCSNF</Text>
+              <Text style={styles.tableHeaderText}>TL</Text>
             </View>
             {reportEntries[company] && reportEntries[company].length > 0 ? (
               reportEntries[company].map((entry, index) => (
                 <View key={index} style={styles.tableRow}>
                   <Text style={styles.tableCell}>{entry.Shift}</Text>
                   <Text style={styles.tableCell}>
-                    {entry.center_accurate_litre?.toFixed(1) || "-"}
+                    {entry.FAT?.toFixed(1) || "-"}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {entry.cc_accurate_litre?.toFixed(1) || "-"}
+                    {entry.SNF?.toFixed(1) || "-"}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {entry.cc_accurate_litre && entry.center_accurate_litre
-                      ? (
-                          entry.cc_accurate_litre - entry.center_accurate_litre
-                        ).toFixed(1)
-                      : "-"}
+                    {entry.CCFAT?.toFixed(1) || "-"}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {entry.litre_rate?.toFixed(1) || "-"}
+                    {entry.CCSNF?.toFixed(1) || "-"}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {entry.total_amount?.toFixed(1) || "-"}
+                    {entry.total_litre?.toFixed(1) || "-"}
                   </Text>
                 </View>
               ))
@@ -373,13 +321,11 @@ const styles = StyleSheet.create({
   summaryHeaderText: {
     color: "white",
     fontWeight: "bold",
-    width: "20%",
+    width: "50%",
     textAlign: "center",
-    fontSize: 12,
+    fontSize: 16,
     paddingVertical: 4,
-    flexShrink: 1,
   },
-
   tableHeaderText: {
     color: "white",
     fontWeight: "bold",

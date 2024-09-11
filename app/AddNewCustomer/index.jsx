@@ -57,7 +57,7 @@ export default function AddNewCustomer() {
             .insert([
               {
                 customer_number: customerNumber,
-                customer_contact_number: customerContactNumber,
+                customer_contact_number: customerContactNumber || null,
                 total_amount: parseFloat(totalAmount),
                 balance: parseFloat(totalAmount),
               },
@@ -80,6 +80,7 @@ export default function AddNewCustomer() {
             .select();
           if (ledgerError) {
             Alert.alert("Error", "Error inserting customer:");
+            console.log(error);
             return;
           }
           Alert.alert("Successful", "New Customer Created");

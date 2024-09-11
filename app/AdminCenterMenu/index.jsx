@@ -48,6 +48,13 @@ export default function CenterStaffMenu() {
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.DarkBlue}
+            title="External Sales Quality"
+            onPress={() => router.push("/ExCompanySalesQuality")}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.DarkBlue}
             title="Center Shift Check"
             onPress={() => router.push("/AdminCenterMilkCheck")}
           />
