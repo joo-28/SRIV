@@ -262,7 +262,7 @@ export default function Index() {
         <View style={styles.dataDesign}>
           <Text style={styles.reportTitle}>Outstanding Fund</Text>
           <Text style={styles.reportAmount}>
-            RS.{outstandingFund.toFixed(1)}
+            ₹{new Intl.NumberFormat("en-IN").format(outstandingFund)}
           </Text>
         </View>
       </ScrollView>

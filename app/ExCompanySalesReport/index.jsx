@@ -23,7 +23,6 @@ export default function ExternalCompanyReport() {
   const [totalAmount, setTotalAmount] = useState({});
   const [companyList, setCompanyList] = useState([]);
   const [totalDiff, setTotalDiff] = useState({});
-  const [overallTotalLitres, setOverallTotalLitres] = useState(0);
   const router = useRouter();
 
   const fetchCompanies = async () => {
@@ -116,12 +115,6 @@ export default function ExternalCompanyReport() {
       setTotalCCAccurateLitres(ccLitres);
       setTotalAmount(amounts);
       setTotalDiff(diffs);
-
-      const overallTotal = Object.values(litres).reduce(
-        (acc, total) => acc + total,
-        0
-      );
-      setOverallTotalLitres(overallTotal);
     } catch (error) {
       Alert.alert("Error fetching report details", error.message);
     }
@@ -269,7 +262,7 @@ export default function ExternalCompanyReport() {
                       : "-"}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {entry.litre_rate?.toFixed(1) || "-"}
+                    {entry.litre_rate?.toFixed(2) || "-"}
                   </Text>
                   <Text style={styles.tableCell}>
                     {entry.total_amount?.toFixed(1) || "-"}

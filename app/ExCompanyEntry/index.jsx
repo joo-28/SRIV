@@ -132,7 +132,7 @@ export default function EditCenterShift() {
     setCCKG(value);
 
     if (!isNaN(parseFloat(value)) && value.trim() !== "") {
-      setCCLitre((Math.floor(parseFloat(value) * 1.03 * 10) / 10).toFixed(1));
+      setCCLitre((Math.floor((parseFloat(value) / 1.03) * 10) / 10).toFixed(1));
     } else {
       setCCLitre("");
     }
@@ -142,7 +142,7 @@ export default function EditCenterShift() {
     setCCLitre(value);
 
     if (!isNaN(parseFloat(value)) && value.trim() !== "") {
-      setCCKG((Math.floor((parseFloat(value) / 1.03) * 10) / 10).toFixed(1));
+      setCCKG((Math.floor(parseFloat(value) * 1.03 * 10) / 10).toFixed(1));
     } else {
       setCCKG("");
     }
@@ -158,9 +158,13 @@ export default function EditCenterShift() {
 
     const accurateLitre = totalLitresValue + fixedxs;
 
-    const litreRate =
-      ((parseFloat(CCFAT) + parseFloat(CCSNF)) * parseFloat(TS)) / 100;
-
+    const litreRate = parseFloat(
+      (
+        ((parseFloat(CCFAT) + parseFloat(CCSNF)) * parseFloat(TS)) /
+        100
+      ).toFixed(2)
+    );
+    console.log(litreRate);
     const totalAmount = litreRate * parseFloat(CCLitre);
 
     const entryData = {
