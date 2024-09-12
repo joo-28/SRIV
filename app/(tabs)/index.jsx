@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import service from "../../Services/service";
 import { useRouter } from "expo-router";
 import {
@@ -18,6 +18,7 @@ import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useFocusEffect } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
@@ -29,7 +30,7 @@ export default function Index() {
   const [selectedValue, setSelectedValue] = useState("debit");
   const [amount, setAmount] = useState("");
   const [outstandingFund, setOutstandingFund] = useState(0);
-  const [loading, setLoading] = useState(true); // For loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkUserStatus = async () => {
@@ -39,8 +40,6 @@ export default function Index() {
           router.replace("/Login");
           return;
         }
-
-        // Fetch user role
         const { data: userData, error: userError } = await supabase
           .from("User")
           .select("ROLE")
@@ -72,7 +71,11 @@ export default function Index() {
     checkUserStatus();
     fetchOutstandingFund();
   }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchOutstandingFund();
+    }, [])
+  );
   const fetchOutstandingFund = async () => {
     try {
       const { data: customers, error } = await supabase
