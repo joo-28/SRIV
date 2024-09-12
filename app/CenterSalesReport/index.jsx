@@ -181,8 +181,10 @@ export default function CenterReport() {
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderText}>Overall TL</Text>
             <Text style={styles.tableHeaderText}>{overallTotals.litre}</Text>
-            <Text style={styles.tableHeaderText}>Overall TA</Text>
-            <Text style={styles.tableHeaderText}>{overallTotals.amount}</Text>
+            <Text style={styles.tableHeaderText}>OverallTA</Text>
+            <Text style={styles.tableHeaderText}>
+              ₹{new Intl.NumberFormat("en-IN").format(overallTotals.amount)}
+            </Text>
           </View>
           <View style={styles.tableHeader}>
             <Text style={styles.tableHeaderText}>Center Number</Text>
@@ -196,14 +198,24 @@ export default function CenterReport() {
               <View key={index} style={styles.tableRow}>
                 <Text style={styles.tableCell}>{center}</Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[center]?.cash?.toFixed(1) || 0}
+                  ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    totalAmount[center]?.cash?.toFixed(1) || 0
+                  )}
                 </Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[center]?.credit?.toFixed(1) || 0}
+                  ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    totalAmount[center]?.credit?.toFixed(1) || 0
+                  )}
                 </Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[center]?.amount?.toFixed(1) || 0}
+                  ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    totalAmount[center]?.amount?.toFixed(1) || 0
+                  )}
                 </Text>
+
                 <Text style={styles.tableCell}>
                   {totalAmount[center]?.litre?.toFixed(1) || 0}
                 </Text>
@@ -220,16 +232,26 @@ export default function CenterReport() {
             <View style={styles.tableHeading}>
               <View style={styles.totalRow}>
                 <Text style={styles.totalHeadingText}>
-                  Total Cash: {totalAmount[center]?.cash?.toFixed(1) || 0}
+                  Total Cash: ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    totalAmount[center]?.cash?.toFixed(1) || 0
+                  )}
                 </Text>
                 <Text style={styles.totalHeadingText}>
-                  Total Amount: {totalAmount[center]?.amount?.toFixed(1) || 0}
+                  Total Amount: ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    totalAmount[center]?.amount?.toFixed(1) || 0
+                  )}
                 </Text>
               </View>
               <View style={styles.totalRow}>
                 <Text style={styles.totalHeadingText}>
-                  Total Credit: {totalAmount[center]?.credit?.toFixed(1) || 0}
+                  Total Credit: ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    totalAmount[center]?.credit?.toFixed(1) || 0
+                  )}
                 </Text>
+
                 <Text style={styles.totalHeadingText}>
                   Total Litre: {totalAmount[center]?.litre?.toFixed(1) || 0}
                 </Text>
@@ -249,14 +271,27 @@ export default function CenterReport() {
                 <View key={index} style={styles.tableRow}>
                   <Text style={styles.tableCell}>{entry.date}</Text>
                   <Text style={styles.tableCell}>
-                    {entry.cash?.toFixed(1) || "-"}
+                    {entry.cash != null
+                      ? `₹${new Intl.NumberFormat("en-IN").format(
+                          entry.cash.toFixed(1)
+                        )}`
+                      : "-"}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {entry.credit?.toFixed(1) || "-"}
+                    {entry.credit != null
+                      ? `₹${new Intl.NumberFormat("en-IN").format(
+                          entry.credit.toFixed(1)
+                        )}`
+                      : "-"}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {entry.amount?.toFixed(1) || "-"}
+                    {entry.amount != null
+                      ? `₹${new Intl.NumberFormat("en-IN").format(
+                          entry.amount.toFixed(1)
+                        )}`
+                      : "-"}
                   </Text>
+
                   <Text style={styles.tableCell}>
                     {entry.litre?.toFixed(1) || "-"}
                   </Text>

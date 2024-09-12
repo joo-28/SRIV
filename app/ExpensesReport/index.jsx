@@ -135,7 +135,9 @@ export default function ExpensesReport() {
             {Object.entries(summaryTotals).map(([category, amount]) => (
               <View key={category} style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>{category}</Text>
-                <Text style={styles.summaryAmount}>{amount}</Text>
+                <Text style={styles.summaryAmount}>
+                  ₹{new Intl.NumberFormat("en-IN").format(amount)}
+                </Text>
               </View>
             ))}
           </View>
@@ -173,7 +175,10 @@ export default function ExpensesReport() {
                   {expense.comment}
                 </Text>
                 <Text style={[styles.tableText, styles.tableColumnAmount]}>
-                  {(parseFloat(expense.amount) || 0).toFixed(1)}
+                  ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    parseFloat(expense.amount) || 0
+                  )}
                 </Text>
               </View>
             ))

@@ -209,7 +209,10 @@ export default function ExternalCompanyReport() {
                   {totalDiff[company]?.toFixed(1) || 0}
                 </Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[company]?.toFixed(1) || 0}
+                  ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    totalAmount[company]?.toFixed(1) || 0
+                  )}
                 </Text>
               </View>
             ))
@@ -233,7 +236,10 @@ export default function ExternalCompanyReport() {
                 Total Diff: {totalDiff[company]?.toFixed(1) || 0}
               </Text>
               <Text style={styles.totalLitresHeader}>
-                Total Amount: {totalAmount[company]?.toFixed(1) || 0}
+                Total Amount: ₹
+                {new Intl.NumberFormat("en-IN").format(
+                  totalAmount[company]?.toFixed(1) || 0
+                )}
               </Text>
             </View>
             <View style={styles.tableHeader}>
@@ -265,7 +271,11 @@ export default function ExternalCompanyReport() {
                     {entry.litre_rate?.toFixed(2) || "-"}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {entry.total_amount?.toFixed(1) || "-"}
+                    {entry.total_amount != null
+                      ? `₹${new Intl.NumberFormat("en-IN").format(
+                          entry.total_amount.toFixed(1)
+                        )}`
+                      : "-"}
                   </Text>
                 </View>
               ))
@@ -396,7 +406,7 @@ const styles = StyleSheet.create({
   tableCell: {
     width: "16%",
     textAlign: "center",
-    fontSize: 12,
+    fontSize: 10,
   },
   noDataText: {
     textAlign: "center",

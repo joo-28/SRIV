@@ -104,10 +104,30 @@ export default function Customer() {
               .map((entry, index) => (
                 <View key={index} style={styles.tableRow}>
                   <Text style={styles.tableCell}>{entry.due_paid_date}</Text>
-                  <Text style={styles.tableCell}>{entry.amount}</Text>
-                  <Text style={styles.tableCell}>{entry.transaction}</Text>
-                  <Text style={styles.tableCell}>{entry.total_due_paid}</Text>
-                  <Text style={styles.tableCell}>{entry.balance_amount}</Text>
+                  <Text style={styles.tableCell}>
+                    {entry.amount != null
+                      ? `₹${new Intl.NumberFormat("en-IN").format(
+                          entry.amount
+                        )}`
+                      : "-"}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {entry.transaction || "-"}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {entry.total_due_paid != null
+                      ? `₹${new Intl.NumberFormat("en-IN").format(
+                          entry.total_due_paid
+                        )}`
+                      : "-"}
+                  </Text>
+                  <Text style={styles.tableCell}>
+                    {entry.balance_amount != null
+                      ? `₹${new Intl.NumberFormat("en-IN").format(
+                          entry.balance_amount
+                        )}`
+                      : "-"}
+                  </Text>
                 </View>
               ))
           ) : (

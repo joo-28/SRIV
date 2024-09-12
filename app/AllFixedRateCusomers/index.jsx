@@ -201,11 +201,23 @@ export default function CustomerReport() {
         <View style={styles.summaryTableContainer}>
           <View style={styles.tableHeader}>
             <Text style={styles.SummarytableHeaderText}>
-              {"         "}
-              Total Litre: {totalLitres} {"       "}Total Amount: ₹{totalAmt}
+              {"  "}
+              Total Litre: {totalLitres}
+              {"  "} Total Amount: ₹
+              {new Intl.NumberFormat("en-IN").format(totalAmt)}
             </Text>
           </View>
-
+          <View style={styles.tableHeader}>
+            <Text style={[styles.tableHeaderText, styles.tableHeaderTextBold]}>
+              Customer Number
+            </Text>
+            <Text style={[styles.tableHeaderText, styles.tableHeaderTextBold]}>
+              Total Litre
+            </Text>
+            <Text style={[styles.tableHeaderText, styles.tableHeaderTextBold]}>
+              Total Amount
+            </Text>
+          </View>
           {customerList.length > 0 ? (
             customerList.map((customer, index) => (
               <View key={index} style={styles.tableRow}>
@@ -214,7 +226,10 @@ export default function CustomerReport() {
                   {totalAmount[customer]?.litre?.toFixed(1) || 0}
                 </Text>
                 <Text style={styles.tableCell}>
-                  {totalAmount[customer]?.amount?.toFixed(1) || 0}
+                  ₹
+                  {new Intl.NumberFormat("en-IN").format(
+                    totalAmount[customer]?.amount?.toFixed(1) || 0
+                  )}
                 </Text>
               </View>
             ))
@@ -227,12 +242,13 @@ export default function CustomerReport() {
           <View key={index} style={styles.dataContainer}>
             <Text style={styles.customerTitle}>{`${customer} `}</Text>
             <Text style={styles.customerTitleText}>
-              {`    Total Litre: ${
+              {` Total Litre: ${
                 totalAmount[customer]?.litre?.toFixed(1) || 0
-              }    Total Amount: ₹${
+              }   Total Amount: ₹${new Intl.NumberFormat("en-IN").format(
                 totalAmount[customer]?.amount?.toFixed(1) || 0
-              }`}
+              )}`}
             </Text>
+
             <View style={styles.tableHeader}>
               <Text style={styles.tableHeaderText}>Date</Text>
               <Text style={styles.tableHeaderText}>Litre</Text>
@@ -245,7 +261,13 @@ export default function CustomerReport() {
                 <View key={index} style={styles.tableRow}>
                   <Text style={styles.tableCell}>{entry.date}</Text>
                   <Text style={styles.tableCell}>{entry.litre || "-"}</Text>
-                  <Text style={styles.tableCell}>{entry.amount || "-"}</Text>
+                  <Text style={styles.tableCell}>
+                    {entry.amount != null
+                      ? `₹${new Intl.NumberFormat("en-IN").format(
+                          entry.amount
+                        )}`
+                      : "-"}
+                  </Text>
                   <Text style={styles.tableCell}>{entry.litreRate || "-"}</Text>
                 </View>
               ))

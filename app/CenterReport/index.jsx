@@ -152,7 +152,7 @@ export default function CenterReport() {
         <ScrollView style={styles.scrollView}>
           <View style={styles.tableHeading}>
             <Text style={styles.tableHeadingText}>
-              Total Amt: {totalAmount}
+              Total Amt: ₹{new Intl.NumberFormat("en-IN").format(totalAmount)}
             </Text>
             <Text style={styles.tableHeadingText}>Total Diff: {totalDiff}</Text>
           </View>
@@ -174,7 +174,9 @@ export default function CenterReport() {
                 <Text style={styles.tableCell}>{entry.diff}</Text>
                 <Text style={styles.tableCell}>{entry.FAT}</Text>
                 <Text style={styles.tableCell}>{entry.SNF}</Text>
-                <Text style={styles.tableCell}>{entry.total_amount}</Text>
+                <Text style={styles.tableCell}>
+                  ₹{new Intl.NumberFormat("en-IN").format(entry.total_amount)}
+                </Text>
               </View>
             ))
           ) : (
