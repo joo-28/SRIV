@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
 import Colors from "../../Services/Colors";
 import supabase from "../../Services/supabaseConfig";
@@ -31,6 +32,7 @@ export default function Index() {
   const [amount, setAmount] = useState("");
   const [outstandingFund, setOutstandingFund] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
     const checkUserStatus = async () => {
@@ -76,19 +78,23 @@ export default function Index() {
       fetchOutstandingFund();
     }, [])
   );
+
   const fetchOutstandingFund = async () => {
     try {
-      const { data: customers, error } = await supabase
+      const { data: customersData, error } = await supabase
         .from("customer")
-        .select("balance");
+        .select("customer_number, balance");
+
       if (error) {
         throw error;
       }
-      const totalOutstanding = customers.reduce(
+
+      const totalOutstanding = customersData.reduce(
         (sum, customer) => sum + parseFloat(customer.balance || 0),
         0
       );
       setOutstandingFund(totalOutstanding);
+      setCustomers(customersData); // Store customer data for the table
     } catch (error) {
       Alert.alert("Error", "Error fetching outstanding fund");
     }
@@ -182,6 +188,13 @@ export default function Index() {
     );
   }
 
+  const renderCustomerItem = ({ item }) => (
+    <View style={styles.tableRow}>
+      <Text style={styles.tableCell}>{item.customer_number}</Text>
+      <Text style={styles.tableCell}>₹{item.balance}</Text>
+    </View>
+  );
+
   return (
     <KeyboardAvoidingView
       style={styles.bg}
@@ -261,12 +274,33 @@ export default function Index() {
             />
           </View>
         </View>
-
         <View style={styles.dataDesign}>
           <Text style={styles.reportTitle}>Outstanding Fund</Text>
           <Text style={styles.reportAmount}>
             ₹{new Intl.NumberFormat("en-IN").format(outstandingFund)}
           </Text>
+
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.headerText}>Customer Number</Text>
+              <Text style={styles.headerText}>Balance Amount</Text>
+            </View>
+
+            {customers.map((customer, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.tableRow,
+                  index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd,
+                ]}
+              >
+                <Text style={styles.cellText}>{customer.customer_number}</Text>
+                <Text style={styles.cellText}>
+                  ₹{new Intl.NumberFormat("en-IN").format(customer.balance)}
+                </Text>
+              </View>
+            ))}
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -334,26 +368,56 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   dataDesign: {
-    marginHorizontal: "20%",
-    height: height * 0.2,
-    backgroundColor: Colors.Yellow,
-    borderRadius: 8,
     marginTop: 20,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    marginHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: Colors.Yellow,
+    elevation: 2,
   },
   reportTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 5,
+    color: Colors.Black,
+    marginBottom: 10,
     alignSelf: "center",
   },
   reportAmount: {
-    fontSize: 24,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: Colors.Green,
+    marginBottom: 20,
     alignSelf: "center",
+  },
+  table: {
+    overflow: "hidden",
+  },
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: Colors.DarkBlue,
+    padding: 10,
+    justifyContent: "space-between",
+  },
+  tableRow: {
+    flexDirection: "row",
+    padding: 30,
+    paddingVertical: 10,
+
+    justifyContent: "space-between",
+  },
+  tableRowEven: {
+    backgroundColor: Colors.White,
+  },
+  tableRowOdd: {
+    backgroundColor: Colors.LightGray,
+  },
+  headerText: {
+    fontWeight: "bold",
+    color: "white",
+    fontSize: 16,
+  },
+  cellText: {
+    fontSize: 16,
+    color: Colors.Black,
   },
 });
