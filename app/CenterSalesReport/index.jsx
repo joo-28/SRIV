@@ -58,6 +58,9 @@ export default function CenterReport() {
         .lte("DATE", toDate.toISOString());
       if (milkSalesError) throw milkSalesError;
 
+      // Sort milkSalesData by DATE field
+      milkSalesData.sort((a, b) => new Date(a.DATE) - new Date(b.DATE));
+
       let centers = new Set(centerNumbers);
       const report = {};
       const totalAmt = {};

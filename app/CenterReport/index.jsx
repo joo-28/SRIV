@@ -62,6 +62,7 @@ export default function CenterReport() {
         return {
           date: `${formattedDate}-${formattedAMPM}`,
           AM_PM: centerEntry.AM_PM,
+          DATE: centerEntry.DATE, // Keep original DATE for sorting
           Total_litre: centerEntry.Total_litre.toFixed(1),
           diff: diff,
           FAT: centerEntry.FAT.toFixed(2),
@@ -69,6 +70,9 @@ export default function CenterReport() {
           total_amount: centerEntry.total_amt.toFixed(1),
         };
       });
+
+      // Sort combined data by DATE before setting the state
+      combinedData.sort((a, b) => new Date(a.DATE) - new Date(b.DATE));
 
       setReportEntries(combinedData);
       setTotalAmount(totalAmt.toFixed(1));
